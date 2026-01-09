@@ -18,6 +18,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
           <NativeSelect.Field ref={ref} {...selectProps}>
             {children}
           </NativeSelect.Field>
+          <NativeSelect.Indicator />
         </NativeSelect.Root>
         {error && <Field.ErrorText>{error}</Field.ErrorText>}
         {helperText && !error && <Field.HelperText>{helperText}</Field.HelperText>}

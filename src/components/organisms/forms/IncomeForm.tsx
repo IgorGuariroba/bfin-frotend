@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, Checkbox, Center, Text } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Checkbox, Center, Text, Spinner } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { FormField } from '../../molecules/FormField';
 import { FormSelect } from '../../molecules/FormSelect';
@@ -70,83 +70,94 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
 
   if (loadingAccounts || loadingCategories) {
     return (
-      <Center py={4}>
-        <Text>Carregando...</Text>
+      <Center py={8}>
+        <VStack gap={4}>
+          <Spinner size="xl" colorPalette="brand" />
+          <Text color="gray.600">Carregando...</Text>
+        </VStack>
       </Center>
     );
   }
 
   if (!accounts || accounts.length === 0) {
     return (
-      <Center py={4}>
-        <Stack gap={4} align="center">
-          <Text color="gray.600">Você precisa criar uma conta primeiro.</Text>
-          <Button onClick={onCancel}>Voltar</Button>
-        </Stack>
+      <Center py={8}>
+        <VStack gap={4} align="center">
+          <Text color="gray.600" fontSize="md">
+            Você precisa criar uma conta primeiro.
+          </Text>
+          {onCancel && (
+            <Button onClick={onCancel} variant="outline">
+              Voltar
+            </Button>
+          )}
+        </VStack>
       </Center>
     );
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap={4}>
-        <FormSelect
-          label="Conta"
-          isRequired
-          error={errors.accountId?.message}
-          {...register('accountId')}
-        >
-          <option value="">Selecione uma conta</option>
-          {accounts.map((account) => (
-            <option key={account.id} value={account.id}>
-              {account.account_name} - R$ {Number(account.available_balance).toFixed(2)}
-            </option>
-          ))}
-        </FormSelect>
+      <VStack gap={6} align="stretch">
+        <Stack gap={5}>
+          <FormSelect
+            label="Conta"
+            isRequired
+            error={errors.accountId?.message}
+            {...register('accountId')}
+          >
+            <option value="">Selecione uma conta</option>
+            {accounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.account_name} - R$ {Number(account.available_balance).toFixed(2)}
+              </option>
+            ))}
+          </FormSelect>
 
-        <FormField
-          label="Valor"
-          type="number"
-          step="0.01"
-          placeholder="0.00"
-          isRequired
-          error={errors.amount?.message}
-          {...register('amount', { valueAsNumber: true })}
-        />
+          <FormField
+            label="Valor"
+            type="number"
+            step="0.01"
+            placeholder="0.00"
+            isRequired
+            error={errors.amount?.message}
+            {...register('amount', { valueAsNumber: true })}
+          />
 
-        <FormField
-          label="Descrição"
-          type="text"
-          placeholder="Ex: Salário, Freelance, etc."
-          isRequired
-          error={errors.description?.message}
-          {...register('description')}
-        />
+          <FormField
+            label="Descrição"
+            type="text"
+            placeholder="Ex: Salário, Freelance, etc."
+            isRequired
+            error={errors.description?.message}
+            {...register('description')}
+          />
 
-        <FormSelect
-          label="Categoria"
-          isRequired
-          error={errors.categoryId?.message}
-          {...register('categoryId')}
-        >
-          <option value="">Selecione uma categoria</option>
-          {categories?.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </FormSelect>
+          <FormSelect
+            label="Categoria"
+            isRequired
+            error={errors.categoryId?.message}
+            {...register('categoryId')}
+          >
+            <option value="">Selecione uma categoria</option>
+            {categories?.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </FormSelect>
 
-        <FormField
-          label="Data de Recebimento (opcional)"
-          type="datetime-local"
-          {...register('dueDate')}
-        />
+          <FormField
+            label="Data de Recebimento (opcional)"
+            type="datetime-local"
+            {...register('dueDate')}
+          />
 
-        <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
-          <Checkbox.Control />
-          <Checkbox.Label>Receita recorrente</Checkbox.Label>
-        </Checkbox.Root>
+          <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
+            <Checkbox.Control />
+            <Checkbox.Label>Receita recorrente</Checkbox.Label>
+          </Checkbox.Root>
+        </Stack>
 
         {createIncome.isError && (
           <InfoBox variant="error">
@@ -156,21 +167,27 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
           </InfoBox>
         )}
 
-        <HStack gap={3} pt={4}>
+        <HStack gap={3} pt={2}>
           <Button
             type="submit"
             loading={isSubmitting || createIncome.isPending}
             flex="1"
+            size="lg"
           >
             Criar Receita
           </Button>
           {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              size="lg"
+            >
               Cancelar
             </Button>
           )}
         </HStack>
-      </Stack>
+      </VStack>
     </form>
   );
 }

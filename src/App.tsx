@@ -5,6 +5,9 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { DailyLimitPage } from './pages/DailyLimitPage';
+import { AddIncomePage } from './pages/AddIncomePage';
+import { AddFixedExpensePage } from './pages/AddFixedExpensePage';
+import { AddVariableExpensePage } from './pages/AddVariableExpensePage';
 import { StyleguideLayout, DesignTokensPage } from './pages/styleguide';
 
 // Loading component using Chakra UI
@@ -79,6 +82,30 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <DailyLimitPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/add-income"
+        element={
+          <PrivateRoute>
+            <AddIncomePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/add-fixed-expense"
+        element={
+          <PrivateRoute>
+            <AddFixedExpensePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/add-variable-expense"
+        element={
+          <PrivateRoute>
+            <AddVariableExpensePage />
           </PrivateRoute>
         }
       />

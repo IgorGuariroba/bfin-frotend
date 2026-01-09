@@ -9,8 +9,6 @@ import {
   Text,
   VStack,
   HStack,
-  Grid,
-  GridItem,
   Badge,
   Progress,
   IconButton,
@@ -18,9 +16,11 @@ import {
   Alert,
   Stack,
   List,
+  Tooltip,
+  Icon,
 } from '@chakra-ui/react';
 import { Button } from '../components/atoms/Button';
-import { IncomeForm, FixedExpenseForm, VariableExpenseForm, CreateAccountForm } from '../components/organisms/forms';
+import { CreateAccountForm } from '../components/organisms/forms';
 import { AccountsDialog, InvitationsDialog } from '../components/organisms/dialogs';
 import { TransactionList } from '../components/organisms/lists';
 import { SpendingHistoryChart } from '../components/organisms/charts';
@@ -36,9 +36,6 @@ import { toast } from '../lib/toast';
 export function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
-  const [fixedExpenseDialogOpen, setFixedExpenseDialogOpen] = useState(false);
-  const [variableExpenseDialogOpen, setVariableExpenseDialogOpen] = useState(false);
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [manageAccountsDialogOpen, setManageAccountsDialogOpen] = useState(false);
   const [transactionsDialogOpen, setTransactionsDialogOpen] = useState(false);
@@ -219,85 +216,58 @@ export function Dashboard() {
 
           {/* Quick Actions */}
           {!loadingAccounts && accounts && accounts.length > 0 && (
-            <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4}>
-              <GridItem>
-                <Box
-                  as="button"
-                  onClick={() => setIncomeDialogOpen(true)}
-                  bgGradient="linear(to-br, green.500, green.600)"
-                  _hover={{ bgGradient: 'linear(to-br, green.600, green.700)' }}
-                  color="white"
-                  borderRadius="lg"
-                  p={6}
-                  shadow="lg"
-                  transition="all 0.2s"
-                  _active={{ transform: 'scale(0.95)' }}
-                  w="full"
-                >
-                  <VStack gap={3}>
-                    <Box bg="whiteAlpha.200" p={3} borderRadius="full">
-                      <TrendingUp size={32} />
-                    </Box>
-                    <VStack gap={1}>
-                      <Heading size="md">Nova Receita</Heading>
-                      <Text fontSize="sm" color="green.100">Registrar entrada</Text>
-                    </VStack>
-                  </VStack>
-                </Box>
-              </GridItem>
+            <HStack gap={4} justify="flex-start">
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <IconButton
+                    aria-label="Nova Receita"
+                    onClick={() => navigate('/add-income')}
+                    colorPalette="green"
+                    size="lg"
+                    borderRadius="full"
+                  >
+                    <Icon as={TrendingUp} boxSize={6} />
+                  </IconButton>
+                </Tooltip.Trigger>
+                <Tooltip.Positioner>
+                  <Tooltip.Content>Nova Receita</Tooltip.Content>
+                </Tooltip.Positioner>
+              </Tooltip.Root>
 
-              <GridItem>
-                <Box
-                  as="button"
-                  onClick={() => setFixedExpenseDialogOpen(true)}
-                  bgGradient="linear(to-br, orange.500, orange.600)"
-                  _hover={{ bgGradient: 'linear(to-br, orange.600, orange.700)' }}
-                  color="white"
-                  borderRadius="lg"
-                  p={6}
-                  shadow="lg"
-                  transition="all 0.2s"
-                  _active={{ transform: 'scale(0.95)' }}
-                  w="full"
-                >
-                  <VStack gap={3}>
-                    <Box bg="whiteAlpha.200" p={3} borderRadius="full">
-                      <Calendar size={32} />
-                    </Box>
-                    <VStack gap={1}>
-                      <Heading size="md">Despesa Fixa</Heading>
-                      <Text fontSize="sm" color="orange.100">Conta recorrente</Text>
-                    </VStack>
-                  </VStack>
-                </Box>
-              </GridItem>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <IconButton
+                    aria-label="Nova Despesa Fixa"
+                    onClick={() => navigate('/add-fixed-expense')}
+                    colorPalette="orange"
+                    size="lg"
+                    borderRadius="full"
+                  >
+                    <Icon as={Calendar} boxSize={6} />
+                  </IconButton>
+                </Tooltip.Trigger>
+                <Tooltip.Positioner>
+                  <Tooltip.Content>Nova Despesa Fixa</Tooltip.Content>
+                </Tooltip.Positioner>
+              </Tooltip.Root>
 
-              <GridItem>
-                <Box
-                  as="button"
-                  onClick={() => setVariableExpenseDialogOpen(true)}
-                  bgGradient="linear(to-br, red.500, red.600)"
-                  _hover={{ bgGradient: 'linear(to-br, red.600, red.700)' }}
-                  color="white"
-                  borderRadius="lg"
-                  p={6}
-                  shadow="lg"
-                  transition="all 0.2s"
-                  _active={{ transform: 'scale(0.95)' }}
-                  w="full"
-                >
-                  <VStack gap={3}>
-                    <Box bg="whiteAlpha.200" p={3} borderRadius="full">
-                      <ShoppingCart size={32} />
-                    </Box>
-                    <VStack gap={1}>
-                      <Heading size="md">Despesa Variável</Heading>
-                      <Text fontSize="sm" color="red.100">Gasto do dia</Text>
-                    </VStack>
-                  </VStack>
-                </Box>
-              </GridItem>
-            </Grid>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <IconButton
+                    aria-label="Nova Despesa Variável"
+                    onClick={() => navigate('/add-variable-expense')}
+                    colorPalette="red"
+                    size="lg"
+                    borderRadius="full"
+                  >
+                    <Icon as={ShoppingCart} boxSize={6} />
+                  </IconButton>
+                </Tooltip.Trigger>
+                <Tooltip.Positioner>
+                  <Tooltip.Content>Nova Despesa Variável</Tooltip.Content>
+                </Tooltip.Positioner>
+              </Tooltip.Root>
+            </HStack>
           )}
 
           {/* Available Balance Card */}
@@ -422,60 +392,6 @@ export function Dashboard() {
       </Container>
 
       {/* Dialogs */}
-      <Dialog.Root open={incomeDialogOpen} onOpenChange={(e) => setIncomeDialogOpen(e.open)}>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Nova Receita</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body pb={6}>
-              <IncomeForm
-                onSuccess={() => setIncomeDialogOpen(false)}
-                onCancel={() => setIncomeDialogOpen(false)}
-              />
-            </Dialog.Body>
-            <Dialog.CloseTrigger />
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
-
-      <Dialog.Root open={fixedExpenseDialogOpen} onOpenChange={(e) => setFixedExpenseDialogOpen(e.open)}>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Nova Despesa Fixa</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body pb={6}>
-              <FixedExpenseForm
-                onSuccess={() => setFixedExpenseDialogOpen(false)}
-                onCancel={() => setFixedExpenseDialogOpen(false)}
-              />
-            </Dialog.Body>
-            <Dialog.CloseTrigger />
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
-
-      <Dialog.Root open={variableExpenseDialogOpen} onOpenChange={(e) => setVariableExpenseDialogOpen(e.open)}>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Nova Despesa Variável</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body pb={6}>
-              <VariableExpenseForm
-                onSuccess={() => setVariableExpenseDialogOpen(false)}
-                onCancel={() => setVariableExpenseDialogOpen(false)}
-              />
-            </Dialog.Body>
-            <Dialog.CloseTrigger />
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
-
       <Dialog.Root open={accountDialogOpen} onOpenChange={(e) => setAccountDialogOpen(e.open)}>
         <Dialog.Backdrop />
         <Dialog.Positioner>
