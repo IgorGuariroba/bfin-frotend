@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Criar instância do axios
 const api = axios.create({
-  baseURL: '/api/v1', // Vite proxy vai redirecionar para http://localhost:3000/api/v1
+  baseURL: '/api/v1', // Vite proxy vai redirecionar para a URL configurada em VITE_API_URL
   headers: {
     'Content-Type': 'application/json',
   },

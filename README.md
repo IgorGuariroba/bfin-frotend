@@ -91,11 +91,20 @@ Executa o ESLint para verificar problemas no código
 
 ## Variáveis de Ambiente
 
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+Um arquivo `.env.example` está disponível como template. Copie-o para `.env` e ajuste os valores conforme necessário:
 
-```env
-VITE_API_URL=<url-da-api-backend>
+```bash
+cp .env.example .env
 ```
+
+### Variáveis Disponíveis
+
+- **VITE_API_URL**: URL da API backend (ex: `http://localhost:3000/api`)
+- **VITE_APP_NAME**: Nome da aplicação (padrão: `BFIN`)
+- **VITE_APP_VERSION**: Versão da aplicação (padrão: `1.0.0`)
+- **VITE_ENV**: Ambiente de execução (`development`, `staging`, `production`)
+
+**Nota**: O arquivo `.env` não é commitado no repositório por questões de segurança. Use `.env.example` como referência.
 
 ## Rotas da Aplicação
 
