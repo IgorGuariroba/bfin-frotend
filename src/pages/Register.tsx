@@ -213,21 +213,17 @@ export function Register() {
                   </Flex>
 
                   {/* Link para Login */}
-                  <Box
-                    as={RouterLink}
-                    to="/login"
-                    display="inline-block"
-                  >
-                  <Button
-                    variant="outline"
-                    colorPalette="brand"
-                    size="lg"
-                    fontSize="md"
-                    fontWeight="medium"
-                  >
-                    Fazer login
-                  </Button>
-                  </Box>
+                  <RouterLink to="/login" style={{ display: 'inline-block' }}>
+                    <Button
+                      variant="outline"
+                      colorPalette="brand"
+                      size="lg"
+                      fontSize="md"
+                      fontWeight="medium"
+                    >
+                      Fazer login
+                    </Button>
+                  </RouterLink>
                 </VStack>
               </form>
             </Card.Body>

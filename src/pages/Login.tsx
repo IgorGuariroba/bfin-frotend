@@ -162,23 +162,19 @@ export function Login() {
                   </Flex>
 
                   {/* Link para Registro */}
-                  <Box
-                    as={RouterLink}
-                    to="/register"
-                    display="inline-block"
-                  >
-                  <Button
-                    variant="outline"
-                    borderColor="var(--border)"
-                    color="var(--card-foreground)"
-                    _hover={{ bg: "var(--secondary)", borderColor: "var(--accent)" }}
-                    size="lg"
-                    fontSize="md"
-                    fontWeight="medium"
-                  >
-                    Criar conta grátis
-                  </Button>
-                  </Box>
+                  <RouterLink to="/register" style={{ display: 'inline-block' }}>
+                    <Button
+                      variant="outline"
+                      borderColor="var(--border)"
+                      color="var(--card-foreground)"
+                      _hover={{ bg: "var(--secondary)", borderColor: "var(--accent)" }}
+                      size="lg"
+                      fontSize="md"
+                      fontWeight="medium"
+                    >
+                      Criar conta grátis
+                    </Button>
+                  </RouterLink>
                 </VStack>
               </form>
             </Card.Body>

@@ -14,7 +14,6 @@ import {
   IconButton,
   Dialog,
   Alert,
-  Stack,
   List,
   Tooltip,
   Icon,
@@ -23,7 +22,6 @@ import { Button } from '../components/atoms/Button';
 import { CreateAccountForm } from '../components/organisms/forms';
 import { AccountsDialog, InvitationsDialog } from '../components/organisms/dialogs';
 import { TransactionList } from '../components/organisms/lists';
-import { SpendingHistoryChart } from '../components/organisms/charts';
 import { useAccounts } from '../hooks/useAccounts';
 import { useTotalDailyLimit } from '../hooks/useDailyLimit';
 import { useUpcomingFixedExpenses, useMarkAsPaid } from '../hooks/useTransactions';

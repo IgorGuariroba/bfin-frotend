@@ -23,7 +23,7 @@ export function DailyLimitPage() {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const accountIds = accounts?.map((acc) => acc.id) || [];
   const { data: dailyLimit, isLoading: loadingDailyLimit } = useTotalDailyLimit(accountIds);
-  const { data: spendingHistory, isLoading: loadingHistory } = useSpendingHistory(accountIds, 30);
+  const { isLoading: loadingHistory } = useSpendingHistory(accountIds, 30);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
