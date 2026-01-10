@@ -53,7 +53,7 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
               <Center py={8}>
                 <Stack gap={2} align="center">
                   <Spinner size="lg" colorPalette="brand" />
-                  <Text color="gray.600">Carregando contas...</Text>
+                  <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Carregando contas...</Text>
                 </Stack>
               </Center>
             ) : (
@@ -62,9 +62,9 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                   <Box
                     key={account.id}
                     p={5}
-                    bg="white"
+                    bg={{ base: 'card', _dark: 'card' }}
                     borderWidth="1px"
-                    borderColor="gray.200"
+                    borderColor={{ base: 'border', _dark: 'border' }}
                     borderRadius="lg"
                     _hover={{ shadow: 'md' }}
                     transition="all 0.2s"
@@ -72,7 +72,7 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                     {/* Header with badges */}
                     <Flex justify="space-between" align="flex-start" mb={4}>
                       <Box flex="1">
-                        <Text fontSize="lg" fontWeight="semibold" color="gray.900" mb={2}>
+                        <Text fontSize="lg" fontWeight="semibold" color={{ base: 'fg', _dark: 'fg' }} mb={2}>
                           {account.account_name}
                         </Text>
                         <Flex gap={2} flexWrap="wrap">
@@ -82,7 +82,7 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                             </Badge>
                           )}
                           {account.is_shared && (
-                            <Badge colorPalette="purple" fontSize="xs" px={2} py={1}>
+                            <Badge colorPalette="brand" fontSize="xs" px={2} py={1}>
                               <Flex align="center" gap={1}>
                                 <Icon as={Users} boxSize={3} />
                                 <span>Compartilhada</span>
@@ -95,7 +95,7 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                             </Badge>
                           )}
                           {account.user_role === 'member' && (
-                            <Badge colorPalette="green" fontSize="xs" px={2} py={1}>
+                            <Badge colorPalette="brand" fontSize="xs" px={2} py={1}>
                               Membro
                             </Badge>
                           )}
@@ -141,7 +141,7 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
 
                 {accounts?.length === 0 && (
                   <Center py={8}>
-                    <Text color="gray.500">Nenhuma conta encontrada</Text>
+                    <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Nenhuma conta encontrada</Text>
                   </Center>
                 )}
               </Stack>

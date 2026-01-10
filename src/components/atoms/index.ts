@@ -23,6 +23,7 @@ export {
   Badge,
   Card,
   useDisclosure,
+  chakra,
 } from '@chakra-ui/react';
 
 // Re-export Dialog components (replacement for Modal)

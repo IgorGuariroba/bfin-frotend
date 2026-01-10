@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { ColorModeProvider } from './color-mode';
@@ -7,9 +7,7 @@ import { AuthProvider } from '../../contexts/AuthContext';
 import { ColorModeSync } from '../ColorModeSync';
 import { Toaster } from './toaster';
 import { ConfirmDialog } from './ConfirmDialog';
-
-// Re-export defaultSystem for convenience
-export { defaultSystem };
+import { system } from '../../theme/theme';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -27,7 +25,7 @@ interface ProviderProps {
 
 export function Provider({ children, ...props }: ProviderProps) {
   return (
-    <ChakraProvider value={defaultSystem}>
+    <ChakraProvider value={system}>
       <ColorModeProvider {...props}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter

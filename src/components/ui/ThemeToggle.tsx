@@ -38,6 +38,8 @@ export function ThemeToggle({
             onClick={toggleColorMode}
             variant="ghost"
             size={size}
+            color={{ base: 'gray.700', _dark: 'gray.200' }}
+            _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
           >
             <Icon as={isDark ? Sun : Moon} boxSize={size === 'sm' ? 4 : 5} />
           </IconButton>
@@ -56,9 +58,9 @@ export function ThemeToggle({
       onClick={toggleColorMode}
       size={size}
       borderRadius="full"
-      borderColor="var(--border)"
-      color="var(--foreground)"
-      _hover={{ bg: 'var(--accent)' }}
+      borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
+      color={{ base: 'gray.700', _dark: 'gray.200' }}
+      _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
     >
       <Icon as={isDark ? Sun : Moon} boxSize={4} /> {showLabel && (isDark ? 'Modo Claro' : 'Modo Escuro')}
     </Button>

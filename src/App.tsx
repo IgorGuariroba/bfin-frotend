@@ -8,7 +8,6 @@ import { DailyLimitPage } from './pages/DailyLimitPage';
 import { AddIncomePage } from './pages/AddIncomePage';
 import { AddFixedExpensePage } from './pages/AddFixedExpensePage';
 import { AddVariableExpensePage } from './pages/AddVariableExpensePage';
-import { StyleguideLayout, DesignTokensPage } from './pages/styleguide';
 
 // Loading component using Chakra UI
 function LoadingScreen() {
@@ -109,11 +108,6 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
-
-      {/* Styleguide */}
-      <Route path="/styleguide" element={<StyleguideLayout />}>
-        <Route index element={<DesignTokensPage />} />
-      </Route>
 
       {/* 404 - Deve ser a última rota */}
       <Route path="*" element={<Navigate to="/" />} />

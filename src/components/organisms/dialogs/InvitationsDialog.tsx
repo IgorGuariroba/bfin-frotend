@@ -99,7 +99,7 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
             <Center py={8}>
               <Stack gap={2} align="center">
                 <Spinner size="lg" colorPalette="brand" />
-                <Text color="gray.600">Carregando convites...</Text>
+                <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Carregando convites...</Text>
               </Stack>
             </Center>
           ) : (
@@ -108,9 +108,9 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                 <Box
                   key={invitation.id}
                   p={5}
-                  bg="white"
+                  bg={{ base: 'card', _dark: 'card' }}
                   borderWidth="1px"
-                  borderColor="gray.200"
+                  borderColor={{ base: 'border', _dark: 'border' }}
                   borderRadius="lg"
                   _hover={{ shadow: 'md' }}
                   transition="all 0.2s"
@@ -118,10 +118,10 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                   {/* Header */}
                   <Flex justify="space-between" align="flex-start" mb={4}>
                     <Box flex="1">
-                      <Text fontSize="lg" fontWeight="semibold" color="gray.900" mb={1}>
+                      <Text fontSize="lg" fontWeight="semibold" color={{ base: 'fg', _dark: 'fg' }} mb={1}>
                         {invitation.account?.account_name || 'Conta'}
                       </Text>
-                      <Flex align="center" gap={2} fontSize="sm" color="gray.600">
+                      <Flex align="center" gap={2} fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
                         <Icon as={User} boxSize={4} />
                         <Text>Convidado por {invitation.inviter.full_name}</Text>
                       </Flex>
@@ -131,12 +131,12 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                   {/* Details */}
                   <Flex align="center" gap={4} mb={4} flexWrap="wrap">
                     <Flex align="center" gap={2} fontSize="sm">
-                      <Text color="gray.600">Permissão:</Text>
+                      <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Permissão:</Text>
                       <Badge colorPalette="gray" px={3} py={1}>
                         {getRoleLabel(invitation.role)}
                       </Badge>
                     </Flex>
-                    <Flex align="center" gap={2} fontSize="sm" color="gray.600">
+                    <Flex align="center" gap={2} fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
                       <Icon as={Clock} boxSize={4} />
                       <Text>Expira em {formatDate(invitation.expires_at)}</Text>
                     </Flex>
@@ -168,8 +168,8 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
               {invitations.length === 0 && (
                 <Center py={12}>
                   <Stack gap={3} align="center">
-                    <Icon as={Mail} boxSize={12} color="gray.400" />
-                    <Text color="gray.500">Você não tem convites pendentes</Text>
+                    <Icon as={Mail} boxSize={12} color={{ base: 'muted.fg', _dark: 'muted.fg' }} opacity={0.5} />
+                    <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Você não tem convites pendentes</Text>
                   </Stack>
                 </Center>
               )}

@@ -93,19 +93,22 @@ export function Dashboard() {
   return (
     <Box minH="100vh" bg="var(--background)">
       {/* Header */}
-      <Box as="header" bg="var(--card)" shadow="sm">
+      <Box as="header" bg={{ base: 'card', _dark: 'card' }} shadow="sm" borderBottomWidth="1px" borderBottomColor={{ base: 'border', _dark: 'border' }}>
         <Container maxW="7xl" py={4}>
           <Flex align="center" justify="space-between">
             <HStack gap={4}>
-              <Heading size="lg" color="brand.600">BFIN</Heading>
-              <Text color="gray.600">Dashboard</Text>
+              <Heading size="lg" color={{ base: 'brand.600', _dark: 'brand.400' }}>BFIN</Heading>
+              <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Dashboard</Text>
             </HStack>
             <HStack gap={4}>
-              <Text color="gray.700">Olá, {user?.full_name}</Text>
+              <Text color={{ base: 'fg', _dark: 'fg' }} fontWeight="medium">Olá, {user?.full_name}</Text>
               <Box position="relative">
                 <Button
                   variant="outline"
                   onClick={() => setInvitationsDialogOpen(true)}
+                  borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
+                  color={{ base: 'gray.700', _dark: 'gray.200' }}
+                  _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
                 >
                   <Mail size={16} /> Convites
                 </Button>
@@ -126,11 +129,20 @@ export function Dashboard() {
               <Button
                 variant="outline"
                 onClick={() => setManageAccountsDialogOpen(true)}
+                borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
+                color={{ base: 'gray.700', _dark: 'gray.200' }}
+                _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
               >
                 <Wallet size={16} /> Gerenciar Contas
               </Button>
               <ThemeToggle variant="icon" size="md" />
-              <Button variant="outline" onClick={handleSignOut}>
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
+                color={{ base: 'gray.700', _dark: 'gray.200' }}
+                _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
+              >
                 Sair
               </Button>
             </HStack>
@@ -271,9 +283,16 @@ export function Dashboard() {
           )}
 
           {/* Available Balance Card */}
-          <Box bg="white" borderRadius="lg" shadow="md" p={6}>
+          <Box
+            bg={{ base: 'card', _dark: 'card' }}
+            borderRadius="lg"
+            shadow="md"
+            p={6}
+            borderWidth="1px"
+            borderColor={{ base: 'border', _dark: 'border' }}
+          >
             <Flex justify="space-between" align="center" mb={2}>
-              <Text fontSize="sm" fontWeight="medium" color="gray.500">
+              <Text fontSize="sm" fontWeight="medium" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
                 Saldo Disponível
               </Text>
               <IconButton
@@ -293,25 +312,32 @@ export function Dashboard() {
               textAlign="left"
               w="full"
             >
-              <Text fontSize="4xl" fontWeight="bold" color="green.600" mt={2}>
+              <Text fontSize="4xl" fontWeight="bold" color={{ base: 'green.600', _dark: 'green.400' }} mt={2}>
                 {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
               </Text>
-              <Text fontSize="sm" color="gray.500" mt={1}>
+              <Text fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }} mt={1}>
                 Para gastos · Clique para ver todas as transações
               </Text>
             </Box>
           </Box>
 
           {/* Upcoming Expenses */}
-          <Box bg="white" borderRadius="lg" shadow="md" p={6}>
-            <Heading size="md" color="gray.900" mb={4}>
+          <Box
+            bg={{ base: 'card', _dark: 'card' }}
+            borderRadius="lg"
+            shadow="md"
+            p={6}
+            borderWidth="1px"
+            borderColor={{ base: 'border', _dark: 'border' }}
+          >
+            <Heading size="md" color={{ base: 'fg', _dark: 'fg' }} mb={4}>
               Próximas Despesas Fixas
             </Heading>
             {loadingUpcomingExpenses ? (
-              <Text color="gray.500">Carregando...</Text>
+              <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Carregando...</Text>
             ) : !upcomingExpenses?.transactions || upcomingExpenses.transactions.length === 0 ? (
               <Box textAlign="center" py={8}>
-                <Text color="gray.500">Nenhuma despesa agendada</Text>
+                <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Nenhuma despesa agendada</Text>
               </Box>
             ) : (
               <VStack gap={3} align="stretch">
@@ -329,28 +355,29 @@ export function Dashboard() {
                       justify="space-between"
                       p={4}
                       borderWidth="1px"
-                      borderColor="gray.200"
+                      borderColor={{ base: 'border', _dark: 'border' }}
                       borderRadius="lg"
-                      _hover={{ bg: 'gray.50' }}
+                      bg={{ base: 'transparent', _dark: 'transparent' }}
+                      _hover={{ bg: { base: 'accent/10', _dark: 'accent/10' } }}
                       transition="all 0.2s"
                     >
                       <Box flex="1">
-                        <Text fontWeight="medium" color="gray.900">
+                        <Text fontWeight="medium" color={{ base: 'fg', _dark: 'fg' }}>
                           {expense.description}
                         </Text>
                         {expense.category && (
-                          <Text fontSize="sm" color="gray.500" mt={1}>
+                          <Text fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }} mt={1}>
                             {expense.category.name}
                           </Text>
                         )}
                       </Box>
                       <VStack align="flex-end" ml={4} gap={1}>
-                        <Text fontWeight="bold" color="red.600">
+                        <Text fontWeight="bold" color={{ base: 'red.600', _dark: 'red.400' }}>
                           {formatCurrency(expense.amount)}
                         </Text>
                         <Text
                           fontSize="sm"
-                          color={isOverdue ? 'red.600' : 'gray.500'}
+                          color={isOverdue ? { base: 'red.600', _dark: 'red.400' } : { base: 'muted.fg', _dark: 'muted.fg' }}
                           fontWeight={isOverdue ? 'semibold' : 'normal'}
                         >
                           {isOverdue ? 'Vencida: ' : 'Vencimento: '}
@@ -378,11 +405,17 @@ export function Dashboard() {
 
           {/* Create Account Message */}
           {!loadingAccounts && (!accounts || accounts.length === 0) && (
-            <Box bg="blue.50" borderWidth="1px" borderColor="blue.200" borderRadius="lg" p={6}>
-              <Heading size="md" color="blue.900" mb={2}>
+            <Box
+              bg={{ base: 'blue.100', _dark: 'blue.900/30' }}
+              borderWidth="1px"
+              borderColor={{ base: 'blue.200', _dark: 'blue.700/50' }}
+              borderRadius="lg"
+              p={6}
+            >
+              <Heading size="md" color={{ base: 'blue.700', _dark: 'blue.300' }} mb={2}>
                 Bem-vindo ao BFIN!
               </Heading>
-              <Text color="blue.700" mb={4}>
+              <Text color={{ base: 'blue.600', _dark: 'blue.400' }} mb={4}>
                 Para começar, você precisa criar uma conta bancária.
               </Text>
               <Button onClick={() => setAccountDialogOpen(true)}>+ Criar Conta</Button>
@@ -442,17 +475,23 @@ export function Dashboard() {
             </Dialog.Header>
             <Dialog.Body pb={6}>
               <VStack gap={4} align="stretch">
-                <Box bg="blue.50" borderWidth="1px" borderColor="blue.200" borderRadius="lg" p={4}>
-                  <Text fontSize="sm" color="blue.800" mb={2}>
+                <Box
+                  bg={{ base: 'blue.100', _dark: 'blue.900/30' }}
+                  borderWidth="1px"
+                  borderColor={{ base: 'blue.200', _dark: 'blue.700/50' }}
+                  borderRadius="lg"
+                  p={4}
+                >
+                  <Text fontSize="sm" color={{ base: 'blue.700', _dark: 'blue.300' }} mb={2}>
                     Sua reserva de emergência é calculada automaticamente como 30% de todas as receitas recebidas.
                   </Text>
-                  <Text fontSize="3xl" fontWeight="bold" color="blue.600">
+                  <Text fontSize="3xl" fontWeight="bold" color={{ base: 'blue.600', _dark: 'blue.400' }}>
                     {loadingAccounts ? 'Carregando...' : formatCurrency(totals.emergencyReserve)}
                   </Text>
                 </Box>
 
-                <VStack gap={2} align="stretch" fontSize="sm" color="gray.600">
-                  <Heading size="sm" color="gray.900">Para que serve?</Heading>
+                <VStack gap={2} align="stretch" fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
+                  <Heading size="sm" color={{ base: 'fg', _dark: 'fg' }}>Para que serve?</Heading>
                   <List.Root pl={6} listStyleType="disc">
                     <List.Item>Proteção financeira para imprevistos</List.Item>
                     <List.Item>Cobertura para emergências médicas</List.Item>
@@ -461,8 +500,14 @@ export function Dashboard() {
                   </List.Root>
                 </VStack>
 
-                <Box bg="gray.50" borderRadius="lg" p={4} fontSize="xs" color="gray.500">
-                  <Text fontWeight="medium" color="gray.700" mb={1}>Como funciona:</Text>
+                <Box
+                  bg={{ base: 'muted', _dark: 'muted' }}
+                  borderRadius="lg"
+                  p={4}
+                  fontSize="xs"
+                  color={{ base: 'muted.fg', _dark: 'muted.fg' }}
+                >
+                  <Text fontWeight="medium" color={{ base: 'fg', _dark: 'fg' }} mb={1}>Como funciona:</Text>
                   <Text>
                     A cada receita recebida, 30% é automaticamente separado para sua reserva de emergência.
                     Os 70% restantes ficam disponíveis para seus gastos do dia a dia.

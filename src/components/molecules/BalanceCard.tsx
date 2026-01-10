@@ -1,5 +1,4 @@
-import { Box, Text } from '@chakra-ui/react';
-import { useColorModeValue } from '../../hooks/useColorMode';
+import { Card, Text } from '@chakra-ui/react';
 
 interface BalanceCardProps {
   label: string;
@@ -15,33 +14,63 @@ export function BalanceCard({ label, amount, variant = 'total' }: BalanceCardPro
     }).format(value);
   };
 
-  const variantColors = {
-    available: { bg: 'green.50', text: 'green.700' },
-    locked: { bg: 'blue.50', text: 'blue.700' },
-    reserve: { bg: 'yellow.50', text: 'yellow.700' },
-    total: { bg: 'gray.50', text: 'gray.900' },
+  // Mapeia as variantes para as cores semânticas do tema
+  const variantStyles = {
+    available: {
+      bg: { base: 'green.100', _dark: 'green.900/30' },
+      text: { base: 'green.700', _dark: 'green.300' },
+      borderColor: { base: 'green.200', _dark: 'green.700/50' }
+    },
+    locked: {
+      bg: { base: 'blue.100', _dark: 'blue.900/30' },
+      text: { base: 'blue.700', _dark: 'blue.300' },
+      borderColor: { base: 'blue.200', _dark: 'blue.700/50' }
+    },
+    reserve: {
+      bg: { base: 'yellow.100', _dark: 'yellow.900/30' },
+      text: { base: 'yellow.700', _dark: 'yellow.400' },
+      borderColor: { base: 'yellow.200', _dark: 'yellow.700/50' }
+    },
+    total: {
+      bg: { base: 'brand.100', _dark: 'brand.950/40' },
+      text: { base: 'brand.700', _dark: 'brand.300' },
+      borderColor: { base: 'brand.200', _dark: 'brand.700/50' }
+    },
   };
 
-  const colors = variantColors[variant];
+  const styles = variantStyles[variant];
 
   return (
-    <Box
-      bg={useColorModeValue(colors.bg, `${colors.bg.split('.')[0]}.800`)}
-      px={4}
-      py={3}
-      borderRadius="lg"
+    <Card.Root
       flex="1"
       minW="140px"
+      size="sm"
+      borderWidth="1px"
+      borderColor={styles.borderColor}
     >
-      <Text fontSize="xs" color="gray.600" mb={1.5}>
-        {label}
-      </Text>
-      <Text
-        fontWeight="semibold"
-        color={useColorModeValue(colors.text, `${colors.text.split('.')[0]}.200`)}
+      <Card.Body
+        p={4}
+        bg={styles.bg}
       >
-        {formatCurrency(amount)}
-      </Text>
-    </Box>
+        <Text
+          fontSize="xs"
+          color={{ base: 'muted.fg', _dark: 'muted.fg' }}
+          mb={1.5}
+          textTransform="uppercase"
+          letterSpacing="wide"
+          fontWeight="medium"
+        >
+          {label}
+        </Text>
+        <Text
+          fontSize="2xl"
+          fontWeight="bold"
+          color={styles.text}
+          lineHeight="tight"
+        >
+          {formatCurrency(amount)}
+        </Text>
+      </Card.Body>
+    </Card.Root>
   );
 }
