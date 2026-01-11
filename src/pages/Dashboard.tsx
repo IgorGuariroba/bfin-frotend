@@ -22,7 +22,6 @@ import {
 import { Button } from '../components/atoms/Button';
 import { CreateAccountForm } from '../components/organisms/forms';
 import { AccountsDialog, InvitationsDialog } from '../components/organisms/dialogs';
-import { TransactionList } from '../components/organisms/lists';
 import { SpendingHistoryChart } from '../components/organisms/charts';
 import { useAccounts } from '../hooks/useAccounts';
 import { useTotalDailyLimit } from '../hooks/useDailyLimit';
@@ -38,7 +37,6 @@ export function Dashboard() {
   const navigate = useNavigate();
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [manageAccountsDialogOpen, setManageAccountsDialogOpen] = useState(false);
-  const [transactionsDialogOpen, setTransactionsDialogOpen] = useState(false);
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
@@ -307,7 +305,7 @@ export function Dashboard() {
             </Flex>
             <Box
               as="button"
-              onClick={() => setTransactionsDialogOpen(true)}
+              onClick={() => navigate('/transactions')}
               cursor="pointer"
               textAlign="left"
               w="full"
@@ -447,21 +445,6 @@ export function Dashboard() {
         isOpen={manageAccountsDialogOpen}
         onClose={() => setManageAccountsDialogOpen(false)}
       />
-
-      <Dialog.Root open={transactionsDialogOpen} onOpenChange={(e) => setTransactionsDialogOpen(e.open)}>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content maxW="4xl">
-            <Dialog.Header>
-              <Dialog.Title>Todas as Transações</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body pb={6}>
-              <TransactionList />
-            </Dialog.Body>
-            <Dialog.CloseTrigger />
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
 
       <Dialog.Root open={emergencyReserveDialogOpen} onOpenChange={(e) => setEmergencyReserveDialogOpen(e.open)}>
         <Dialog.Backdrop />
