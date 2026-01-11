@@ -469,7 +469,7 @@ export function Dashboard() {
           <Dialog.Content>
             <Dialog.Header>
               <HStack>
-                <Shield size={20} color="var(--chakra-colors-blue-600)" />
+                <Shield size={20} color="#2563EB" />
                 <Text>Reserva de Emergência</Text>
               </HStack>
             </Dialog.Header>

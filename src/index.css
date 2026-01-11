@@ -317,6 +317,15 @@
   --radius-full: 9999px;
 
   /* ═══════════════════════════════════════════════════════════════════════════
+   * BORDER WIDTH TOKENS
+   * ═══════════════════════════════════════════════════════════════════════════ */
+  --border-width-0: 0;
+  --border-width-1: 1px;
+  --border-width-2: 2px;
+  --border-width-4: 4px;
+  --border-width-8: 8px;
+
+  /* ═══════════════════════════════════════════════════════════════════════════
    * TRANSITION TOKENS
    * ═══════════════════════════════════════════════════════════════════════════ */
   --duration-75: 75ms;
@@ -564,20 +573,20 @@ body {
 .focus-ring-primary:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
-  box-shadow: var(--shadow-purple-sm);
+  box-shadow: var(--shadow-green-sm);
 }
 
 /* ═════════════════════════════════════════════════════════════════════════════
  * SELECTION STYLING
  * ═════════════════════════════════════════════════════════════════════════════ */
 ::selection {
-  background: hsl(263, 84%, 58%);
-  color: hsl(0, 0%, 100%);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 ::-moz-selection {
-  background: hsl(263, 84%, 58%);
-  color: hsl(0, 0%, 100%);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 /* ═════════════════════════════════════════════════════════════════════════════

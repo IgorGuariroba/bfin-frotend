@@ -10,19 +10,20 @@ Sistema de design baseado em Chakra UI v3 com tokens customizados.
 
 ## Cores
 
-### Brand (Purple)
-Escala de roxo principal do design system:
+### Brand (Emerald Green)
+Escala de verde esmeralda principal do design system:
 
-- `brand.50` - Muito claro (#FAFAFF)
-- `brand.100` - Claro (#F3E8FF)
-- `brand.200` - Suave (#E9D5FF)
-- `brand.300` - Médio (#D8B4FE)
-- `brand.400` - Claro (#C084FC)
-- `brand.500` - Base (#7C3AED) ⭐ PRIMARY
-- `brand.600` - Escuro (#7C3AED)
-- `brand.700` - Muito escuro (#6D28D9)
-- `brand.800` - Mais escuro (#5B21B6)
-- `brand.900` - Muito escuro (#4C1D95)
+- `brand.50` - Muito claro (#ECFDF5)
+- `brand.100` - Claro (#D1FAE5)
+- `brand.200` - Suave (#A7F3D0)
+- `brand.300` - Médio (#6EE7B7)
+- `brand.400` - Claro (#34D399)
+- `brand.500` - Base (#10B981) ⭐ PRIMARY
+- `brand.600` - Escuro (#059669)
+- `brand.700` - Muito escuro (#047857)
+- `brand.800` - Mais escuro (#065F46)
+- `brand.900` - Muito escuro (#064E3B)
+- `brand.950` - Deepest (#022C22)
 
 ### Cores Semânticas
 
