@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { DailyLimitPage } from './pages/DailyLimitPage';
+import { AllTransactionsPage } from './pages/AllTransactionsPage';
 import { AddIncomePage } from './pages/AddIncomePage';
 import { AddFixedExpensePage } from './pages/AddFixedExpensePage';
 import { AddVariableExpensePage } from './pages/AddVariableExpensePage';
@@ -81,6 +82,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <DailyLimitPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/transactions"
+        element={
+          <PrivateRoute>
+            <AllTransactionsPage />
           </PrivateRoute>
         }
       />

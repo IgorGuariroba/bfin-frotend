@@ -21,6 +21,18 @@ import {
 import { BarChart3 } from 'lucide-react';
 import { useSpendingHistory } from '../../../hooks/useDailyLimit';
 
+/**
+ * Chart colors - Hex values required by Recharts library
+ * These correspond to Design System tokens defined in index.css
+ */
+const CHART_COLORS = {
+  // Status colors matching Design Tokens
+  exceeded: '#dc2626',   // red-600 (var(--red-600))
+  warning: '#eab308',    // yellow-500 (var(--yellow-500))
+  normal: '#2563eb',     // blue-600 (var(--blue-600))
+  limit: '#d1d5db',      // gray-300 (var(--gray-300))
+} as const;
+
 interface SpendingHistoryChartProps {
   accountIds: string[];
   days?: number;
@@ -82,9 +94,9 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
   };
 
   const getBarColor = (entry: ChartDataItem): string => {
-    if (entry.status === 'exceeded') return '#dc2626'; // red
-    if (entry.status === 'warning') return '#eab308'; // yellow
-    return '#2563eb'; // blue
+    if (entry.status === 'exceeded') return CHART_COLORS.exceeded;
+    if (entry.status === 'warning') return CHART_COLORS.warning;
+    return CHART_COLORS.normal;
   };
 
   const CustomTooltip = ({
@@ -95,7 +107,7 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
       const data = (payload[0] as any).payload as ChartDataItem;
 
       return (
-        <Box bg="white" p={3} borderWidth="1px" borderColor="gray.200" borderRadius="md" shadow="lg">
+        <Box bg="card" p={3} borderWidth="1px" borderColor="gray.200" borderRadius="md" shadow="lg">
           <Text fontWeight="semibold" color="gray.900" mb={2}>
             {formatFullDate(data.date)}
           </Text>
@@ -144,7 +156,7 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
 
   if (isLoading) {
     return (
-      <Box bg="white" p={6} borderRadius="lg" shadow="md" mb={6}>
+      <Box bg="card" p={6} borderRadius="lg" shadow="md" mb={6}>
         <Text fontSize="lg" fontWeight="semibold" color="gray.900" mb={4}>
           Histórico de Gastos (Últimos {days} dias)
         </Text>
@@ -157,7 +169,7 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
 
   if (isError) {
     return (
-      <Box bg="white" p={6} borderRadius="lg" shadow="md" mb={6}>
+      <Box bg="card" p={6} borderRadius="lg" shadow="md" mb={6}>
         <Text fontSize="lg" fontWeight="semibold" color="gray.900" mb={4}>
           Histórico de Gastos (Últimos {days} dias)
         </Text>
@@ -177,7 +189,7 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
 
   if (!data || chartData.length === 0) {
     return (
-      <Box bg="white" p={6} borderRadius="lg" shadow="md" mb={6}>
+      <Box bg="card" p={6} borderRadius="lg" shadow="md" mb={6}>
         <Text fontSize="lg" fontWeight="semibold" color="gray.900" mb={4}>
           Histórico de Gastos (Últimos {days} dias)
         </Text>
@@ -197,7 +209,7 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
   }
 
   return (
-    <Box bg="white" p={6} borderRadius="lg" shadow="md" mb={6}>
+    <Box bg="card" p={6} borderRadius="lg" shadow="md" mb={6}>
       <Text fontSize="lg" fontWeight="semibold" color="gray.900" mb={4}>
         Histórico de Gastos (Últimos {days} dias)
       </Text>
@@ -224,7 +236,7 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
           />
           <Bar
             dataKey="dailyLimit"
-            fill="#d1d5db"
+            fill={CHART_COLORS.limit}
             name="Limite Diário"
             radius={[4, 4, 0, 0]}
           />
@@ -232,7 +244,7 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
             dataKey="spent"
             name="Gasto"
             radius={[4, 4, 0, 0]}
-            fill="#2563eb"
+            fill={CHART_COLORS.normal}
             shape={(props: any) => {
               const { x, y, width, height, payload } = props;
               const color = getBarColor(payload);

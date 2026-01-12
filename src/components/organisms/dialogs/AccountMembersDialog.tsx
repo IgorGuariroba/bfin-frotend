@@ -226,7 +226,7 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
                   align="center"
                   justify="space-between"
                   p={4}
-                  bg="white"
+                  bg="card"
                   borderWidth="1px"
                   borderColor="gray.200"
                   borderRadius="lg"

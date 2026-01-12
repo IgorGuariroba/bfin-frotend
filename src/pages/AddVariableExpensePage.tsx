@@ -22,7 +22,7 @@ export function AddVariableExpensePage() {
         </Box>
 
         <Box
-          bg="white"
+          bg="card"
           borderRadius="lg"
           p={6}
           shadow="sm"

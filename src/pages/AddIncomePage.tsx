@@ -21,7 +21,7 @@ export function AddIncomePage() {
           <Heading size="lg">Nova Receita</Heading>
         </Box>
 
-        <Card.Root bg="white" borderRadius="lg" shadow="md">
+        <Card.Root bg="card" borderRadius="lg" shadow="md">
           <Card.Body p={6}>
             <IncomeForm
               onSuccess={() => navigate('/dashboard')}

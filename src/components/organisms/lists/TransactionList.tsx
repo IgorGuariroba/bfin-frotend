@@ -204,7 +204,7 @@ export function TransactionList({ accountId }: TransactionListProps) {
   return (
     <Stack gap={3}>
       {/* Summary */}
-      <Box bg="gray.50" p={3} borderRadius="lg">
+      <Box bg="muted" p={3} borderRadius="lg">
         <Text fontSize="sm" color="gray.600">
           Total: <strong>{data.pagination.total_items}</strong> transações
         </Text>
@@ -215,7 +215,7 @@ export function TransactionList({ accountId }: TransactionListProps) {
         {data.transactions.map((transaction) => (
           <Box
             key={transaction.id}
-            bg="white"
+            bg="card"
             borderWidth="1px"
             borderColor="gray.200"
             borderRadius="lg"
@@ -292,7 +292,7 @@ export function TransactionList({ accountId }: TransactionListProps) {
                     onClick={() => handleDuplicate(transaction.id, transaction.description)}
                     size="sm"
                     variant="ghost"
-                    colorPalette="purple"
+                    colorPalette="brand"
                     aria-label="Duplicar"
                   >
                     <Copy size={16} />

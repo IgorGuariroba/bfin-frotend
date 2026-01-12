@@ -2,11 +2,12 @@
  * BFIN Design System Theme
  *
  * ARQUITETURA:
- * - Todas as cores são definidas em index.css como variáveis CSS
+ * - TODOS os Design Tokens são definidos em index.css como variáveis CSS
  * - Este tema mapeia as variáveis CSS para o Chakra UI v3
- * - Mudanças de cor devem ser feitas APENAS em index.css
+ * - Mudanças devem ser feitas APENAS em index.css (single source of truth)
  *
- * Primary: Emerald Green (#10B981)
+ * PRIMARY COLOR: Emerald Green (#10B981)
+ * TYPOGRAPHY: Figtree (sans-serif)
  */
 
 import { createSystem, defaultConfig } from '@chakra-ui/react';
@@ -14,8 +15,8 @@ import { createSystem, defaultConfig } from '@chakra-ui/react';
 /**
  * Chakra UI v3 System Configuration
  *
- * Usa createSystem com defaultConfig como base e estende com tokens personalizados
- * e estilos globais.
+ * Usa createSystem com defaultConfig como base e estende com tokens personalizados.
+ * Todos os tokens referenciam variáveis CSS do index.css para garantir consistência.
  */
 export const system = createSystem(defaultConfig, {
   theme: {
@@ -31,80 +32,116 @@ export const system = createSystem(defaultConfig, {
     },
 
     tokens: {
-      // Fonts
+      // Fonts - referencing CSS variables from index.css
       fonts: {
-        heading: { value: `'Figtree', sans-serif` },
-        body: { value: `'Figtree', sans-serif` },
-        mono: { value: `ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace` },
+        heading: { value: 'var(--font-sans)' },
+        body: { value: 'var(--font-sans)' },
+        mono: { value: 'var(--font-mono)' },
       },
 
-      // Font Sizes
+      // Font Sizes - referencing CSS variables from index.css
       fontSizes: {
-        xs: { value: '0.75rem' },    // 12px
-        sm: { value: '0.875rem' },   // 14px
-        md: { value: '1rem' },       // 16px
-        lg: { value: '1.125rem' },  // 18px
-        xl: { value: '1.25rem' },   // 20px
-        '2xl': { value: '1.5rem' }, // 24px
-        '3xl': { value: '1.875rem' }, // 30px
-        '4xl': { value: '2.25rem' },  // 36px
-        '5xl': { value: '3rem' },     // 48px
+        xs: { value: 'var(--font-size-xs)' },      // 12px
+        sm: { value: 'var(--font-size-sm)' },      // 14px
+        md: { value: 'var(--font-size-base)' },    // 16px
+        lg: { value: 'var(--font-size-lg)' },      // 18px
+        xl: { value: 'var(--font-size-xl)' },      // 20px
+        '2xl': { value: 'var(--font-size-2xl)' },  // 24px
+        '3xl': { value: 'var(--font-size-3xl)' },  // 30px
+        '4xl': { value: 'var(--font-size-4xl)' },  // 36px
+        '5xl': { value: 'var(--font-size-5xl)' },  // 48px
+        '6xl': { value: 'var(--font-size-6xl)' },  // 60px
       },
 
-      // Font Weights
+      // Font Weights - referencing CSS variables from index.css
       fontWeights: {
-        normal: { value: '400' },
-        medium: { value: '500' },
-        semibold: { value: '600' },
-        bold: { value: '700' },
+        thin: { value: 'var(--font-weight-thin)' },
+        extralight: { value: 'var(--font-weight-extralight)' },
+        light: { value: 'var(--font-weight-light)' },
+        normal: { value: 'var(--font-weight-normal)' },
+        medium: { value: 'var(--font-weight-medium)' },
+        semibold: { value: 'var(--font-weight-semibold)' },
+        bold: { value: 'var(--font-weight-bold)' },
+        extrabold: { value: 'var(--font-weight-extrabold)' },
+        black: { value: 'var(--font-weight-black)' },
       },
 
-      // Line Heights
+      // Line Heights - referencing CSS variables from index.css
       lineHeights: {
-        none: { value: '1' },
-        tight: { value: '1.25' },
-        snug: { value: '1.375' },
-        normal: { value: '1.5' },
-        relaxed: { value: '1.625' },
-        loose: { value: '2' },
+        none: { value: 'var(--line-height-none)' },
+        tight: { value: 'var(--line-height-tight)' },
+        snug: { value: 'var(--line-height-snug)' },
+        normal: { value: 'var(--line-height-normal)' },
+        relaxed: { value: 'var(--line-height-relaxed)' },
+        loose: { value: 'var(--line-height-loose)' },
       },
 
-      // Spacing (baseado em 4px)
+      // Letter Spacing - referencing CSS variables from index.css
+      letterSpacings: {
+        tighter: { value: 'var(--letter-spacing-tighter)' },
+        tight: { value: 'var(--letter-spacing-tight)' },
+        normal: { value: 'var(--letter-spacing-normal)' },
+        wide: { value: 'var(--letter-spacing-wide)' },
+        wider: { value: 'var(--letter-spacing-wider)' },
+        widest: { value: 'var(--letter-spacing-widest)' },
+      },
+
+      // Spacing - referencing CSS variables from index.css
       spacing: {
-        0: { value: '0' },
-        1: { value: '0.25rem' },   // 4px
-        2: { value: '0.5rem' },    // 8px
-        3: { value: '0.75rem' },   // 12px
-        4: { value: '1rem' },      // 16px
-        5: { value: '1.25rem' },   // 20px
-        6: { value: '1.5rem' },    // 24px
-        8: { value: '2rem' },      // 32px
-        10: { value: '2.5rem' },   // 40px
-        12: { value: '3rem' },     // 48px
-        16: { value: '4rem' },     // 64px
-        20: { value: '5rem' },     // 80px
-        24: { value: '6rem' },     // 96px
+        0: { value: 'var(--space-0)' },
+        px: { value: 'var(--space-px)' },
+        0.5: { value: 'var(--space-0-5)' },
+        1: { value: 'var(--space-1)' },
+        1.5: { value: 'var(--space-1-5)' },
+        2: { value: 'var(--space-2)' },
+        2.5: { value: 'var(--space-2-5)' },
+        3: { value: 'var(--space-3)' },
+        3.5: { value: 'var(--space-3-5)' },
+        4: { value: 'var(--space-4)' },
+        5: { value: 'var(--space-5)' },
+        6: { value: 'var(--space-6)' },
+        7: { value: 'var(--space-7)' },
+        8: { value: 'var(--space-8)' },
+        9: { value: 'var(--space-9)' },
+        10: { value: 'var(--space-10)' },
+        11: { value: 'var(--space-11)' },
+        12: { value: 'var(--space-12)' },
+        13: { value: 'var(--space-13)' },
+        14: { value: 'var(--space-14)' },
+        15: { value: 'var(--space-15)' },
+        16: { value: 'var(--space-16)' },
+        18: { value: 'var(--space-18)' },
+        20: { value: 'var(--space-20)' },
+        24: { value: 'var(--space-24)' },
+        32: { value: 'var(--space-32)' },
+        40: { value: 'var(--space-40)' },
+        48: { value: 'var(--space-48)' },
+        56: { value: 'var(--space-56)' },
+        64: { value: 'var(--space-64)' },
       },
 
-      // Border Radius
+      // Border Radius - referencing CSS variables from index.css
       radii: {
-        none: { value: '0' },
-        sm: { value: '0.125rem' },  // 2px
-        md: { value: '0.375rem' },  // 6px
-        lg: { value: '0.5rem' },    // 8px
-        xl: { value: '0.75rem' },   // 12px
-        '2xl': { value: '1rem' },   // 16px
-        '3xl': { value: '1.5rem' }, // 24px
-        full: { value: '9999px' },
+        none: { value: 'var(--radius-none)' },
+        xs: { value: 'var(--radius-xs)' },
+        sm: { value: 'var(--radius-sm)' },
+        md: { value: 'var(--radius-md)' },
+        lg: { value: 'var(--radius-lg)' },
+        xl: { value: 'var(--radius-xl)' },
+        '2xl': { value: 'var(--radius-2xl)' },
+        '3xl': { value: 'var(--radius-3xl)' },
+        full: { value: 'var(--radius-full)' },
       },
 
-      // Shadows
+      // Shadows - referencing CSS variables from index.css
       shadows: {
-        xs: { value: '0 1px 2px 0 rgb(0 0 0 / 0.05)' },
-        sm: { value: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' },
-        md: { value: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' },
-        lg: { value: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' },
-        xl: { value: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' },
+        xs: { value: 'var(--shadow-xs)' },
+        sm: { value: 'var(--shadow-sm)' },
+        md: { value: 'var(--shadow-md)' },
+        lg: { value: 'var(--shadow-lg)' },
+        xl: { value: 'var(--shadow-xl)' },
+        '2xl': { value: 'var(--shadow-2xl)' },
+        inner: { value: 'var(--shadow-inner)' },
       },
 
       // Colors - Design Tokens

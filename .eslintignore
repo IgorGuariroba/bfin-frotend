@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+coverage
+.vite
+.storybook-static
+*.config.js
+*.config.ts
+vite.config.ts
+vitest.shims.d.ts
+debug-storybook.log

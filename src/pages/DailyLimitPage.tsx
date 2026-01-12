@@ -59,7 +59,7 @@ export function DailyLimitPage() {
         <VStack gap={6} align="stretch">
           {/* Daily Limit Summary Card */}
           {!loadingDailyLimit && !loadingAccounts && dailyLimit && dailyLimit.totalDailyLimit > 0 && (
-            <Box bg="white" borderRadius="lg" shadow="md" p={6}>
+            <Box bg="card" borderRadius="lg" shadow="md" p={6}>
               <VStack gap={4} align="stretch">
                 <Box>
                   <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={2}>
@@ -130,7 +130,7 @@ export function DailyLimitPage() {
           {!loadingAccounts && accounts && accounts.length > 0 && (
             <>
               {loadingHistory ? (
-                <Box bg="white" p={6} borderRadius="lg" shadow="md">
+                <Box bg="card" p={6} borderRadius="lg" shadow="md">
                   <Center h="200">
                     <VStack gap={2}>
                       <Spinner size="lg" color="brand.600" />
