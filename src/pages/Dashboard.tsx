@@ -543,27 +543,6 @@ export function Dashboard() {
             </Flex>
           )}
 
-          {/* Quick Actions */}
-          {!loadingAccounts && accounts && accounts.length > 0 && (
-            <HStack gap={4} justify="flex-start">
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <IconButton
-                    aria-label="Nova Despesa Fixa"
-                    onClick={() => navigate('/add-fixed-expense')}
-                    colorPalette="orange"
-                    size="lg"
-                    borderRadius="xl"
-                  >
-                    <Icon as={Calendar} boxSize={6} />
-                  </IconButton>
-                </Tooltip.Trigger>
-                <Tooltip.Positioner>
-                  <Tooltip.Content>Nova Despesa Fixa</Tooltip.Content>
-                </Tooltip.Positioner>
-              </Tooltip.Root>
-            </HStack>
-          )}
 
           {/* Available Balance Card */}
           <Box
@@ -903,9 +882,10 @@ export function Dashboard() {
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
                 gap={1}
+                onClick={() => navigate('/add-fixed-expense')}
               >
-                <CreditCard size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Cartão virtual</Text>
+                <Calendar size={22} color="var(--primary-foreground)" />
+                <Text color="var(--primary-foreground)" fontSize="2xs">Agendar pagamento</Text>
               </Box>
 
               <Box
