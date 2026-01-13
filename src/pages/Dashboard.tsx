@@ -31,7 +31,6 @@ import { useUpcomingFixedExpenses, useMarkAsPaid } from '../hooks/useTransaction
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
   Shield,
-  TrendingUp,
   Calendar,
   ShoppingCart,
   Wallet,
@@ -548,23 +547,6 @@ export function Dashboard() {
           {/* Quick Actions */}
           {!loadingAccounts && accounts && accounts.length > 0 && (
             <HStack gap={4} justify="flex-start">
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <IconButton
-                    aria-label="Nova Receita"
-                    onClick={() => navigate('/add-income')}
-                    colorPalette="green"
-                    size="lg"
-                    borderRadius="xl"
-                  >
-                    <Icon as={TrendingUp} boxSize={6} />
-                  </IconButton>
-                </Tooltip.Trigger>
-                <Tooltip.Positioner>
-                  <Tooltip.Content>Nova Receita</Tooltip.Content>
-                </Tooltip.Positioner>
-              </Tooltip.Root>
-
               <Tooltip.Root>
                 <Tooltip.Trigger asChild>
                   <IconButton
