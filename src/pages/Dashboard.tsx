@@ -843,11 +843,11 @@ export function Dashboard() {
             py={5}
             zIndex={15}
           >
-            <Flex justify="space-around" align="center" gap={2}>
-              <VStack gap={2}>
+            <Flex justify="space-between" align="center" gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
@@ -863,10 +863,10 @@ export function Dashboard() {
                 <Text color="var(--primary-foreground)" fontSize="2xs">Pagar</Text>
               </VStack>
 
-              <VStack gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
@@ -881,10 +881,10 @@ export function Dashboard() {
                 <Text color="var(--primary-foreground)" fontSize="2xs">Indicar amigos</Text>
               </VStack>
 
-              <VStack gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
@@ -899,10 +899,10 @@ export function Dashboard() {
                 <Text color="var(--primary-foreground)" fontSize="2xs">Transferir</Text>
               </VStack>
 
-              <VStack gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
@@ -918,10 +918,10 @@ export function Dashboard() {
                 <Text color="var(--primary-foreground)" fontSize="2xs">Depositar</Text>
               </VStack>
 
-              <VStack gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
@@ -936,10 +936,10 @@ export function Dashboard() {
                 <Text color="var(--primary-foreground)" fontSize="2xs">Empréstimos</Text>
               </VStack>
 
-              <VStack gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
@@ -954,10 +954,10 @@ export function Dashboard() {
                 <Text color="var(--primary-foreground)" fontSize="2xs">Cartão virtual</Text>
               </VStack>
 
-              <VStack gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
@@ -972,10 +972,10 @@ export function Dashboard() {
                 <Text color="var(--primary-foreground)" fontSize="2xs">Recarga de celular</Text>
               </VStack>
 
-              <VStack gap={2}>
+              <VStack gap={2} flex="1">
                 <Box
-                  w="50px"
-                  h="50px"
+                  w="full"
+                  h="60px"
                   borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
