@@ -834,7 +834,7 @@ export function Dashboard() {
           <Box
             position="fixed"
             bottom="0"
-            left="80px"
+            left="0"
             right="0"
             bg="var(--primary)"
             borderTopWidth="1px"
