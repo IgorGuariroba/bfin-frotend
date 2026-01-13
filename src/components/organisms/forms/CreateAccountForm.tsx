@@ -1,13 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { Stack, HStack, Checkbox } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { FormField } from '../../molecules/FormField';
 import { FormSelect } from '../../molecules/FormSelect';
 import { InfoBox } from '../../molecules/InfoBox';
-import api from '../../../services/api';
+import { usePostApiV1Accounts } from '@igorguariroba/bfin-sdk/react-query';
 
 const createAccountSchema = z.object({
   account_name: z.string().min(1, 'Nome da conta é obrigatório'),
@@ -25,16 +25,14 @@ interface CreateAccountFormProps {
 export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProps) {
   const queryClient = useQueryClient();
 
-  const createAccount = useMutation({
-    mutationFn: async (data: CreateAccountFormData) => {
-      const response = await api.post('/accounts', data);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      if (onSuccess) {
-        onSuccess();
-      }
+  const createAccount = usePostApiV1Accounts({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['accounts'] });
+        if (onSuccess) {
+          onSuccess();
+        }
+      },
     },
   });
 
@@ -52,7 +50,7 @@ export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProp
 
   const onSubmit = async (data: CreateAccountFormData) => {
     try {
-      await createAccount.mutateAsync(data);
+      await createAccount.mutateAsync({ data });
     } catch (error) {
       console.error('Error creating account:', error);
     }

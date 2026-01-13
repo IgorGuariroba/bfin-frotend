@@ -1,4 +1,4 @@
-import api from './api';
+import { customInstance } from '@igorguariroba/bfin-sdk';
 import type { AccountMember } from '../types/transaction';
 
 interface ListMembersResponse {
@@ -40,48 +40,67 @@ interface Invitation {
 export const accountMemberService = {
   // Lista membros de uma conta
   async listMembers(accountId: string): Promise<ListMembersResponse> {
-    const response = await api.get<ListMembersResponse>(`/accounts/${accountId}/members`);
-    return response.data;
+    return customInstance<ListMembersResponse>({
+      url: `/api/v1/accounts/${accountId}/members`,
+      method: 'GET',
+    });
   },
 
   // Cria um convite para adicionar membro à conta
   async createInvitation(accountId: string, data: CreateInvitationDTO): Promise<Invitation> {
-    const response = await api.post<Invitation>(`/accounts/${accountId}/invitations`, data);
-    return response.data;
+    return customInstance<Invitation>({
+      url: `/api/v1/accounts/${accountId}/invitations`,
+      method: 'POST',
+      data,
+    });
   },
 
   // Lista convites de uma conta
   async listInvitations(accountId: string): Promise<Invitation[]> {
-    const response = await api.get<Invitation[]>(`/accounts/${accountId}/invitations`);
-    return response.data;
+    return customInstance<Invitation[]>({
+      url: `/api/v1/accounts/${accountId}/invitations`,
+      method: 'GET',
+    });
   },
 
   // Lista convites recebidos pelo usuário logado
   async listMyInvitations(): Promise<Invitation[]> {
-    const response = await api.get<Invitation[]>('/invitations/my-invitations');
-    return response.data;
+    return customInstance<Invitation[]>({
+      url: '/api/v1/invitations/my-invitations',
+      method: 'GET',
+    });
   },
 
   // Aceita um convite
   async acceptInvitation(token: string): Promise<AccountMember> {
-    const response = await api.post<AccountMember>(`/invitations/${token}/accept`);
-    return response.data;
+    return customInstance<AccountMember>({
+      url: `/invitations/${token}/accept`,
+      method: 'POST',
+    });
   },
 
   // Rejeita um convite
   async rejectInvitation(token: string): Promise<{ message: string }> {
-    const response = await api.post<{ message: string }>(`/invitations/${token}/reject`);
-    return response.data;
+    return customInstance<{ message: string }>({
+      url: `/invitations/${token}/reject`,
+      method: 'POST',
+    });
   },
 
   // Atualiza o role de um membro
   async updateMemberRole(accountId: string, userId: string, data: UpdateMemberRoleDTO): Promise<AccountMember> {
-    const response = await api.put<AccountMember>(`/accounts/${accountId}/members/${userId}`, data);
-    return response.data;
+    return customInstance<AccountMember>({
+      url: `/api/v1/accounts/${accountId}/members/${userId}`,
+      method: 'PUT',
+      data,
+    });
   },
 
   // Remove um membro da conta
   async removeMember(accountId: string, userId: string): Promise<void> {
-    await api.delete(`/accounts/${accountId}/members/${userId}`);
+    return customInstance<void>({
+      url: `/api/v1/accounts/${accountId}/members/${userId}`,
+      method: 'DELETE',
+    });
   },
 };
