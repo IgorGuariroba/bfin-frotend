@@ -18,6 +18,8 @@ import {
   List,
   Tooltip,
   Icon,
+  Grid,
+  Separator,
 } from '@chakra-ui/react';
 import { Button } from '../components/atoms/Button';
 import { CreateAccountForm } from '../components/organisms/forms';
@@ -27,7 +29,29 @@ import { useAccounts } from '../hooks/useAccounts';
 import { useTotalDailyLimit } from '../hooks/useDailyLimit';
 import { useUpcomingFixedExpenses, useMarkAsPaid } from '../hooks/useTransactions';
 import { useMyInvitations } from '../hooks/useAccountMembers';
-import { Shield, TrendingUp, Calendar, ShoppingCart, Wallet, Mail } from 'lucide-react';
+import {
+  Shield,
+  TrendingUp,
+  Calendar,
+  ShoppingCart,
+  Wallet,
+  Mail,
+  Home,
+  Settings,
+  Eye,
+  CreditCard,
+  DollarSign,
+  Gift,
+  Users,
+  Send,
+  Download,
+  Smartphone,
+  Sliders,
+  BarChart3,
+  Minus,
+  Square,
+  X
+} from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { confirm } from '../components/ui/ConfirmDialog';
 import { toast } from '../lib/toast';
@@ -89,69 +113,252 @@ export function Dashboard() {
   };
 
   return (
-    <Box minH="100vh" bg="var(--background)">
+    <Flex minH="100vh" bg="var(--primary)" direction="column">
       {/* Header */}
-      <Box as="header" bg={{ base: 'card', _dark: 'card' }} shadow="sm" borderBottomWidth="1px" borderBottomColor={{ base: 'border', _dark: 'border' }}>
-        <Container maxW="7xl" py={4}>
-          <Flex align="center" justify="space-between">
-            <HStack gap={4}>
-              <Heading size="lg" color={{ base: 'brand.600', _dark: 'brand.400' }}>BFIN</Heading>
-              <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Dashboard</Text>
-            </HStack>
-            <HStack gap={4}>
-              <Text color={{ base: 'fg', _dark: 'fg' }} fontWeight="medium">Olá, {user?.full_name}</Text>
-              <Box position="relative">
-                <Button
-                  variant="outline"
-                  onClick={() => setInvitationsDialogOpen(true)}
-                  borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
-                  color={{ base: 'gray.700', _dark: 'gray.200' }}
-                  _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
-                >
-                  <Mail size={16} /> Convites
-                </Button>
-                {invitations.length > 0 && (
-                  <Badge
-                    position="absolute"
-                    top="-8px"
-                    right="-8px"
-                    colorPalette="red"
-                    borderRadius="full"
-                    fontSize="xs"
-                    px={2}
-                  >
-                    {invitations.length}
-                  </Badge>
-                )}
-              </Box>
-              <Button
-                variant="outline"
-                onClick={() => setManageAccountsDialogOpen(true)}
-                borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
-                color={{ base: 'gray.700', _dark: 'gray.200' }}
-                _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
-              >
-                <Wallet size={16} /> Gerenciar Contas
-              </Button>
-              <ThemeToggle variant="icon" size="md" />
-              <Button
-                variant="outline"
-                onClick={handleSignOut}
-                borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
-                color={{ base: 'gray.700', _dark: 'gray.200' }}
-                _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
-              >
-                Sair
-              </Button>
-            </HStack>
-          </Flex>
-        </Container>
-      </Box>
+      <Flex
+        as="header"
+        bg="var(--primary)"
+        px={6}
+        py={3}
+        align="center"
+        justify="space-between"
+        borderBottomWidth="1px"
+        borderBottomColor="rgba(255,255,255,0.1)"
+      >
+        <HStack gap={4}>
+          <Text
+            fontSize="3xl"
+            fontWeight="extrabold"
+            color="var(--primary-foreground)"
+            fontFamily="'Playfair Display SC', serif"
+          >
+            BFIN
+          </Text>
+          <Text color="var(--primary-foreground)" fontSize="sm">
+            - Olá, {user?.full_name?.split(' ')[0]}
+          </Text>
+        </HStack>
 
-      {/* Main Content */}
-      <Container maxW="7xl" py={8}>
-        <VStack gap={6} align="stretch">
-          {/* Daily Limit Alert */}
+        <HStack gap={2}>
+          <IconButton
+            aria-label="Minimizar"
+            size="sm"
+            variant="ghost"
+            color="var(--primary-foreground)"
+            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+          >
+            <Minus size={16} />
+          </IconButton>
+          <IconButton
+            aria-label="Maximizar"
+            size="sm"
+            variant="ghost"
+            color="var(--primary-foreground)"
+            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+          >
+            <Square size={16} />
+          </IconButton>
+          <IconButton
+            aria-label="Fechar"
+            size="sm"
+            variant="ghost"
+            color="var(--primary-foreground)"
+            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+            onClick={handleSignOut}
+          >
+            <X size={16} />
+          </IconButton>
+        </HStack>
+      </Flex>
+
+      {/* Main Layout - Sidebar + Content */}
+      <Flex flex="1" overflow="hidden">
+        {/* Sidebar */}
+        <VStack
+          w="80px"
+          bg="var(--primary)"
+          py={6}
+          gap={6}
+          borderRightWidth="1px"
+          borderRightColor="rgba(255,255,255,0.1)"
+        >
+          <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                aria-label="Home"
+                variant="ghost"
+                color="var(--primary-foreground)"
+                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                size="lg"
+              >
+                <Home size={24} />
+              </IconButton>
+            </Tooltip.Trigger>
+            <Tooltip.Positioner>
+              <Tooltip.Content>Home</Tooltip.Content>
+            </Tooltip.Positioner>
+          </Tooltip.Root>
+
+          <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                aria-label="Configurações"
+                variant="ghost"
+                color="var(--primary-foreground)"
+                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                size="lg"
+                onClick={() => setManageAccountsDialogOpen(true)}
+              >
+                <Settings size={24} />
+              </IconButton>
+            </Tooltip.Trigger>
+            <Tooltip.Positioner>
+              <Tooltip.Content>Configurações</Tooltip.Content>
+            </Tooltip.Positioner>
+          </Tooltip.Root>
+
+          <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                aria-label="Visibilidade"
+                variant="ghost"
+                color="var(--primary-foreground)"
+                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                size="lg"
+              >
+                <Eye size={24} />
+              </IconButton>
+            </Tooltip.Trigger>
+            <Tooltip.Positioner>
+              <Tooltip.Content>Visibilidade</Tooltip.Content>
+            </Tooltip.Positioner>
+          </Tooltip.Root>
+
+          <Box flex="1" />
+
+          <VStack gap={2}>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <IconButton
+                  aria-label="Pix"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <Gift size={24} />
+                </IconButton>
+              </Tooltip.Trigger>
+              <Tooltip.Positioner>
+                <Tooltip.Content>Pix</Tooltip.Content>
+              </Tooltip.Positioner>
+            </Tooltip.Root>
+            <Text color="var(--primary-foreground)" fontSize="xs">
+              Pix
+            </Text>
+          </VStack>
+        </VStack>
+
+        {/* Content Area */}
+        <Flex flex="1" direction="column" overflow="auto">
+          <Grid
+            templateColumns={{ base: '1fr', lg: '440px 1fr' }}
+            gap={6}
+            p={8}
+            flex="1"
+          >
+            {/* Left Column - Cards */}
+            <VStack gap={4} align="stretch">
+              {/* Card Cartão de Crédito */}
+              <Box
+                bg="var(--card)"
+                borderRadius="xl"
+                p={6}
+                shadow="md"
+              >
+                <HStack mb={4}>
+                  <CreditCard size={20} color="var(--card-foreground)" />
+                  <Text color="var(--card-foreground)" fontWeight="medium">
+                    Cartão de Crédito
+                  </Text>
+                </HStack>
+
+                <Box mb={4}>
+                  <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
+                    Fatura atual
+                  </Text>
+                  <Text fontSize="3xl" fontWeight="bold" color="var(--accent)">
+                    {loadingAccounts ? 'Carregando...' : formatCurrency(totals.lockedBalance)}
+                  </Text>
+                  <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
+                    Limite disponível: <Text as="span" color="var(--accent)" fontWeight="medium">{formatCurrency(totals.availableBalance)}</Text>
+                  </Text>
+                </Box>
+
+                <Button
+                  size="md"
+                  bg="var(--primary)"
+                  color="var(--primary-foreground)"
+                  _hover={{ opacity: 0.9 }}
+                  onClick={() => navigate('/transactions')}
+                >
+                  VER COMPRAS
+                </Button>
+              </Box>
+
+              {/* Card Nuconta */}
+              <Box
+                bg="var(--card)"
+                borderRadius="xl"
+                p={6}
+                shadow="md"
+              >
+                <HStack mb={4}>
+                  <DollarSign size={20} color="var(--card-foreground)" />
+                  <Text color="var(--card-foreground)" fontWeight="medium">
+                    Nuconta
+                  </Text>
+                </HStack>
+
+                <Box mb={4}>
+                  <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
+                    Saldo disponível
+                  </Text>
+                  <Text fontSize="3xl" fontWeight="bold" color="var(--accent)">
+                    {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
+                  </Text>
+                  <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
+                    Valor investido: <Text as="span" color="var(--accent)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
+                  </Text>
+                </Box>
+
+                <Button
+                  size="md"
+                  bg="var(--primary)"
+                  color="var(--primary-foreground)"
+                  _hover={{ opacity: 0.9 }}
+                  onClick={() => setManageAccountsDialogOpen(true)}
+                >
+                  ACESSAR
+                </Button>
+              </Box>
+
+              {/* Card Rewards */}
+              <Box
+                bg="var(--card)"
+                borderRadius="xl"
+                p={6}
+                shadow="md"
+              >
+                <HStack>
+                  <Gift size={20} color="var(--card-foreground)" />
+                  <Text color="var(--card-foreground)" fontWeight="medium">
+                    Rewards
+                  </Text>
+                </HStack>
+              </Box>
+
+              {/* Daily Limit Alert - Moved below */}
           {!loadingDailyLimit && !loadingAccounts && dailyLimit && dailyLimit.totalDailyLimit > 0 && (
             <Flex justify="flex-end">
               <Box
@@ -401,26 +608,222 @@ export function Dashboard() {
             )}
           </Box>
 
-          {/* Create Account Message */}
-          {!loadingAccounts && (!accounts || accounts.length === 0) && (
-            <Box
-              bg={{ base: 'blue.100', _dark: 'blue.900/30' }}
-              borderWidth="1px"
-              borderColor={{ base: 'blue.200', _dark: 'blue.700/50' }}
-              borderRadius="lg"
-              p={6}
-            >
-              <Heading size="md" color={{ base: 'blue.700', _dark: 'blue.300' }} mb={2}>
-                Bem-vindo ao BFIN!
-              </Heading>
-              <Text color={{ base: 'blue.600', _dark: 'blue.400' }} mb={4}>
-                Para começar, você precisa criar uma conta bancária.
-              </Text>
-              <Button onClick={() => setAccountDialogOpen(true)}>+ Criar Conta</Button>
-            </Box>
-          )}
-        </VStack>
-      </Container>
+            </VStack>
+
+            {/* Right Column - Info & Charts */}
+            <VStack gap={6} align="stretch">
+              {/* Progress Bars */}
+              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
+                <VStack gap={4} align="stretch">
+                  {/* Barra 1 - Cartão de Crédito */}
+                  <Box>
+                    <HStack justify="space-between" mb={2}>
+                      <Text fontSize="sm" color="var(--muted-foreground)">disponível</Text>
+                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                        {formatCurrency(totals.availableBalance)}
+                      </Text>
+                    </HStack>
+                    <Progress.Root value={60} size="lg" colorPalette="green">
+                      <Progress.Track>
+                        <Progress.Range />
+                      </Progress.Track>
+                    </Progress.Root>
+                  </Box>
+
+                  <Box>
+                    <HStack justify="space-between" mb={2}>
+                      <Text fontSize="sm" color="var(--muted-foreground)">atual</Text>
+                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                        {formatCurrency(totals.lockedBalance)}
+                      </Text>
+                    </HStack>
+                    <Progress.Root value={40} size="lg" colorPalette="blue">
+                      <Progress.Track>
+                        <Progress.Range />
+                      </Progress.Track>
+                    </Progress.Root>
+                  </Box>
+
+                  <Box>
+                    <HStack justify="space-between" mb={2}>
+                      <Text fontSize="sm" color="var(--muted-foreground)">próximas</Text>
+                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                        {formatCurrency(totals.emergencyReserve)}
+                      </Text>
+                    </HStack>
+                    <Progress.Root value={30} size="lg" colorPalette="orange">
+                      <Progress.Track>
+                        <Progress.Range />
+                      </Progress.Track>
+                    </Progress.Root>
+                  </Box>
+
+                  <VStack align="stretch" gap={2} mt={4} fontSize="xs" color="var(--muted-foreground)">
+                    <Text>Gastos: gastos referentes ao mês de Dezembro</Text>
+                    <Text>Cartão final: XXX XXX XXX 1510</Text>
+                    <Text>Bandeira: Master Card Platinum</Text>
+                  </VStack>
+                </VStack>
+              </Box>
+
+              {/* Nuconta Info */}
+              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
+                <VStack gap={4} align="stretch">
+                  <HStack justify="space-between">
+                    <Text fontSize="sm" color="var(--muted-foreground)">saldo disponível</Text>
+                    <Text fontSize="2xl" fontWeight="bold" color="var(--card-foreground)">
+                      {formatCurrency(totals.availableBalance)}
+                    </Text>
+                  </HStack>
+
+                  <HStack justify="space-between">
+                    <Text fontSize="sm" color="var(--muted-foreground)">total investido</Text>
+                    <Text fontSize="2xl" fontWeight="bold" color="var(--card-foreground)">
+                      {formatCurrency(totals.emergencyReserve)}
+                    </Text>
+                  </HStack>
+
+                  <Progress.Root value={70} size="lg" colorPalette="green" mt={4}>
+                    <Progress.Track>
+                      <Progress.Range />
+                    </Progress.Track>
+                  </Progress.Root>
+
+                  <VStack align="stretch" gap={1} mt={4} fontSize="xs" color="var(--muted-foreground)">
+                    <Text><Text as="span" color="var(--accent)" fontWeight="bold">Em azul:</Text> representa o valor atual em sua conta corrente</Text>
+                    <Text><Text as="span" color="green.500" fontWeight="bold">Em verde:</Text> representa todos os seus investimentos</Text>
+                  </VStack>
+                </VStack>
+              </Box>
+
+              {/* Rewards Info */}
+              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
+                <Text fontSize="sm" color="var(--card-foreground)">
+                  R$ 1,00 = 1 Ponto
+                </Text>
+              </Box>
+            </VStack>
+          </Grid>
+
+          {/* Footer - Actions */}
+          <Box
+            bg="var(--primary)"
+            borderTopWidth="1px"
+            borderTopColor="rgba(255,255,255,0.1)"
+            px={8}
+            py={4}
+          >
+            <Flex justify="space-around" align="center">
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Pagar"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                  onClick={() => navigate('/add-variable-expense')}
+                >
+                  <BarChart3 size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Pagar</Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Indicar amigos"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <Users size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Indicar amigos</Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Transferir"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <Send size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Transferir</Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Depositar"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                  onClick={() => navigate('/add-income')}
+                >
+                  <Download size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Depositar</Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Empréstimos"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <DollarSign size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Empréstimos</Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Cartão virtual"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <CreditCard size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Cartão virtual</Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Recarga de celular"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <Smartphone size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Recarga de celular</Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <IconButton
+                  aria-label="Ajustar limite"
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                  onClick={() => navigate('/daily-limit')}
+                >
+                  <Sliders size={24} />
+                </IconButton>
+                <Text color="var(--primary-foreground)" fontSize="xs">Ajustar limite</Text>
+              </VStack>
+            </Flex>
+          </Box>
+        </Flex>
+      </Flex>
 
       {/* Dialogs */}
       <Dialog.Root open={accountDialogOpen} onOpenChange={(e) => setAccountDialogOpen(e.open)}>
