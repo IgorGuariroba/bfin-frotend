@@ -32,7 +32,6 @@ import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
   Shield,
   Calendar,
-  ShoppingCart,
   Wallet,
   Mail,
   Home,
@@ -561,23 +560,6 @@ export function Dashboard() {
                 </Tooltip.Trigger>
                 <Tooltip.Positioner>
                   <Tooltip.Content>Nova Despesa Fixa</Tooltip.Content>
-                </Tooltip.Positioner>
-              </Tooltip.Root>
-
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <IconButton
-                    aria-label="Nova Despesa Variável"
-                    onClick={() => navigate('/add-variable-expense')}
-                    colorPalette="red"
-                    size="lg"
-                    borderRadius="xl"
-                  >
-                    <Icon as={ShoppingCart} boxSize={6} />
-                  </IconButton>
-                </Tooltip.Trigger>
-                <Tooltip.Positioner>
-                  <Tooltip.Content>Nova Despesa Variável</Tooltip.Content>
                 </Tooltip.Positioner>
               </Tooltip.Root>
             </HStack>
