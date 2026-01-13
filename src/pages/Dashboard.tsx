@@ -90,8 +90,7 @@ export function Dashboard() {
         py={3}
         align="center"
         justify="space-between"
-        borderBottomWidth="1px"
-        borderBottomColor="rgba(255,255,255,0.1)"
+        boxShadow="0 2px 10px rgba(255,255,255,0.1)"
       >
         <HStack gap={4}>
           <Text
@@ -132,8 +131,7 @@ export function Dashboard() {
           bg="var(--primary)"
           py={6}
           gap={6}
-          borderRightWidth="1px"
-          borderRightColor="rgba(255,255,255,0.1)"
+          boxShadow="2px 0 10px rgba(255,255,255,0.1)"
           position="relative"
           zIndex={1}
         >
@@ -229,7 +227,7 @@ export function Dashboard() {
                 <VStack align="flex-start" gap={0} fontSize="xs" color="var(--primary-foreground)" opacity={0.8}>
                   <Text>Agência: 0001</Text>
                   <Text>Conta: 1000001-0</Text>
-                  <Text>Banco: 260 - NU Pagamentos S.A.</Text>
+                  <Text>Banco: 260 - BFIN Pagamentos S.A.</Text>
                 </VStack>
               </VStack>
 
@@ -352,7 +350,7 @@ export function Dashboard() {
           >
             {/* Left Column - Cards */}
             <VStack gap={4} align="stretch">
-              {/* Card Nuconta */}
+              {/* Card Bfinconta */}
               <Box
                 bg="var(--card)"
                 borderRadius="xl"
@@ -362,7 +360,7 @@ export function Dashboard() {
                 <HStack mb={4}>
                   <DollarSign size={20} color="var(--card-foreground)" />
                   <Text color="var(--card-foreground)" fontWeight="medium">
-                    Nuconta
+                    Bfinconta
                   </Text>
                 </HStack>
 
@@ -370,11 +368,11 @@ export function Dashboard() {
                   <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
                     Saldo disponível
                   </Text>
-                  <Text fontSize="3xl" fontWeight="bold" color="var(--accent)">
+                  <Text fontSize="3xl" fontWeight="bold" color="var(--card-foreground)">
                     {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
                   </Text>
                   <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
-                    Valor investido: <Text as="span" color="var(--accent)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
+                    Valor investido: <Text as="span" color="var(--card-foreground)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
                   </Text>
                 </Box>
 
@@ -520,7 +518,7 @@ export function Dashboard() {
                 </VStack>
               </Box>
 
-              {/* Nuconta Info */}
+              {/* Bfinconta Info */}
               <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
                 <VStack gap={4} align="stretch">
                   <HStack justify="space-between">
@@ -560,8 +558,7 @@ export function Dashboard() {
             left="0"
             right="0"
             bg="var(--primary)"
-            borderTopWidth="1px"
-            borderTopColor="rgba(255,255,255,0.1)"
+            boxShadow="0 -2px 10px rgba(255,255,255,0.1)"
             px={8}
             py={2}
             zIndex={15}
