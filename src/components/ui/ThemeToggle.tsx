@@ -38,8 +38,8 @@ export function ThemeToggle({
             onClick={toggleColorMode}
             variant="ghost"
             size={size}
-            color={{ base: 'gray.700', _dark: 'gray.200' }}
-            _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
+            color="var(--primary-foreground)"
+            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
             border="none"
             _focus={{ boxShadow: 'none' }}
           >
