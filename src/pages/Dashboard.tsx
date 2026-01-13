@@ -566,7 +566,7 @@ export function Dashboard() {
                     onClick={() => navigate('/add-income')}
                     colorPalette="green"
                     size="lg"
-                    borderRadius="full"
+                    borderRadius="xl"
                   >
                     <Icon as={TrendingUp} boxSize={6} />
                   </IconButton>
@@ -583,7 +583,7 @@ export function Dashboard() {
                     onClick={() => navigate('/add-fixed-expense')}
                     colorPalette="orange"
                     size="lg"
-                    borderRadius="full"
+                    borderRadius="xl"
                   >
                     <Icon as={Calendar} boxSize={6} />
                   </IconButton>
@@ -600,7 +600,7 @@ export function Dashboard() {
                     onClick={() => navigate('/add-variable-expense')}
                     colorPalette="red"
                     size="lg"
-                    borderRadius="full"
+                    borderRadius="xl"
                   >
                     <Icon as={ShoppingCart} boxSize={6} />
                   </IconButton>
@@ -848,7 +848,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
@@ -867,7 +867,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
@@ -885,7 +885,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
@@ -903,7 +903,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
@@ -922,7 +922,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
@@ -940,7 +940,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
@@ -958,7 +958,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
@@ -976,7 +976,7 @@ export function Dashboard() {
                 <Box
                   w="50px"
                   h="50px"
-                  borderRadius="full"
+                  borderRadius="xl"
                   bg="rgba(255,255,255,0.15)"
                   display="flex"
                   alignItems="center"
