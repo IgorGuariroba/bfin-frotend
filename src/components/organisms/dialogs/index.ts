@@ -2,3 +2,4 @@
 export { AccountsDialog } from './AccountsDialog';
 export { AccountMembersDialog } from './AccountMembersDialog';
 export { InvitationsDialog } from './InvitationsDialog';
+export { BfinParceiroDialog } from './BfinParceiroDialog';

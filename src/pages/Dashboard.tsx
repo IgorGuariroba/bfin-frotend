@@ -20,9 +20,9 @@ import {
 } from '@chakra-ui/react';
 import { Button } from '../components/atoms/Button';
 import { CreateAccountForm } from '../components/organisms/forms';
-import { AccountsDialog, InvitationsDialog } from '../components/organisms/dialogs';
+import { AccountsDialog, InvitationsDialog, BfinParceiroDialog } from '../components/organisms/dialogs';
+import { VariableExpenseForm, IncomeForm, FixedExpenseForm } from '../components/organisms/forms';
 import { useAccounts } from '../hooks/useAccounts';
-import { useTotalDailyLimit } from '../hooks/useDailyLimit';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
   Shield,
@@ -40,9 +40,11 @@ import {
   Smartphone,
   Sliders,
   BarChart3,
-  X
+  X,
+  ArrowLeft
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { toast } from '../lib/toast';
 
 export function Dashboard() {
   const { user, signOut } = useAuth();
@@ -51,17 +53,198 @@ export function Dashboard() {
   const [manageAccountsDialogOpen, setManageAccountsDialogOpen] = useState(false);
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
+  const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | null>(null);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: invitations = [] } = useMyInvitations();
 
   const accountIds = accounts?.map((acc) => acc.id) || [];
-  const { data: dailyLimit, isLoading: loadingDailyLimit } = useTotalDailyLimit(accountIds);
 
   function handleSignOut() {
     signOut();
     navigate('/login');
   }
+
+  const renderExpandedContent = () => {
+    if (!expandedForm) return null;
+
+    const getTitle = () => {
+      switch (expandedForm) {
+        case 'pagar': return 'Nova Despesa';
+        case 'bfin-parceiro': return 'Convidar Bfin Parceiro';
+        case 'transferir': return 'Transferir';
+        case 'depositar': return 'Depositar';
+        case 'emprestimos': return 'Empréstimos';
+        case 'agendar-pagamento': return 'Agendar Pagamento';
+        case 'recarga-celular': return 'Recarga de Celular';
+        case 'ajustar-limite': return 'Ajustar Limite';
+        default: return '';
+      }
+    };
+
+    const getContent = () => {
+      switch (expandedForm) {
+        case 'pagar':
+          return (
+            <VariableExpenseForm
+              onSuccess={() => setExpandedForm(null)}
+              onCancel={() => setExpandedForm(null)}
+            />
+          );
+        case 'depositar':
+          return (
+            <IncomeForm
+              onSuccess={() => setExpandedForm(null)}
+              onCancel={() => setExpandedForm(null)}
+            />
+          );
+        case 'agendar-pagamento':
+          return (
+            <FixedExpenseForm
+              onSuccess={() => setExpandedForm(null)}
+              onCancel={() => setExpandedForm(null)}
+            />
+          );
+        case 'bfin-parceiro':
+          return (
+            <Box>
+              <Text mb={4} color="var(--muted-foreground)">
+                Use o menu lateral para convidar um parceiro ou clique no botão abaixo.
+              </Text>
+              <Button onClick={() => setBfinParceiroDialogOpen(true)}>
+                Abrir Diálogo de Convite
+              </Button>
+            </Box>
+          );
+        case 'transferir':
+          return (
+            <Box>
+              <Text color="var(--muted-foreground)">
+                Funcionalidade de transferência em desenvolvimento.
+              </Text>
+            </Box>
+          );
+        case 'emprestimos':
+          return (
+            <Box>
+              <Text color="var(--muted-foreground)">
+                Funcionalidade de empréstimos em desenvolvimento.
+              </Text>
+            </Box>
+          );
+        case 'recarga-celular':
+          return (
+            <Box>
+              <Text color="var(--muted-foreground)">
+                Funcionalidade de recarga de celular em desenvolvimento.
+              </Text>
+            </Box>
+          );
+        case 'ajustar-limite':
+          return (
+            <Box>
+              <Text color="var(--muted-foreground)">
+                Funcionalidade de ajuste de limite em desenvolvimento.
+              </Text>
+            </Box>
+          );
+        default:
+          return null;
+      }
+    };
+
+    const hasGreenHeader = expandedForm === 'pagar';
+
+    return (
+      <Box
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        bg={hasGreenHeader ? 'var(--primary)' : 'var(--background)'}
+        zIndex={10}
+        overflow="auto"
+        css={{
+          animation: 'dropExpand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+          '@keyframes dropExpand': {
+            '0%': {
+              borderRadius: '50%',
+              width: 'calc((100% - 112px) / 7)',
+              height: '80px',
+              bottom: '90px',
+              left: '32px',
+              top: 'auto',
+              transform: 'scale(0.3)',
+              opacity: 0.5,
+            },
+            '50%': {
+              borderRadius: '24px',
+              opacity: 0.8,
+            },
+            '100%': {
+              borderRadius: '0',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              transform: 'scale(1)',
+              opacity: 1,
+            },
+          },
+        }}
+      >
+        {hasGreenHeader ? (
+          <VStack gap={0} align="stretch" minH="100vh">
+            {/* Green Header */}
+            <Box bg="var(--primary)" px={6} py={6} pb={8}>
+              <Flex align="center" gap={4} mb={6}>
+                <IconButton
+                  aria-label="Voltar"
+                  variant="ghost"
+                  onClick={() => setExpandedForm(null)}
+                  size="sm"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                >
+                  <ArrowLeft size={20} />
+                </IconButton>
+                <Heading size="lg" color="var(--primary-foreground)" flex="1">
+                  {getTitle()}
+                </Heading>
+              </Flex>
+              {getContent()}
+            </Box>
+          </VStack>
+        ) : (
+          <Box p={8} maxW="2xl" mx="auto" pb="140px">
+            <Flex align="center" gap={4} mb={6}>
+              <IconButton
+                aria-label="Fechar"
+                variant="ghost"
+                onClick={() => setExpandedForm(null)}
+                size="sm"
+                color="var(--card-foreground)"
+              >
+                <X size={20} />
+              </IconButton>
+              <Heading size="lg" color="var(--card-foreground)">{getTitle()}</Heading>
+            </Flex>
+            <Box
+              bg="var(--card)"
+              borderRadius="xl"
+              p={6}
+              shadow="md"
+            >
+              {getContent()}
+            </Box>
+          </Box>
+        )}
+      </Box>
+    );
+  };
 
   const totals = accounts?.reduce(
     (acc, account) => ({
@@ -90,8 +273,7 @@ export function Dashboard() {
         py={3}
         align="center"
         justify="space-between"
-        borderBottomWidth="1px"
-        borderBottomColor="rgba(255,255,255,0.1)"
+        boxShadow="0 2px 10px rgba(255,255,255,0.1)"
       >
         <HStack gap={4}>
           <Text
@@ -132,8 +314,7 @@ export function Dashboard() {
           bg="var(--primary)"
           py={6}
           gap={6}
-          borderRightWidth="1px"
-          borderRightColor="rgba(255,255,255,0.1)"
+          boxShadow="2px 0 10px rgba(255,255,255,0.1)"
           position="relative"
           zIndex={1}
         >
@@ -147,6 +328,7 @@ export function Dashboard() {
                 size="lg"
                 border="none"
                 _focus={{ boxShadow: 'none' }}
+                onClick={() => setExpandedForm(null)}
               >
                 <Home size={24} />
               </IconButton>
@@ -229,7 +411,7 @@ export function Dashboard() {
                 <VStack align="flex-start" gap={0} fontSize="xs" color="var(--primary-foreground)" opacity={0.8}>
                   <Text>Agência: 0001</Text>
                   <Text>Conta: 1000001-0</Text>
-                  <Text>Banco: 260 - NU Pagamentos S.A.</Text>
+                  <Text>Banco: 260 - BFIN Pagamentos S.A.</Text>
                 </VStack>
               </VStack>
 
@@ -343,16 +525,18 @@ export function Dashboard() {
 
         {/* Content Area */}
         <Flex flex="1" direction="column" overflow="auto" position="relative">
-          <Grid
-            templateColumns={{ base: '1fr', lg: '440px 1fr' }}
-            gap={6}
-            p={8}
-            pb="140px"
-            flex="1"
-          >
+          {renderExpandedContent()}
+          {!expandedForm && (
+            <Grid
+              templateColumns={{ base: '1fr', lg: '440px 1fr' }}
+              gap={6}
+              p={8}
+              pb="140px"
+              flex="1"
+            >
             {/* Left Column - Cards */}
             <VStack gap={4} align="stretch">
-              {/* Card Nuconta */}
+              {/* Card Bfinconta */}
               <Box
                 bg="var(--card)"
                 borderRadius="xl"
@@ -360,9 +544,9 @@ export function Dashboard() {
                 shadow="md"
               >
                 <HStack mb={4}>
-                  <DollarSign size={20} color="var(--card-foreground)" />
-                  <Text color="var(--card-foreground)" fontWeight="medium">
-                    Nuconta
+                  <DollarSign size={20} color="var(--muted-foreground)" />
+                  <Text color="var(--muted-foreground)" fontWeight="medium">
+                    Bfinconta
                   </Text>
                 </HStack>
 
@@ -370,11 +554,11 @@ export function Dashboard() {
                   <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
                     Saldo disponível
                   </Text>
-                  <Text fontSize="3xl" fontWeight="bold" color="var(--accent)">
+                  <Text fontSize="3xl" fontWeight="bold" color="var(--muted-foreground)">
                     {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
                   </Text>
                   <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
-                    Valor investido: <Text as="span" color="var(--accent)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
+                    Valor investido: <Text as="span" color="var(--muted-foreground)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
                   </Text>
                 </Box>
 
@@ -389,79 +573,6 @@ export function Dashboard() {
                 </Button>
               </Box>
 
-              {/* Daily Limit Alert - Moved below */}
-          {!loadingDailyLimit && !loadingAccounts && dailyLimit && dailyLimit.totalDailyLimit > 0 && (
-            <Flex justify="flex-end">
-              <Box
-                as="button"
-                onClick={() => navigate('/daily-limit')}
-                w={{ base: 'full', md: '40%' }}
-                cursor="pointer"
-                transition="all 0.2s"
-                _hover={{ transform: 'translateY(-2px)', shadow: 'lg' }}
-              >
-                <Alert.Root
-                  status={
-                    dailyLimit.exceeded
-                      ? 'error'
-                      : dailyLimit.percentageUsed > 80
-                      ? 'warning'
-                      : 'success'
-                  }
-                  variant="outline"
-                  borderRadius="lg"
-                >
-                  <Alert.Indicator />
-                  <Alert.Title>
-                    <VStack gap={2} align="stretch" w="full">
-                      <Flex justify="space-between" align="center">
-                        <Text fontSize="sm" fontWeight="semibold">
-                          Limite Diário Sugerido
-                        </Text>
-                        <Text fontSize="xs" opacity={0.8}>
-                          ▶ Ver detalhes
-                        </Text>
-                      </Flex>
-                      <Flex justify="space-between" fontSize="xs" opacity={0.9}>
-                        <Text>Gasto hoje</Text>
-                        <Text fontWeight="medium">
-                          {formatCurrency(dailyLimit.totalSpentToday)} / {formatCurrency(dailyLimit.totalDailyLimit)}
-                        </Text>
-                      </Flex>
-                      <Progress.Root
-                        value={Math.min(100, dailyLimit.percentageUsed)}
-                        colorPalette={
-                          dailyLimit.exceeded
-                            ? 'red'
-                            : dailyLimit.percentageUsed > 80
-                            ? 'yellow'
-                            : 'green'
-                        }
-                        size="sm"
-                        shape="full"
-                      >
-                        <Progress.Track>
-                          <Progress.Range />
-                        </Progress.Track>
-                      </Progress.Root>
-                      <Text fontSize="xs">
-                        {dailyLimit.exceeded ? (
-                          <Text as="span" fontWeight="medium">
-                            Excedido em {formatCurrency(dailyLimit.totalSpentToday - dailyLimit.totalDailyLimit)}
-                          </Text>
-                        ) : (
-                          <Text as="span">
-                            Restam {formatCurrency(dailyLimit.totalRemaining)} hoje
-                          </Text>
-                        )}
-                      </Text>
-                    </VStack>
-                  </Alert.Title>
-                </Alert.Root>
-              </Box>
-            </Flex>
-          )}
-
             </VStack>
 
             {/* Right Column - Info & Charts */}
@@ -473,7 +584,7 @@ export function Dashboard() {
                   <Box>
                     <HStack justify="space-between" mb={2}>
                       <Text fontSize="sm" color="var(--muted-foreground)">disponível</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
                         {formatCurrency(totals.availableBalance)}
                       </Text>
                     </HStack>
@@ -487,7 +598,7 @@ export function Dashboard() {
                   <Box>
                     <HStack justify="space-between" mb={2}>
                       <Text fontSize="sm" color="var(--muted-foreground)">atual</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
                         {formatCurrency(totals.lockedBalance)}
                       </Text>
                     </HStack>
@@ -501,7 +612,7 @@ export function Dashboard() {
                   <Box>
                     <HStack justify="space-between" mb={2}>
                       <Text fontSize="sm" color="var(--muted-foreground)">próximas</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
                         {formatCurrency(totals.emergencyReserve)}
                       </Text>
                     </HStack>
@@ -520,19 +631,19 @@ export function Dashboard() {
                 </VStack>
               </Box>
 
-              {/* Nuconta Info */}
+              {/* Bfinconta Info */}
               <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
                 <VStack gap={4} align="stretch">
                   <HStack justify="space-between">
                     <Text fontSize="sm" color="var(--muted-foreground)">saldo disponível</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--card-foreground)">
+                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
                       {formatCurrency(totals.availableBalance)}
                     </Text>
                   </HStack>
 
                   <HStack justify="space-between">
                     <Text fontSize="sm" color="var(--muted-foreground)">total investido</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--card-foreground)">
+                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
                       {formatCurrency(totals.emergencyReserve)}
                     </Text>
                   </HStack>
@@ -552,6 +663,7 @@ export function Dashboard() {
 
             </VStack>
           </Grid>
+          )}
 
           {/* Footer - Actions */}
           <Box
@@ -560,8 +672,7 @@ export function Dashboard() {
             left="0"
             right="0"
             bg="var(--primary)"
-            borderTopWidth="1px"
-            borderTopColor="rgba(255,255,255,0.1)"
+            boxShadow="0 -2px 10px rgba(255,255,255,0.1)"
             px={8}
             py={2}
             zIndex={15}
@@ -580,7 +691,7 @@ export function Dashboard() {
                 cursor="pointer"
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
-                onClick={() => navigate('/add-variable-expense')}
+                onClick={() => setExpandedForm(expandedForm === 'pagar' ? null : 'pagar')}
                 gap={1}
               >
                 <BarChart3 size={22} color="var(--primary-foreground)" />
@@ -600,9 +711,10 @@ export function Dashboard() {
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
                 gap={1}
+                onClick={() => setExpandedForm(expandedForm === 'bfin-parceiro' ? null : 'bfin-parceiro')}
               >
                 <Users size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Indicar amigos</Text>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Bfin Parceiro</Text>
               </Box>
 
               <Box
@@ -617,6 +729,7 @@ export function Dashboard() {
                 cursor="pointer"
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
+                onClick={() => setExpandedForm(expandedForm === 'transferir' ? null : 'transferir')}
                 gap={1}
               >
                 <Send size={22} color="var(--primary-foreground)" />
@@ -635,7 +748,7 @@ export function Dashboard() {
                 cursor="pointer"
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
-                onClick={() => navigate('/add-income')}
+                onClick={() => setExpandedForm(expandedForm === 'depositar' ? null : 'depositar')}
                 gap={1}
               >
                 <Download size={22} color="var(--primary-foreground)" />
@@ -654,6 +767,7 @@ export function Dashboard() {
                 cursor="pointer"
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
+                onClick={() => setExpandedForm(expandedForm === 'emprestimos' ? null : 'emprestimos')}
                 gap={1}
               >
                 <DollarSign size={22} color="var(--primary-foreground)" />
@@ -673,7 +787,7 @@ export function Dashboard() {
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
                 gap={1}
-                onClick={() => navigate('/add-fixed-expense')}
+                onClick={() => setExpandedForm(expandedForm === 'agendar-pagamento' ? null : 'agendar-pagamento')}
               >
                 <Calendar size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Agendar pagamento</Text>
@@ -691,6 +805,7 @@ export function Dashboard() {
                 cursor="pointer"
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
+                onClick={() => setExpandedForm(expandedForm === 'recarga-celular' ? null : 'recarga-celular')}
                 gap={1}
               >
                 <Smartphone size={22} color="var(--primary-foreground)" />
@@ -709,7 +824,7 @@ export function Dashboard() {
                 cursor="pointer"
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
-                onClick={() => navigate('/daily-limit')}
+                onClick={() => setExpandedForm(expandedForm === 'ajustar-limite' ? null : 'ajustar-limite')}
                 gap={1}
               >
                 <Sliders size={22} color="var(--primary-foreground)" />
@@ -804,6 +919,11 @@ export function Dashboard() {
       <InvitationsDialog
         isOpen={invitationsDialogOpen}
         onClose={() => setInvitationsDialogOpen(false)}
+      />
+
+      <BfinParceiroDialog
+        isOpen={bfinParceiroDialogOpen}
+        onClose={() => setBfinParceiroDialogOpen(false)}
       />
     </Flex>
   );

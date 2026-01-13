@@ -1,15 +1,14 @@
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, Center, Text, List } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Center, Text, Box, Flex, Input, NativeSelect, Field, Menu } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
-import { FormField } from '../../molecules/FormField';
-import { FormSelect } from '../../molecules/FormSelect';
-import { InfoBox } from '../../molecules/InfoBox';
 import { useCreateVariableExpense } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useCategories } from '../../../hooks/useCategories';
 import type { CreateVariableExpenseDTO } from '../../../types/transaction';
+import { Pencil, Tag, Zap, Check, ChevronDown } from 'lucide-react';
 
 const variableExpenseSchema = z.object({
   accountId: z.string().min(1, 'Conta é obrigatória'),
@@ -33,10 +32,32 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<VariableExpenseFormData>({
     resolver: zodResolver(variableExpenseSchema),
+    defaultValues: {
+      accountId: '',
+      amount: 0,
+    },
   });
+
+  const amount = watch('amount') || 0;
+  const selectedAccountId = watch('accountId');
+  const [isEditingAmount, setIsEditingAmount] = useState(false);
+
+  const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
+
+  // Define a conta padrão quando as contas forem carregadas
+  useEffect(() => {
+    if (accounts && accounts.length > 0 && !selectedAccountId) {
+      const defaultAccount = accounts.find((acc) => acc.is_default) || accounts[0];
+      if (defaultAccount?.id) {
+        setValue('accountId', defaultAccount.id, { shouldValidate: true });
+      }
+    }
+  }, [accounts, selectedAccountId, setValue]);
 
   const onSubmit = async (data: VariableExpenseFormData) => {
     try {
@@ -74,88 +95,338 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
     );
   }
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap={4}>
-        <FormSelect
-          label="Conta"
-          isRequired
-          error={errors.accountId?.message}
-          {...register('accountId')}
-        >
-          <option value="">Selecione uma conta</option>
-          {accounts.map((account) => (
-            <option key={account.id} value={account.id}>
-              {account.account_name} - R$ {Number(account.available_balance).toFixed(2)}
-            </option>
-          ))}
-        </FormSelect>
-
-        <FormField
-          label="Valor"
-          type="number"
-          step="0.01"
-          placeholder="0.00"
-          isRequired
-          error={errors.amount?.message}
-          {...register('amount', { valueAsNumber: true })}
-        />
-
-        <FormField
-          label="Descrição"
-          type="text"
-          placeholder="Ex: Supermercado, Uber, Restaurante, etc."
-          isRequired
-          error={errors.description?.message}
-          {...register('description')}
-        />
-
-        <FormSelect
-          label="Categoria"
-          isRequired
-          error={errors.categoryId?.message}
-          {...register('categoryId')}
-        >
-          <option value="">Selecione uma categoria</option>
-          {categories?.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </FormSelect>
-
-        {createVariableExpense.isError && (
-          <InfoBox variant="error">
-            {createVariableExpense.error instanceof Error
-              ? createVariableExpense.error.message
-              : 'Erro ao criar despesa variável'}
-          </InfoBox>
-        )}
-
-        <InfoBox variant="warning">
-          <Text fontWeight="semibold">Como funciona:</Text>
-          <List.Root pl={4} mt={1} fontSize="sm" listStyleType="disc">
-            <List.Item>O valor será <strong>debitado imediatamente</strong> da sua conta</List.Item>
-            <List.Item>Perfeito para gastos do dia a dia</List.Item>
-            <List.Item>Reduz o saldo disponível na hora</List.Item>
-          </List.Root>
-        </InfoBox>
-
-        <HStack gap={3} pt={4}>
-          <Button
-            type="submit"
-            loading={isSubmitting || createVariableExpense.isPending}
-            flex="1"
-          >
-            Criar Despesa Variável
-          </Button>
-          {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancelar
-            </Button>
+      <VStack gap={0} align="stretch">
+        {/* Valor em destaque no header verde */}
+        <Box mb={6}>
+          {isEditingAmount ? (
+            <Input
+              type="number"
+              step="0.01"
+              autoFocus
+              defaultValue={amount}
+              fontSize="4xl"
+              fontWeight="bold"
+              color="var(--primary-foreground)"
+              bg="transparent"
+              border="none"
+              borderBottom="2px solid var(--primary-foreground)"
+              borderRadius="0"
+              p={0}
+              mb={4}
+              onBlur={(e) => {
+                const value = parseFloat(e.target.value) || 0;
+                setValue('amount', value);
+                setIsEditingAmount(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const value = parseFloat((e.target as HTMLInputElement).value) || 0;
+                  setValue('amount', value);
+                  setIsEditingAmount(false);
+                }
+              }}
+              css={{
+                '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': {
+                  display: 'none',
+                },
+              }}
+            />
+          ) : (
+            <Text
+              fontSize="4xl"
+              fontWeight="bold"
+              color="var(--primary-foreground)"
+              mb={4}
+              cursor="pointer"
+              onClick={() => setIsEditingAmount(true)}
+              _hover={{ opacity: 0.8 }}
+            >
+              {formatCurrency(Number(amount))}
+            </Text>
           )}
-        </HStack>
-      </Stack>
+
+          {/* Dropdown de Conta Customizado */}
+          <Field.Root invalid={!!errors.accountId}>
+            <input
+              type="hidden"
+              {...register('accountId')}
+            />
+            <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
+              <Menu.Trigger asChild>
+                <Box
+                  as="button"
+                  type="button"
+                  w="full"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  px={4}
+                  py={3}
+                  fontSize="md"
+                  fontWeight="medium"
+                  color="white"
+                  bg="var(--primary)"
+                  borderWidth="1px"
+                  borderColor="white"
+                  borderRadius="full"
+                  transition="all 0.2s"
+                  css={{
+                    '&:hover': {
+                      backgroundColor: 'var(--primary-600)',
+                    },
+                    '&:focus': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                  }}
+                >
+                  <Text color="white">
+                    {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
+                  </Text>
+                  <ChevronDown size={20} color="white" />
+                </Box>
+              </Menu.Trigger>
+              <Menu.Positioner>
+                <Menu.Content
+                  maxH="300px"
+                  overflowY="auto"
+                  bg="var(--primary)"
+                  borderRadius="lg"
+                  boxShadow="lg"
+                  borderWidth="1px"
+                  borderColor="white"
+                  p={0}
+                  css={{
+                    zIndex: 'var(--z-dropdown)',
+                  }}
+                >
+                {/* Cabeçalho do Menu */}
+                <Box
+                  px={3}
+                  py={2}
+                  bg="var(--primary)"
+                  borderTopRadius="lg"
+                  borderBottomWidth="1px"
+                  borderBottomColor="white"
+                >
+                  <HStack gap={2}>
+                    <Check size={16} color="var(--primary-foreground)" />
+                    <Text fontSize="sm" fontWeight="bold" color="var(--primary-foreground)">
+                      Selecione uma conta
+                    </Text>
+                  </HStack>
+                </Box>
+
+                {/* Lista de Contas */}
+                <Box py={1}>
+                  {accounts?.map((account) => (
+                    <Menu.Item
+                      key={account.id}
+                      value={account.id}
+                      onClick={() => setValue('accountId', account.id, { shouldValidate: true })}
+                      css={{
+                        backgroundColor: selectedAccountId === account.id ? 'var(--primary-600)' : 'transparent',
+                        '&:hover': {
+                          backgroundColor: 'var(--primary-600)',
+                        },
+                      }}
+                      px={3}
+                      py={2}
+                    >
+                      <Text fontSize="sm" color="var(--primary-foreground)">
+                        {account.account_name}
+                      </Text>
+                    </Menu.Item>
+                  ))}
+                </Box>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Menu.Root>
+            {errors.accountId && (
+              <Field.ErrorText color="var(--primary-foreground)" mt={2} fontSize="sm">
+                {errors.accountId.message}
+              </Field.ErrorText>
+            )}
+          </Field.Root>
+        </Box>
+
+        {/* Card branco com campos */}
+        <Box
+          bg="var(--card)"
+          borderRadius="2xl"
+          p={6}
+          shadow="md"
+          mt={4}
+        >
+          <VStack gap={6} align="stretch">
+            {/* Campo Descrição com ícone */}
+            <Field.Root invalid={!!errors.description}>
+              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                Descrição
+              </Field.Label>
+              <Box position="relative">
+                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                  <Pencil size={18} color="var(--muted-foreground)" />
+                </Box>
+                <Input
+                  {...register('description')}
+                  placeholder="Ex: Supermercado, Uber..."
+                  pl={10}
+                  borderColor="var(--border)"
+                  borderRadius="full"
+                  _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                />
+              </Box>
+              {errors.description && (
+                <Field.ErrorText>{errors.description.message}</Field.ErrorText>
+              )}
+            </Field.Root>
+
+            {/* Campo Categoria com ícone */}
+            <Field.Root invalid={!!errors.categoryId}>
+              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                Categoria
+              </Field.Label>
+              <Box position="relative">
+                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                  <Tag size={18} color="var(--muted-foreground)" />
+                </Box>
+                <NativeSelect.Root>
+                  <NativeSelect.Field
+                    {...register('categoryId')}
+                    placeholder="Selecione uma categoria"
+                    pl={10}
+                    borderColor="var(--border)"
+                    borderRadius="full"
+                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                  >
+                    {categories?.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </NativeSelect.Field>
+                  <NativeSelect.Indicator />
+                </NativeSelect.Root>
+              </Box>
+              {errors.categoryId && (
+                <Field.ErrorText>{errors.categoryId.message}</Field.ErrorText>
+              )}
+            </Field.Root>
+
+            {/* Campo Valor oculto para validação do react-hook-form */}
+            <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
+              <Input
+                type="number"
+                step="0.01"
+                {...register('amount', { valueAsNumber: true })}
+              />
+            </Box>
+
+            {/* Mensagem de erro do valor (se houver) */}
+            {errors.amount && (
+              <Box
+                bg="red.50"
+                borderWidth="1px"
+                borderColor="red.200"
+                borderRadius="lg"
+                p={3}
+                mt={-4}
+              >
+                <Text fontSize="sm" color="red.600">{errors.amount.message}</Text>
+              </Box>
+            )}
+
+            {/* Box informativo verde claro */}
+            <Box
+              bg="var(--primary-50)"
+              borderWidth="1px"
+              borderColor="var(--primary-200)"
+              borderRadius="lg"
+              p={4}
+              mt={2}
+            >
+              <HStack gap={2} mb={3}>
+                <Zap size={18} color="var(--primary-600)" />
+                <Text fontWeight="semibold" color="var(--card-foreground)" fontSize="sm">
+                  Como funciona:
+                </Text>
+              </HStack>
+              <VStack gap={2} align="stretch" fontSize="sm" color="var(--muted-foreground)">
+                <HStack gap={2}>
+                  <Check size={16} color="var(--primary-600)" />
+                  <Text>O valor será <strong>debitado imediatamente</strong> da sua conta</Text>
+                </HStack>
+                <HStack gap={2}>
+                  <Check size={16} color="var(--primary-600)" />
+                  <Text>Perfeito para gastos do dia a dia</Text>
+                </HStack>
+                <HStack gap={2}>
+                  <Check size={16} color="var(--primary-600)" />
+                  <Text>Reduz o saldo disponível na hora</Text>
+                </HStack>
+              </VStack>
+            </Box>
+
+            {createVariableExpense.isError && (
+              <Box
+                bg="red.50"
+                borderWidth="1px"
+                borderColor="red.200"
+                borderRadius="lg"
+                p={4}
+              >
+                <Text fontSize="sm" color="red.600">
+                  {createVariableExpense.error instanceof Error
+                    ? createVariableExpense.error.message
+                    : 'Erro ao criar despesa variável'}
+                </Text>
+              </Box>
+            )}
+
+            {/* Botão verde grande */}
+            <Button
+              type="submit"
+              loading={isSubmitting || createVariableExpense.isPending}
+              w="full"
+              size="lg"
+              bg="var(--primary)"
+              color="var(--primary-foreground)"
+              borderRadius="full"
+              _hover={{ opacity: 0.9 }}
+              mt={4}
+            >
+              Criar Despesa Variável
+            </Button>
+
+            {/* Link Cancelar */}
+            {onCancel && (
+              <Text
+                as="button"
+                type="button"
+                onClick={onCancel}
+                textAlign="center"
+                color="var(--primary-600)"
+                fontSize="sm"
+                fontWeight="medium"
+                _hover={{ textDecoration: 'underline' }}
+                cursor="pointer"
+              >
+                Cancelar
+              </Text>
+            )}
+          </VStack>
+        </Box>
+      </VStack>
     </form>
   );
 }
