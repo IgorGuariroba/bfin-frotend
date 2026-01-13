@@ -384,11 +384,12 @@ export function Dashboard() {
         )}
 
         {/* Content Area */}
-        <Flex flex="1" direction="column" overflow="auto">
+        <Flex flex="1" direction="column" overflow="auto" position="relative">
           <Grid
             templateColumns={{ base: '1fr', lg: '440px 1fr' }}
             gap={6}
             p={8}
+            pb="140px"
             flex="1"
           >
             {/* Left Column - Cards */}
@@ -831,11 +832,16 @@ export function Dashboard() {
 
           {/* Footer - Actions */}
           <Box
+            position="fixed"
+            bottom="0"
+            left="80px"
+            right="0"
             bg="var(--primary)"
             borderTopWidth="1px"
             borderTopColor="rgba(255,255,255,0.1)"
             px={8}
             py={5}
+            zIndex={5}
           >
             <Flex justify="space-around" align="center" gap={2}>
               <VStack gap={2}>
