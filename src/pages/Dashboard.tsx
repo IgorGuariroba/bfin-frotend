@@ -148,6 +148,8 @@ export function Dashboard() {
             variant="ghost"
             color="var(--primary-foreground)"
             _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+            border="none"
+            _focus={{ boxShadow: 'none' }}
           >
             <Minus size={16} />
           </IconButton>
@@ -157,6 +159,8 @@ export function Dashboard() {
             variant="ghost"
             color="var(--primary-foreground)"
             _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+            border="none"
+            _focus={{ boxShadow: 'none' }}
           >
             <Square size={16} />
           </IconButton>
@@ -167,6 +171,8 @@ export function Dashboard() {
             color="var(--primary-foreground)"
             _hover={{ bg: 'rgba(255,255,255,0.1)' }}
             onClick={handleSignOut}
+            border="none"
+            _focus={{ boxShadow: 'none' }}
           >
             <X size={16} />
           </IconButton>
