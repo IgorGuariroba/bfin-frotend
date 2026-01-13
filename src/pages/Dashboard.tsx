@@ -3,18 +3,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Container,
   Flex,
   Heading,
   Text,
   VStack,
   HStack,
-  Badge,
   Progress,
   IconButton,
   Dialog,
   Alert,
-  Stack,
   List,
   Tooltip,
   Icon,
@@ -24,10 +21,8 @@ import {
 import { Button } from '../components/atoms/Button';
 import { CreateAccountForm } from '../components/organisms/forms';
 import { AccountsDialog, InvitationsDialog } from '../components/organisms/dialogs';
-import { SpendingHistoryChart } from '../components/organisms/charts';
 import { useAccounts } from '../hooks/useAccounts';
 import { useTotalDailyLimit } from '../hooks/useDailyLimit';
-import { useUpcomingFixedExpenses, useMarkAsPaid } from '../hooks/useTransactions';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
   Shield,
@@ -39,7 +34,6 @@ import {
   Eye,
   CreditCard,
   DollarSign,
-  Gift,
   Users,
   Send,
   Download,
@@ -49,8 +43,6 @@ import {
   X
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
-import { confirm } from '../components/ui/ConfirmDialog';
-import { toast } from '../lib/toast';
 
 export function Dashboard() {
   const { user, signOut } = useAuth();
@@ -65,31 +57,10 @@ export function Dashboard() {
 
   const accountIds = accounts?.map((acc) => acc.id) || [];
   const { data: dailyLimit, isLoading: loadingDailyLimit } = useTotalDailyLimit(accountIds);
-  const { data: upcomingExpenses, isLoading: loadingUpcomingExpenses } = useUpcomingFixedExpenses();
-  const markAsPaid = useMarkAsPaid();
 
   function handleSignOut() {
     signOut();
     navigate('/login');
-  }
-
-  async function handleMarkAsPaid(id: string, description: string) {
-    const confirmed = await confirm({
-      title: 'Marcar como Paga',
-      description: `Deseja marcar "${description}" como paga?`,
-      confirmLabel: 'Confirmar',
-      cancelLabel: 'Cancelar',
-      colorPalette: 'green',
-    });
-
-    if (confirmed) {
-      try {
-        await markAsPaid.mutateAsync(id);
-        toast.success('Despesa marcada como paga!');
-      } catch (error: any) {
-        toast.error('Erro ao marcar como paga', error.response?.data?.error);
-      }
-    }
   }
 
   const totals = accounts?.reduce(
@@ -381,43 +352,6 @@ export function Dashboard() {
           >
             {/* Left Column - Cards */}
             <VStack gap={4} align="stretch">
-              {/* Card Cartão de Crédito */}
-              <Box
-                bg="var(--card)"
-                borderRadius="xl"
-                p={6}
-                shadow="md"
-              >
-                <HStack mb={4}>
-                  <CreditCard size={20} color="var(--card-foreground)" />
-                  <Text color="var(--card-foreground)" fontWeight="medium">
-                    Cartão de Crédito
-                  </Text>
-                </HStack>
-
-                <Box mb={4}>
-                  <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
-                    Fatura atual
-                  </Text>
-                  <Text fontSize="3xl" fontWeight="bold" color="var(--accent)">
-                    {loadingAccounts ? 'Carregando...' : formatCurrency(totals.lockedBalance)}
-                  </Text>
-                  <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
-                    Limite disponível: <Text as="span" color="var(--accent)" fontWeight="medium">{formatCurrency(totals.availableBalance)}</Text>
-                  </Text>
-                </Box>
-
-                <Button
-                  size="md"
-                  bg="var(--primary)"
-                  color="var(--primary-foreground)"
-                  _hover={{ opacity: 0.9 }}
-                  onClick={() => navigate('/transactions')}
-                >
-                  VER COMPRAS
-                </Button>
-              </Box>
-
               {/* Card Nuconta */}
               <Box
                 bg="var(--card)"
@@ -453,21 +387,6 @@ export function Dashboard() {
                 >
                   ACESSAR
                 </Button>
-              </Box>
-
-              {/* Card Rewards */}
-              <Box
-                bg="var(--card)"
-                borderRadius="xl"
-                p={6}
-                shadow="md"
-              >
-                <HStack>
-                  <Gift size={20} color="var(--card-foreground)" />
-                  <Text color="var(--card-foreground)" fontWeight="medium">
-                    Rewards
-                  </Text>
-                </HStack>
               </Box>
 
               {/* Daily Limit Alert - Moved below */}
@@ -542,88 +461,6 @@ export function Dashboard() {
               </Box>
             </Flex>
           )}
-
-          {/* Upcoming Expenses */}
-          <Box
-            bg={{ base: 'card', _dark: 'card' }}
-            borderRadius="lg"
-            shadow="md"
-            p={6}
-            borderWidth="1px"
-            borderColor={{ base: 'border', _dark: 'border' }}
-          >
-            <Heading size="md" color={{ base: 'fg', _dark: 'fg' }} mb={4}>
-              Próximas Despesas Fixas
-            </Heading>
-            {loadingUpcomingExpenses ? (
-              <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Carregando...</Text>
-            ) : !upcomingExpenses?.transactions || upcomingExpenses.transactions.length === 0 ? (
-              <Box textAlign="center" py={8}>
-                <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Nenhuma despesa agendada</Text>
-              </Box>
-            ) : (
-              <VStack gap={3} align="stretch">
-                {upcomingExpenses.transactions.map((expense) => {
-                  const dueDate = new Date(expense.due_date);
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  dueDate.setHours(0, 0, 0, 0);
-                  const isOverdue = dueDate < today;
-
-                  return (
-                    <Flex
-                      key={expense.id}
-                      align="center"
-                      justify="space-between"
-                      p={4}
-                      borderWidth="1px"
-                      borderColor={{ base: 'border', _dark: 'border' }}
-                      borderRadius="lg"
-                      bg={{ base: 'transparent', _dark: 'transparent' }}
-                      _hover={{ bg: { base: 'accent/10', _dark: 'accent/10' } }}
-                      transition="all 0.2s"
-                    >
-                      <Box flex="1">
-                        <Text fontWeight="medium" color={{ base: 'fg', _dark: 'fg' }}>
-                          {expense.description}
-                        </Text>
-                        {expense.category && (
-                          <Text fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }} mt={1}>
-                            {expense.category.name}
-                          </Text>
-                        )}
-                      </Box>
-                      <VStack align="flex-end" ml={4} gap={1}>
-                        <Text fontWeight="bold" color={{ base: 'red.600', _dark: 'red.400' }}>
-                          {formatCurrency(expense.amount)}
-                        </Text>
-                        <Text
-                          fontSize="sm"
-                          color={isOverdue ? { base: 'red.600', _dark: 'red.400' } : { base: 'muted.fg', _dark: 'muted.fg' }}
-                          fontWeight={isOverdue ? 'semibold' : 'normal'}
-                        >
-                          {isOverdue ? 'Vencida: ' : 'Vencimento: '}
-                          {new Date(expense.due_date).toLocaleDateString('pt-BR', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
-                        </Text>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          colorPalette="green"
-                          onClick={() => handleMarkAsPaid(expense.id, expense.description)}
-                        >
-                          Marcar como Paga
-                        </Button>
-                      </VStack>
-                    </Flex>
-                  );
-                })}
-              </VStack>
-            )}
-          </Box>
 
             </VStack>
 
@@ -713,12 +550,6 @@ export function Dashboard() {
                 </VStack>
               </Box>
 
-              {/* Rewards Info */}
-              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
-                <Text fontSize="sm" color="var(--card-foreground)">
-                  R$ 1,00 = 1 Ponto
-                </Text>
-              </Box>
             </VStack>
           </Grid>
 
