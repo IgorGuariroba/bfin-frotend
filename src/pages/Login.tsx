@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { MdClose } from 'react-icons/md';
 import { useAuth } from '../contexts/AuthContext';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -61,6 +62,11 @@ export function Login() {
       bg="var(--background)"
       position="relative"
     >
+      {/* Theme Toggle - Fixed top-right */}
+      <Box position="absolute" top={4} right={4} zIndex={10}>
+        <ThemeToggle variant="icon" size="md" />
+      </Box>
+
       <Container maxW="md" py={{ base: "8", md: "16" }} px={{ base: "4", sm: "8" }}>
         <VStack gap="0" w="full">
           {/* Card Superior - Informações da Conta e Logo */}
