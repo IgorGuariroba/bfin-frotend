@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import api from '../services/api';
+import {
+  getAuthentication,
+  type User as SdkUser,
+} from '@igorguariroba/bfin-sdk';
+import { updateSdkToken } from '../config/sdk';
 
-interface User {
-  id: string;
-  email: string;
-  full_name: string;
-}
+const authApi = getAuthentication();
+
+type User = SdkUser;
 
 interface AuthContextData {
   user: User | null;
@@ -35,8 +37,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (token && storedUser) {
         try {
           // Validar token buscando dados do usuário
-          const { data } = await api.get('/auth/me');
-          setUser(data);
+          const userData = await authApi.getApiV1AuthMe();
+          setUser(userData);
         } catch (error) {
           // Token inválido, limpar localStorage
           localStorage.removeItem('@bfin:token');
@@ -53,19 +55,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn(email: string, password: string) {
     try {
-      const { data } = await api.post('/auth/login', {
+      const response = await authApi.postApiV1AuthLogin({
         email,
         password,
       });
 
-      const { user, tokens } = data;
+      if (!response.user || !response.tokens?.access_token || !response.tokens?.refresh_token) {
+        throw new Error('Resposta inválida do servidor');
+      }
 
       // Salvar no localStorage
-      localStorage.setItem('@bfin:token', tokens.access_token);
-      localStorage.setItem('@bfin:refreshToken', tokens.refresh_token);
-      localStorage.setItem('@bfin:user', JSON.stringify(user));
+      localStorage.setItem('@bfin:token', response.tokens.access_token);
+      localStorage.setItem('@bfin:refreshToken', response.tokens.refresh_token);
+      localStorage.setItem('@bfin:user', JSON.stringify(response.user));
 
-      setUser(user);
+      // Atualizar token no SDK
+      updateSdkToken(response.tokens.access_token);
+
+      setUser(response.user);
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Erro ao fazer login');
     }
@@ -73,20 +80,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signUp(email: string, password: string, full_name: string) {
     try {
-      const { data } = await api.post('/auth/register', {
+      const response = await authApi.postApiV1AuthRegister({
         email,
         password,
         full_name,
       });
 
-      const { user, tokens } = data;
+      if (!response.user || !response.tokens?.access_token || !response.tokens?.refresh_token) {
+        throw new Error('Resposta inválida do servidor');
+      }
 
       // Salvar no localStorage
-      localStorage.setItem('@bfin:token', tokens.access_token);
-      localStorage.setItem('@bfin:refreshToken', tokens.refresh_token);
-      localStorage.setItem('@bfin:user', JSON.stringify(user));
+      localStorage.setItem('@bfin:token', response.tokens.access_token);
+      localStorage.setItem('@bfin:refreshToken', response.tokens.refresh_token);
+      localStorage.setItem('@bfin:user', JSON.stringify(response.user));
 
-      setUser(user);
+      // Atualizar token no SDK
+      updateSdkToken(response.tokens.access_token);
+
+      setUser(response.user);
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Erro ao criar conta');
     }

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import api from '../services/api';
+import { customInstance } from '@igorguariroba/bfin-sdk';
 
 interface DailyLimitResponse {
   accountId: string;
@@ -51,10 +51,10 @@ export function useDailyLimit(accountId?: string) {
         throw new Error('Account ID is required');
       }
 
-      const response = await api.get<DailyLimitResponse>(
-        `/suggestions/daily-limit?account_id=${accountId}`
-      );
-      return response.data;
+      return customInstance<DailyLimitResponse>({
+        url: `/api/v1/suggestions/daily-limit?account_id=${accountId}`,
+        method: 'GET',
+      });
     },
     enabled: !!accountId, // Só executa se accountId existir
     staleTime: 1000 * 60 * 5, // 5 minutos
@@ -73,10 +73,10 @@ export function useDailyLimitStatus(accountId?: string) {
         throw new Error('Account ID is required');
       }
 
-      const response = await api.get<DailyLimitStatusResponse>(
-        `/suggestions/status?account_id=${accountId}`
-      );
-      return response.data;
+      return customInstance<DailyLimitStatusResponse>({
+        url: `/api/v1/suggestions/status?account_id=${accountId}`,
+        method: 'GET',
+      });
     },
     enabled: !!accountId,
     staleTime: 1000 * 60, // 1 minuto
@@ -108,16 +108,18 @@ export function useTotalDailyLimit(accountIds: string[]) {
       }
 
       // Buscar limite de cada conta
-      const promises = accountIds.map((accountId) =>
-        api.get<DailyLimitResponse>(`/suggestions/daily-limit?account_id=${accountId}`)
+      const responses = await Promise.all(
+        accountIds.map((accountId) =>
+          customInstance<DailyLimitResponse>({
+            url: `/api/v1/suggestions/daily-limit?account_id=${accountId}`,
+            method: 'GET',
+          })
+        )
       );
-
-      const responses = await Promise.all(promises);
 
       // Somar todos os limites
       const totals = responses.reduce(
-        (acc, response) => {
-          const data = response.data;
+        (acc, data) => {
           return {
             totalDailyLimit: acc.totalDailyLimit + data.dailyLimit,
             totalSpentToday: acc.totalSpentToday + data.spentToday,
@@ -165,19 +167,20 @@ export function useSpendingHistory(accountIds: string[], days: number = 7) {
       }
 
       // Buscar histórico de cada conta
-      const promises = accountIds.map((accountId) =>
-        api.get<SpendingHistoryResponse>(
-          `/suggestions/spending-history?account_id=${accountId}&days=${days}`
+      const responses = await Promise.all(
+        accountIds.map((accountId) =>
+          customInstance<SpendingHistoryResponse>({
+            url: `/api/v1/suggestions/spending-history?account_id=${accountId}&days=${days}`,
+            method: 'GET',
+          })
         )
       );
-
-      const responses = await Promise.all(promises);
 
       // Agregar dados por data
       const dataByDate = new Map<string, { spent: number; dailyLimit: number }>();
 
-      responses.forEach((response) => {
-        response.data.history.forEach((item) => {
+      responses.forEach((data) => {
+        data.history.forEach((item) => {
           const existing = dataByDate.get(item.date);
           if (existing) {
             existing.spent += item.spent;

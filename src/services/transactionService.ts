@@ -1,4 +1,4 @@
-import api from './api';
+import { customInstance } from '@igorguariroba/bfin-sdk';
 import type {
   CreateIncomeDTO,
   CreateFixedExpenseDTO,
@@ -14,40 +14,54 @@ export const transactionService = {
    * Create income transaction
    */
   async createIncome(data: CreateIncomeDTO): Promise<CreateTransactionResponse> {
-    const response = await api.post('/transactions/income', data);
-    return response.data;
+    return customInstance({
+      url: '/api/v1/transactions/income',
+      method: 'POST',
+      data,
+    });
   },
 
   /**
    * Create fixed expense transaction
    */
   async createFixedExpense(data: CreateFixedExpenseDTO): Promise<CreateTransactionResponse> {
-    const response = await api.post('/transactions/fixed-expense', data);
-    return response.data;
+    return customInstance({
+      url: '/api/v1/transactions/fixed-expense',
+      method: 'POST',
+      data,
+    });
   },
 
   /**
    * Create variable expense transaction
    */
   async createVariableExpense(data: CreateVariableExpenseDTO): Promise<CreateTransactionResponse> {
-    const response = await api.post('/transactions/variable-expense', data);
-    return response.data;
+    return customInstance({
+      url: '/api/v1/transactions/variable-expense',
+      method: 'POST',
+      data,
+    });
   },
 
   /**
    * List transactions with filters
    */
   async list(params?: ListTransactionsParams): Promise<TransactionListResponse> {
-    const response = await api.get('/transactions', { params });
-    return response.data;
+    return customInstance({
+      url: '/api/v1/transactions',
+      method: 'GET',
+      params,
+    });
   },
 
   /**
    * Get transaction by ID
    */
   async getById(id: string): Promise<Transaction> {
-    const response = await api.get(`/transactions/${id}`);
-    return response.data;
+    return customInstance({
+      url: `/api/v1/transactions/${id}`,
+      method: 'GET',
+    });
   },
 
   /**
@@ -62,31 +76,40 @@ export const transactionService = {
       dueDate?: string;
     }
   ): Promise<{ transaction: Transaction; message: string }> {
-    const response = await api.put(`/transactions/${id}`, data);
-    return response.data;
+    return customInstance({
+      url: `/api/v1/transactions/${id}`,
+      method: 'PUT',
+      data,
+    });
   },
 
   /**
    * Mark fixed expense as paid
    */
   async markAsPaid(id: string): Promise<{ transaction: Transaction; message: string }> {
-    const response = await api.post(`/transactions/${id}/mark-as-paid`);
-    return response.data;
+    return customInstance({
+      url: `/api/v1/transactions/${id}/mark-as-paid`,
+      method: 'POST',
+    });
   },
 
   /**
    * Duplicate transaction
    */
   async duplicate(id: string): Promise<any> {
-    const response = await api.post(`/transactions/${id}/duplicate`);
-    return response.data;
+    return customInstance({
+      url: `/api/v1/transactions/${id}/duplicate`,
+      method: 'POST',
+    });
   },
 
   /**
    * Delete transaction
    */
   async delete(id: string): Promise<{ message: string }> {
-    const response = await api.delete(`/transactions/${id}`);
-    return response.data;
+    return customInstance({
+      url: `/api/v1/transactions/${id}`,
+      method: 'DELETE',
+    });
   },
 };
