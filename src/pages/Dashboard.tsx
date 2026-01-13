@@ -48,8 +48,6 @@ import {
   Smartphone,
   Sliders,
   BarChart3,
-  Minus,
-  Square,
   X
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -142,28 +140,6 @@ export function Dashboard() {
 
         <HStack gap={2}>
           <ThemeToggle variant="icon" size="md" />
-          <IconButton
-            aria-label="Minimizar"
-            size="sm"
-            variant="ghost"
-            color="var(--primary-foreground)"
-            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-            border="none"
-            _focus={{ boxShadow: 'none' }}
-          >
-            <Minus size={16} />
-          </IconButton>
-          <IconButton
-            aria-label="Maximizar"
-            size="sm"
-            variant="ghost"
-            color="var(--primary-foreground)"
-            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-            border="none"
-            _focus={{ boxShadow: 'none' }}
-          >
-            <Square size={16} />
-          </IconButton>
           <IconButton
             aria-label="Fechar"
             size="sm"
