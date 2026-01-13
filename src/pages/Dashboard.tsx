@@ -141,6 +141,7 @@ export function Dashboard() {
         </HStack>
 
         <HStack gap={2}>
+          <ThemeToggle variant="icon" size="md" />
           <IconButton
             aria-label="Minimizar"
             size="sm"
