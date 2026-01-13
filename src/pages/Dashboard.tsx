@@ -543,46 +543,6 @@ export function Dashboard() {
             </Flex>
           )}
 
-
-          {/* Available Balance Card */}
-          <Box
-            bg={{ base: 'card', _dark: 'card' }}
-            borderRadius="lg"
-            shadow="md"
-            p={6}
-            borderWidth="1px"
-            borderColor={{ base: 'border', _dark: 'border' }}
-          >
-            <Flex justify="space-between" align="center" mb={2}>
-              <Text fontSize="sm" fontWeight="medium" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
-                Saldo Disponível
-              </Text>
-              <IconButton
-                aria-label="Ver Reserva de Emergência"
-                onClick={() => setEmergencyReserveDialogOpen(true)}
-                size="sm"
-                variant="ghost"
-                colorPalette="blue"
-              >
-                <Shield size={20} />
-              </IconButton>
-            </Flex>
-            <Box
-              as="button"
-              onClick={() => navigate('/transactions')}
-              cursor="pointer"
-              textAlign="left"
-              w="full"
-            >
-              <Text fontSize="4xl" fontWeight="bold" color={{ base: 'green.600', _dark: 'green.400' }} mt={2}>
-                {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
-              </Text>
-              <Text fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }} mt={1}>
-                Para gastos · Clique para ver todas as transações
-              </Text>
-            </Box>
-          </Box>
-
           {/* Upcoming Expenses */}
           <Box
             bg={{ base: 'card', _dark: 'card' }}
