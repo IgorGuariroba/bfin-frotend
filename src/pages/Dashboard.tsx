@@ -844,152 +844,152 @@ export function Dashboard() {
             zIndex={15}
           >
             <Flex justify="space-between" align="center" gap={2}>
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                  onClick={() => navigate('/add-variable-expense')}
-                >
-                  <BarChart3 size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                onClick={() => navigate('/add-variable-expense')}
+                gap={1}
+              >
+                <BarChart3 size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Pagar</Text>
-              </VStack>
+              </Box>
 
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                >
-                  <Users size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                gap={1}
+              >
+                <Users size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Indicar amigos</Text>
-              </VStack>
+              </Box>
 
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                >
-                  <Send size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                gap={1}
+              >
+                <Send size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Transferir</Text>
-              </VStack>
+              </Box>
 
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                  onClick={() => navigate('/add-income')}
-                >
-                  <Download size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                onClick={() => navigate('/add-income')}
+                gap={1}
+              >
+                <Download size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Depositar</Text>
-              </VStack>
+              </Box>
 
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                >
-                  <DollarSign size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                gap={1}
+              >
+                <DollarSign size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Empréstimos</Text>
-              </VStack>
+              </Box>
 
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                >
-                  <CreditCard size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                gap={1}
+              >
+                <CreditCard size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Cartão virtual</Text>
-              </VStack>
+              </Box>
 
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                >
-                  <Smartphone size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                gap={1}
+              >
+                <Smartphone size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Recarga de celular</Text>
-              </VStack>
+              </Box>
 
-              <VStack gap={2} flex="1">
-                <Box
-                  w="full"
-                  h="60px"
-                  borderRadius="xl"
-                  bg="rgba(255,255,255,0.15)"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  cursor="pointer"
-                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
-                  transition="all 0.2s"
-                  onClick={() => navigate('/daily-limit')}
-                >
-                  <Sliders size={24} color="var(--primary-foreground)" />
-                </Box>
+              <Box
+                flex="1"
+                h="70px"
+                borderRadius="xl"
+                bg="rgba(255,255,255,0.15)"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                transition="all 0.2s"
+                onClick={() => navigate('/daily-limit')}
+                gap={1}
+              >
+                <Sliders size={22} color="var(--primary-foreground)" />
                 <Text color="var(--primary-foreground)" fontSize="2xs">Ajustar limite</Text>
-              </VStack>
+              </Box>
             </Flex>
           </Box>
         </Flex>
