@@ -841,7 +841,7 @@ export function Dashboard() {
             borderTopColor="rgba(255,255,255,0.1)"
             px={8}
             py={5}
-            zIndex={5}
+            zIndex={15}
           >
             <Flex justify="space-around" align="center" gap={2}>
               <VStack gap={2}>
