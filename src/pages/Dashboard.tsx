@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { Button } from '../components/atoms/Button';
 import { CreateAccountForm } from '../components/organisms/forms';
-import { AccountsDialog, InvitationsDialog } from '../components/organisms/dialogs';
+import { AccountsDialog, InvitationsDialog, BfinParceiroDialog } from '../components/organisms/dialogs';
 import { useAccounts } from '../hooks/useAccounts';
 import { useTotalDailyLimit } from '../hooks/useDailyLimit';
 import { useMyInvitations } from '../hooks/useAccountMembers';
@@ -51,6 +51,7 @@ export function Dashboard() {
   const [manageAccountsDialogOpen, setManageAccountsDialogOpen] = useState(false);
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
+  const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: invitations = [] } = useMyInvitations();
@@ -597,9 +598,10 @@ export function Dashboard() {
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
                 gap={1}
+                onClick={() => setBfinParceiroDialogOpen(true)}
               >
                 <Users size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Indicar amigos</Text>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Bfin Parceiro</Text>
               </Box>
 
               <Box
@@ -801,6 +803,11 @@ export function Dashboard() {
       <InvitationsDialog
         isOpen={invitationsDialogOpen}
         onClose={() => setInvitationsDialogOpen(false)}
+      />
+
+      <BfinParceiroDialog
+        isOpen={bfinParceiroDialogOpen}
+        onClose={() => setBfinParceiroDialogOpen(false)}
       />
     </Flex>
   );
