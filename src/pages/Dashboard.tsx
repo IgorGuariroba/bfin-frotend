@@ -194,6 +194,8 @@ export function Dashboard() {
                 color="var(--primary-foreground)"
                 _hover={{ bg: 'rgba(255,255,255,0.1)' }}
                 size="lg"
+                border="none"
+                _focus={{ boxShadow: 'none' }}
               >
                 <Home size={24} />
               </IconButton>
@@ -212,6 +214,8 @@ export function Dashboard() {
                 _hover={{ bg: 'rgba(255,255,255,0.1)' }}
                 size="lg"
                 onClick={() => setSidebarExpanded(!sidebarExpanded)}
+                border="none"
+                _focus={{ boxShadow: 'none' }}
               >
                 <Settings size={24} />
               </IconButton>
@@ -229,6 +233,8 @@ export function Dashboard() {
                 color="var(--primary-foreground)"
                 _hover={{ bg: 'rgba(255,255,255,0.1)' }}
                 size="lg"
+                border="none"
+                _focus={{ boxShadow: 'none' }}
               >
                 <Eye size={24} />
               </IconButton>
