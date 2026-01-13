@@ -40,7 +40,8 @@ import {
   Smartphone,
   Sliders,
   BarChart3,
-  X
+  X,
+  ArrowLeft
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { toast } from '../lib/toast';
@@ -153,6 +154,8 @@ export function Dashboard() {
       }
     };
 
+    const hasGreenHeader = expandedForm === 'pagar';
+
     return (
       <Box
         position="absolute"
@@ -160,7 +163,7 @@ export function Dashboard() {
         left={0}
         right={0}
         bottom={0}
-        bg="var(--background)"
+        bg={hasGreenHeader ? 'var(--primary)' : 'var(--background)'}
         zIndex={10}
         overflow="auto"
         css={{
@@ -193,28 +196,52 @@ export function Dashboard() {
           },
         }}
       >
-        <Box p={8} maxW="2xl" mx="auto" pb="140px">
-          <Flex align="center" gap={4} mb={6}>
-            <IconButton
-              aria-label="Fechar"
-              variant="ghost"
-              onClick={() => setExpandedForm(null)}
-              size="sm"
-              color="var(--card-foreground)"
+        {hasGreenHeader ? (
+          <VStack gap={0} align="stretch" minH="100vh">
+            {/* Green Header */}
+            <Box bg="var(--primary)" px={6} py={6} pb={8}>
+              <Flex align="center" gap={4} mb={6}>
+                <IconButton
+                  aria-label="Voltar"
+                  variant="ghost"
+                  onClick={() => setExpandedForm(null)}
+                  size="sm"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                >
+                  <ArrowLeft size={20} />
+                </IconButton>
+                <Heading size="lg" color="var(--primary-foreground)" flex="1">
+                  {getTitle()}
+                </Heading>
+              </Flex>
+              {getContent()}
+            </Box>
+          </VStack>
+        ) : (
+          <Box p={8} maxW="2xl" mx="auto" pb="140px">
+            <Flex align="center" gap={4} mb={6}>
+              <IconButton
+                aria-label="Fechar"
+                variant="ghost"
+                onClick={() => setExpandedForm(null)}
+                size="sm"
+                color="var(--card-foreground)"
+              >
+                <X size={20} />
+              </IconButton>
+              <Heading size="lg" color="var(--card-foreground)">{getTitle()}</Heading>
+            </Flex>
+            <Box
+              bg="var(--card)"
+              borderRadius="xl"
+              p={6}
+              shadow="md"
             >
-              <X size={20} />
-            </IconButton>
-            <Heading size="lg" color="var(--card-foreground)">{getTitle()}</Heading>
-          </Flex>
-          <Box
-            bg="var(--card)"
-            borderRadius="xl"
-            p={6}
-            shadow="md"
-          >
-            {getContent()}
+              {getContent()}
+            </Box>
           </Box>
-        </Box>
+        )}
       </Box>
     );
   };
