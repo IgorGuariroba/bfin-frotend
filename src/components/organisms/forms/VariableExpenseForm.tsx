@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, VStack, Center, Text, Box, Flex, Input, NativeSelect, Field } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Center, Text, Box, Flex, Input, NativeSelect, Field, Menu } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useCreateVariableExpense } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useCategories } from '../../../hooks/useCategories';
 import type { CreateVariableExpenseDTO } from '../../../types/transaction';
-import { Pencil, Tag, Zap, Check } from 'lucide-react';
+import { Pencil, Tag, Zap, Check, ChevronDown } from 'lucide-react';
 
 const variableExpenseSchema = z.object({
   accountId: z.string().min(1, 'Conta é obrigatória'),
@@ -38,12 +38,26 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
   } = useForm<VariableExpenseFormData>({
     resolver: zodResolver(variableExpenseSchema),
     defaultValues: {
+      accountId: '',
       amount: 0,
     },
   });
 
   const amount = watch('amount') || 0;
+  const selectedAccountId = watch('accountId');
   const [isEditingAmount, setIsEditingAmount] = useState(false);
+
+  const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
+
+  // Define a conta padrão quando as contas forem carregadas
+  useEffect(() => {
+    if (accounts && accounts.length > 0 && !selectedAccountId) {
+      const defaultAccount = accounts.find((acc) => acc.is_default) || accounts[0];
+      if (defaultAccount?.id) {
+        setValue('accountId', defaultAccount.id, { shouldValidate: true });
+      }
+    }
+  }, [accounts, selectedAccountId, setValue]);
 
   const onSubmit = async (data: VariableExpenseFormData) => {
     try {
@@ -140,31 +154,107 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
             </Text>
           )}
 
-          {/* Dropdown de Conta com borda branca */}
+          {/* Dropdown de Conta Customizado */}
           <Field.Root invalid={!!errors.accountId}>
-            <NativeSelect.Root>
-              <NativeSelect.Field
-                {...register('accountId')}
-                placeholder="Selecione uma conta"
-                borderWidth="2px"
-                borderColor="var(--primary-foreground)"
-                bg="transparent"
-                color="var(--primary-foreground)"
-                _placeholder={{ color: 'var(--primary-foreground)', opacity: 0.7 }}
-                fontSize="md"
-                py={3}
-                borderRadius="lg"
-              >
-                {accounts?.map((account) => (
-                  <option key={account.id} value={account.id} style={{ color: '#000' }}>
-                    {account.account_name}
-                  </option>
-                ))}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator color="var(--primary-foreground)" />
-            </NativeSelect.Root>
+            <input
+              type="hidden"
+              {...register('accountId')}
+            />
+            <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
+              <Menu.Trigger asChild>
+                <Box
+                  as="button"
+                  type="button"
+                  w="full"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  px={4}
+                  py={3}
+                  fontSize="md"
+                  fontWeight="medium"
+                  color="white"
+                  bg="var(--primary)"
+                  borderWidth="1px"
+                  borderColor="white"
+                  borderRadius="full"
+                  transition="all 0.2s"
+                  css={{
+                    '&:hover': {
+                      backgroundColor: 'var(--primary-600)',
+                    },
+                    '&:focus': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                  }}
+                >
+                  <Text color="white">
+                    {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
+                  </Text>
+                  <ChevronDown size={20} color="white" />
+                </Box>
+              </Menu.Trigger>
+              <Menu.Positioner>
+                <Menu.Content
+                  maxH="300px"
+                  overflowY="auto"
+                  bg="var(--primary)"
+                  borderRadius="lg"
+                  boxShadow="lg"
+                  borderWidth="1px"
+                  borderColor="white"
+                  p={0}
+                  css={{
+                    zIndex: 'var(--z-dropdown)',
+                  }}
+                >
+                {/* Cabeçalho do Menu */}
+                <Box
+                  px={3}
+                  py={2}
+                  bg="var(--primary)"
+                  borderTopRadius="lg"
+                  borderBottomWidth="1px"
+                  borderBottomColor="white"
+                >
+                  <HStack gap={2}>
+                    <Check size={16} color="var(--primary-foreground)" />
+                    <Text fontSize="sm" fontWeight="bold" color="var(--primary-foreground)">
+                      Selecione uma conta
+                    </Text>
+                  </HStack>
+                </Box>
+
+                {/* Lista de Contas */}
+                <Box py={1}>
+                  {accounts?.map((account) => (
+                    <Menu.Item
+                      key={account.id}
+                      value={account.id}
+                      onClick={() => setValue('accountId', account.id, { shouldValidate: true })}
+                      css={{
+                        backgroundColor: selectedAccountId === account.id ? 'var(--primary-600)' : 'transparent',
+                        '&:hover': {
+                          backgroundColor: 'var(--primary-600)',
+                        },
+                      }}
+                      px={3}
+                      py={2}
+                    >
+                      <Text fontSize="sm" color="var(--primary-foreground)">
+                        {account.account_name}
+                      </Text>
+                    </Menu.Item>
+                  ))}
+                </Box>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Menu.Root>
             {errors.accountId && (
-              <Field.ErrorText color="var(--primary-foreground)">{errors.accountId.message}</Field.ErrorText>
+              <Field.ErrorText color="var(--primary-foreground)" mt={2} fontSize="sm">
+                {errors.accountId.message}
+              </Field.ErrorText>
             )}
           </Field.Root>
         </Box>
@@ -192,7 +282,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                   placeholder="Ex: Supermercado, Uber..."
                   pl={10}
                   borderColor="var(--border)"
-                  borderRadius="lg"
+                  borderRadius="full"
                   _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
                 />
               </Box>
@@ -216,7 +306,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                     placeholder="Selecione uma categoria"
                     pl={10}
                     borderColor="var(--border)"
-                    borderRadius="lg"
+                    borderRadius="full"
                     _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
                   >
                     {categories?.map((category) => (
@@ -311,6 +401,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
               size="lg"
               bg="var(--primary)"
               color="var(--primary-foreground)"
+              borderRadius="full"
               _hover={{ opacity: 0.9 }}
               mt={4}
             >
