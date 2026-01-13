@@ -358,8 +358,8 @@ export function Dashboard() {
                 shadow="md"
               >
                 <HStack mb={4}>
-                  <DollarSign size={20} color="var(--card-foreground)" />
-                  <Text color="var(--card-foreground)" fontWeight="medium">
+                  <DollarSign size={20} color="var(--muted-foreground)" />
+                  <Text color="var(--muted-foreground)" fontWeight="medium">
                     Bfinconta
                   </Text>
                 </HStack>
@@ -368,11 +368,11 @@ export function Dashboard() {
                   <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
                     Saldo disponível
                   </Text>
-                  <Text fontSize="3xl" fontWeight="bold" color="var(--card-foreground)">
+                  <Text fontSize="3xl" fontWeight="bold" color="var(--muted-foreground)">
                     {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
                   </Text>
                   <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
-                    Valor investido: <Text as="span" color="var(--card-foreground)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
+                    Valor investido: <Text as="span" color="var(--muted-foreground)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
                   </Text>
                 </Box>
 
@@ -471,7 +471,7 @@ export function Dashboard() {
                   <Box>
                     <HStack justify="space-between" mb={2}>
                       <Text fontSize="sm" color="var(--muted-foreground)">disponível</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
                         {formatCurrency(totals.availableBalance)}
                       </Text>
                     </HStack>
@@ -485,7 +485,7 @@ export function Dashboard() {
                   <Box>
                     <HStack justify="space-between" mb={2}>
                       <Text fontSize="sm" color="var(--muted-foreground)">atual</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
                         {formatCurrency(totals.lockedBalance)}
                       </Text>
                     </HStack>
@@ -499,7 +499,7 @@ export function Dashboard() {
                   <Box>
                     <HStack justify="space-between" mb={2}>
                       <Text fontSize="sm" color="var(--muted-foreground)">próximas</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
                         {formatCurrency(totals.emergencyReserve)}
                       </Text>
                     </HStack>
@@ -523,14 +523,14 @@ export function Dashboard() {
                 <VStack gap={4} align="stretch">
                   <HStack justify="space-between">
                     <Text fontSize="sm" color="var(--muted-foreground)">saldo disponível</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--card-foreground)">
+                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
                       {formatCurrency(totals.availableBalance)}
                     </Text>
                   </HStack>
 
                   <HStack justify="space-between">
                     <Text fontSize="sm" color="var(--muted-foreground)">total investido</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--card-foreground)">
+                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
                       {formatCurrency(totals.emergencyReserve)}
                     </Text>
                   </HStack>
