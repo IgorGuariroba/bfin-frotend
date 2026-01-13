@@ -23,7 +23,6 @@ import { CreateAccountForm } from '../components/organisms/forms';
 import { AccountsDialog, InvitationsDialog, BfinParceiroDialog } from '../components/organisms/dialogs';
 import { VariableExpenseForm, IncomeForm, FixedExpenseForm } from '../components/organisms/forms';
 import { useAccounts } from '../hooks/useAccounts';
-import { useTotalDailyLimit } from '../hooks/useDailyLimit';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
   Shield,
@@ -60,7 +59,6 @@ export function Dashboard() {
   const { data: invitations = [] } = useMyInvitations();
 
   const accountIds = accounts?.map((acc) => acc.id) || [];
-  const { data: dailyLimit, isLoading: loadingDailyLimit } = useTotalDailyLimit(accountIds);
 
   function handleSignOut() {
     signOut();
@@ -548,79 +546,6 @@ export function Dashboard() {
                 </Button>
               </Box>
 
-              {/* Daily Limit Alert - Moved below */}
-          {!loadingDailyLimit && !loadingAccounts && dailyLimit && dailyLimit.totalDailyLimit > 0 && (
-            <Flex justify="flex-end">
-              <Box
-                as="button"
-                onClick={() => navigate('/daily-limit')}
-                w={{ base: 'full', md: '40%' }}
-                cursor="pointer"
-                transition="all 0.2s"
-                _hover={{ transform: 'translateY(-2px)', shadow: 'lg' }}
-              >
-                <Alert.Root
-                  status={
-                    dailyLimit.exceeded
-                      ? 'error'
-                      : dailyLimit.percentageUsed > 80
-                      ? 'warning'
-                      : 'success'
-                  }
-                  variant="outline"
-                  borderRadius="lg"
-                >
-                  <Alert.Indicator />
-                  <Alert.Title>
-                    <VStack gap={2} align="stretch" w="full">
-                      <Flex justify="space-between" align="center">
-                        <Text fontSize="sm" fontWeight="semibold">
-                          Limite Diário Sugerido
-                        </Text>
-                        <Text fontSize="xs" opacity={0.8}>
-                          ▶ Ver detalhes
-                        </Text>
-                      </Flex>
-                      <Flex justify="space-between" fontSize="xs" opacity={0.9}>
-                        <Text>Gasto hoje</Text>
-                        <Text fontWeight="medium">
-                          {formatCurrency(dailyLimit.totalSpentToday)} / {formatCurrency(dailyLimit.totalDailyLimit)}
-                        </Text>
-                      </Flex>
-                      <Progress.Root
-                        value={Math.min(100, dailyLimit.percentageUsed)}
-                        colorPalette={
-                          dailyLimit.exceeded
-                            ? 'red'
-                            : dailyLimit.percentageUsed > 80
-                            ? 'yellow'
-                            : 'green'
-                        }
-                        size="sm"
-                        shape="full"
-                      >
-                        <Progress.Track>
-                          <Progress.Range />
-                        </Progress.Track>
-                      </Progress.Root>
-                      <Text fontSize="xs">
-                        {dailyLimit.exceeded ? (
-                          <Text as="span" fontWeight="medium">
-                            Excedido em {formatCurrency(dailyLimit.totalSpentToday - dailyLimit.totalDailyLimit)}
-                          </Text>
-                        ) : (
-                          <Text as="span">
-                            Restam {formatCurrency(dailyLimit.totalRemaining)} hoje
-                          </Text>
-                        )}
-                      </Text>
-                    </VStack>
-                  </Alert.Title>
-                </Alert.Root>
-              </Box>
-            </Flex>
-          )}
-
             </VStack>
 
             {/* Right Column - Info & Charts */}
@@ -872,7 +797,7 @@ export function Dashboard() {
                 cursor="pointer"
                 _hover={{ bg: 'rgba(255,255,255,0.25)' }}
                 transition="all 0.2s"
-                onClick={() => navigate('/daily-limit')}
+                onClick={() => setExpandedForm(expandedForm === 'ajustar-limite' ? null : 'ajustar-limite')}
                 gap={1}
               >
                 <Sliders size={22} color="var(--primary-foreground)" />
