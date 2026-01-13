@@ -840,13 +840,14 @@ export function Dashboard() {
             borderTopWidth="1px"
             borderTopColor="rgba(255,255,255,0.1)"
             px={8}
-            py={5}
+            py={2}
             zIndex={15}
+            h="90px"
           >
-            <Flex justify="space-between" align="center" gap={2}>
+            <Flex justify="space-between" align="stretch" gap={2} h="full">
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
@@ -865,7 +866,7 @@ export function Dashboard() {
 
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
@@ -883,7 +884,7 @@ export function Dashboard() {
 
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
@@ -901,7 +902,7 @@ export function Dashboard() {
 
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
@@ -920,7 +921,7 @@ export function Dashboard() {
 
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
@@ -938,7 +939,7 @@ export function Dashboard() {
 
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
@@ -956,7 +957,7 @@ export function Dashboard() {
 
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
@@ -974,7 +975,7 @@ export function Dashboard() {
 
               <Box
                 flex="1"
-                h="70px"
+                h="full"
                 borderRadius="xl"
                 bg="rgba(255,255,255,0.15)"
                 display="flex"
