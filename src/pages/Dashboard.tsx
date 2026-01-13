@@ -910,6 +910,6 @@ export function Dashboard() {
         isOpen={invitationsDialogOpen}
         onClose={() => setInvitationsDialogOpen(false)}
       />
-    </Box>
+    </Flex>
   );
 }
