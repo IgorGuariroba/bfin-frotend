@@ -63,6 +63,7 @@ export function Dashboard() {
   const [manageAccountsDialogOpen, setManageAccountsDialogOpen] = useState(false);
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: invitations = [] } = useMyInvitations();
 
@@ -172,8 +173,8 @@ export function Dashboard() {
       </Flex>
 
       {/* Main Layout - Sidebar + Content */}
-      <Flex flex="1" overflow="hidden">
-        {/* Sidebar */}
+      <Flex flex="1" overflow="hidden" position="relative">
+        {/* Sidebar Collapsed */}
         <VStack
           w="80px"
           bg="var(--primary)"
@@ -181,6 +182,8 @@ export function Dashboard() {
           gap={6}
           borderRightWidth="1px"
           borderRightColor="rgba(255,255,255,0.1)"
+          position="relative"
+          zIndex={1}
         >
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
@@ -207,13 +210,13 @@ export function Dashboard() {
                 color="var(--primary-foreground)"
                 _hover={{ bg: 'rgba(255,255,255,0.1)' }}
                 size="lg"
-                onClick={() => setManageAccountsDialogOpen(true)}
+                onClick={() => setSidebarExpanded(!sidebarExpanded)}
               >
                 <Settings size={24} />
               </IconButton>
             </Tooltip.Trigger>
             <Tooltip.Positioner>
-              <Tooltip.Content>Configurações</Tooltip.Content>
+              <Tooltip.Content>Ocultar configurações</Tooltip.Content>
             </Tooltip.Positioner>
           </Tooltip.Root>
 
@@ -233,31 +236,152 @@ export function Dashboard() {
               <Tooltip.Content>Visibilidade</Tooltip.Content>
             </Tooltip.Positioner>
           </Tooltip.Root>
+        </VStack>
 
-          <Box flex="1" />
+        {/* Sidebar Expanded */}
+        {sidebarExpanded && (
+          <Box
+            position="absolute"
+            left="80px"
+            top="0"
+            bottom="0"
+            w="320px"
+            bg="var(--primary)"
+            zIndex={10}
+            boxShadow="2xl"
+            overflowY="auto"
+          >
+            <VStack p={6} gap={6} align="stretch">
+              {/* QR Code and Account Info */}
+              <VStack gap={4} align="stretch">
+                <Flex justify="center">
+                  <Box
+                    w="180px"
+                    h="180px"
+                    bg="white"
+                    borderRadius="xl"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text fontSize="xs" color="gray.600">QR Code</Text>
+                  </Box>
+                </Flex>
 
-          <VStack gap={2}>
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <IconButton
-                  aria-label="Pix"
+                <VStack align="flex-start" gap={0} fontSize="xs" color="var(--primary-foreground)" opacity={0.8}>
+                  <Text>Agência: 0001</Text>
+                  <Text>Conta: 1000001-0</Text>
+                  <Text>Banco: 260 - NU Pagamentos S.A.</Text>
+                </VStack>
+              </VStack>
+
+              <Separator borderColor="rgba(255,255,255,0.2)" />
+
+              {/* Menu Options */}
+              <VStack gap={2} align="stretch">
+                <Button
                   variant="ghost"
                   color="var(--primary-foreground)"
+                  justifyContent="space-between"
                   _hover={{ bg: 'rgba(255,255,255,0.1)' }}
                   size="lg"
                 >
-                  <Gift size={24} />
-                </IconButton>
-              </Tooltip.Trigger>
-              <Tooltip.Positioner>
-                <Tooltip.Content>Pix</Tooltip.Content>
-              </Tooltip.Positioner>
-            </Tooltip.Root>
-            <Text color="var(--primary-foreground)" fontSize="xs">
-              Pix
-            </Text>
-          </VStack>
-        </VStack>
+                  <HStack>
+                    <Icon as={Shield} boxSize={5} />
+                    <Text>Me ajuda</Text>
+                  </HStack>
+                  <Text>›</Text>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  justifyContent="space-between"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <HStack>
+                    <Icon as={Users} boxSize={5} />
+                    <Text>Perfil</Text>
+                  </HStack>
+                  <Text>›</Text>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  justifyContent="space-between"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                  onClick={() => setManageAccountsDialogOpen(true)}
+                >
+                  <HStack>
+                    <Icon as={DollarSign} boxSize={5} />
+                    <Text>Configurar conta</Text>
+                  </HStack>
+                  <Text>›</Text>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  justifyContent="space-between"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <HStack>
+                    <Icon as={CreditCard} boxSize={5} />
+                    <Text>Configurar cartão</Text>
+                  </HStack>
+                  <Text>›</Text>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  justifyContent="space-between"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <HStack>
+                    <Icon as={Wallet} boxSize={5} />
+                    <Text>Pedir conta PJ</Text>
+                  </HStack>
+                  <Text>›</Text>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  color="var(--primary-foreground)"
+                  justifyContent="space-between"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  size="lg"
+                >
+                  <HStack>
+                    <Icon as={Mail} boxSize={5} />
+                    <Text>Configurar notificações</Text>
+                  </HStack>
+                  <Text>›</Text>
+                </Button>
+              </VStack>
+
+              <Box flex="1" />
+
+              <Button
+                variant="solid"
+                bg="transparent"
+                color="var(--primary-foreground)"
+                borderWidth="1px"
+                borderColor="rgba(255,255,255,0.3)"
+                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                size="lg"
+                onClick={handleSignOut}
+              >
+                DESCONECTAR
+              </Button>
+            </VStack>
+          </Box>
+        )}
 
         {/* Content Area */}
         <Flex flex="1" direction="column" overflow="auto">
@@ -711,114 +835,154 @@ export function Dashboard() {
             borderTopWidth="1px"
             borderTopColor="rgba(255,255,255,0.1)"
             px={8}
-            py={4}
+            py={5}
           >
-            <Flex justify="space-around" align="center">
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Pagar"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+            <Flex justify="space-around" align="center" gap={2}>
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                   onClick={() => navigate('/add-variable-expense')}
                 >
-                  <BarChart3 size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Pagar</Text>
+                  <BarChart3 size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Pagar</Text>
               </VStack>
 
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Indicar amigos"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                 >
-                  <Users size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Indicar amigos</Text>
+                  <Users size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Indicar amigos</Text>
               </VStack>
 
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Transferir"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                 >
-                  <Send size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Transferir</Text>
+                  <Send size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Transferir</Text>
               </VStack>
 
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Depositar"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                   onClick={() => navigate('/add-income')}
                 >
-                  <Download size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Depositar</Text>
+                  <Download size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Depositar</Text>
               </VStack>
 
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Empréstimos"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                 >
-                  <DollarSign size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Empréstimos</Text>
+                  <DollarSign size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Empréstimos</Text>
               </VStack>
 
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Cartão virtual"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                 >
-                  <CreditCard size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Cartão virtual</Text>
+                  <CreditCard size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Cartão virtual</Text>
               </VStack>
 
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Recarga de celular"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                 >
-                  <Smartphone size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Recarga de celular</Text>
+                  <Smartphone size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Recarga de celular</Text>
               </VStack>
 
-              <VStack gap={1}>
-                <IconButton
-                  aria-label="Ajustar limite"
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-                  size="lg"
+              <VStack gap={2}>
+                <Box
+                  w="50px"
+                  h="50px"
+                  borderRadius="full"
+                  bg="rgba(255,255,255,0.15)"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  cursor="pointer"
+                  _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                  transition="all 0.2s"
                   onClick={() => navigate('/daily-limit')}
                 >
-                  <Sliders size={24} />
-                </IconButton>
-                <Text color="var(--primary-foreground)" fontSize="xs">Ajustar limite</Text>
+                  <Sliders size={24} color="var(--primary-foreground)" />
+                </Box>
+                <Text color="var(--primary-foreground)" fontSize="2xs">Ajustar limite</Text>
               </VStack>
             </Flex>
           </Box>
