@@ -40,6 +40,8 @@ export function ThemeToggle({
             size={size}
             color={{ base: 'gray.700', _dark: 'gray.200' }}
             _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
+            border="none"
+            _focus={{ boxShadow: 'none' }}
           >
             <Icon as={isDark ? Sun : Moon} boxSize={size === 'sm' ? 4 : 5} />
           </IconButton>
