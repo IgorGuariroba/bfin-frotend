@@ -153,6 +153,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                 _placeholder={{ color: 'var(--primary-foreground)', opacity: 0.7 }}
                 fontSize="md"
                 py={3}
+                borderRadius="lg"
               >
                 {accounts?.map((account) => (
                   <option key={account.id} value={account.id} style={{ color: '#000' }}>
@@ -191,6 +192,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                   placeholder="Ex: Supermercado, Uber..."
                   pl={10}
                   borderColor="var(--border)"
+                  borderRadius="lg"
                   _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
                 />
               </Box>
@@ -214,6 +216,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                     placeholder="Selecione uma categoria"
                     pl={10}
                     borderColor="var(--border)"
+                    borderRadius="lg"
                     _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
                   >
                     {categories?.map((category) => (
