@@ -14,7 +14,7 @@ Como a API do Render não permite atualizar Static Sites diretamente, você prec
 3. **Atualize o Build Command:**
    - **Comando atual:** `npm run build:render`
    - **Novo comando:** `node scripts/setup-npmrc.js && npm ci && npm run build`
-   
+
    Ou mantenha `npm run build:render` se preferir (já está configurado corretamente no package.json)
 
 4. **Salve as alterações**
