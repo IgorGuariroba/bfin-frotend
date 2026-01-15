@@ -1,32 +1,54 @@
 # Configuração do Build no Render
 
-## Solução Simples e Direta
+## ⚠️ IMPORTANTE: Configuração Necessária
 
-Para garantir que o `.npmrc` seja criado **antes** do `npm install`, configure o **Build Command** no Render:
+### 1. Variável de Ambiente no Render
 
-### Build Command (Render)
+**OBRIGATÓRIO:** Configure a variável `NPM_TOKEN` no Render:
+
+1. Acesse: https://dashboard.render.com/static/srv-d5kjhjq4d50c739riq7g
+2. Vá em **Environment**
+3. Adicione a variável:
+   - **Key:** `NPM_TOKEN`
+   - **Value:** Seu GitHub Personal Access Token (com permissão `read:packages`)
+   - **Type:** `Secret`
+   - **Scope:** `Build & Runtime` ✅
+
+### 2. Build Command no Render
+
+O Build Command já está configurado como:
 ```
 npm run build:render
 ```
 
 Este comando executa em sequência:
-1. `node scripts/setup-npmrc.js` - Cria o `.npmrc` com o token
-2. `npm install` - Instala as dependências (agora com autenticação)
+1. `node scripts/setup-npmrc.js` - Cria o `.npmrc` com o token do ambiente
+2. `npm ci` - Instala as dependências (com autenticação do .npmrc)
 3. `npm run build` - Faz o build da aplicação
 
-### Variáveis de Ambiente no Render
+### Como Funciona
 
-Certifique-se de que a variável `NPM_TOKEN` está configurada:
-- **Key:** `NPM_TOKEN`
-- **Value:** Seu GitHub Personal Access Token (com permissão `read:packages`)
-- **Type:** `Secret` (Build & Runtime)
+1. O script `setup-npmrc.js` detecta automaticamente o ambiente Render
+2. Lê a variável `NPM_TOKEN` do ambiente
+3. Cria o arquivo `.npmrc` com o token
+4. O `npm ci` usa o `.npmrc` para autenticar com GitHub Packages
+5. O build é executado normalmente
 
-### Alternativa: Build Command Manual
+### Troubleshooting
 
-Se preferir, você também pode usar diretamente:
-```
-node scripts/setup-npmrc.js && npm install && npm run build
-```
+Se o build ainda falhar com erro 401:
+
+1. **Verifique se `NPM_TOKEN` está configurado:**
+   - Vá em Environment no Render
+   - Confirme que `NPM_TOKEN` existe e está marcado como "Build & Runtime"
+
+2. **Verifique o token:**
+   - O token deve ter permissão `read:packages`
+   - Gere um novo token em: https://github.com/settings/tokens
+
+3. **Verifique os logs:**
+   - Procure por `[setup-npmrc]` nos logs do build
+   - Deve aparecer "Token disponível: Sim"
 
 ## Comandos Disponíveis
 
