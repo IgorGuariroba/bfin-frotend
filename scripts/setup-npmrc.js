@@ -24,6 +24,13 @@ const isCI = !!(
   process.env.TRAVIS
 );
 
+// Log for debugging (only in CI/CD)
+if (isCI) {
+  console.log('[setup-npmrc] Ambiente CI/CD detectado');
+  console.log(`[setup-npmrc] Token disponível: ${npmToken ? 'Sim' : 'Não'}`);
+  console.log(`[setup-npmrc] .npmrc existe: ${npmrcExists ? 'Sim' : 'Não'}`);
+}
+
 if (npmToken) {
   // Always use token when available (dev or CI/CD)
   const npmrcContent = `@igorguariroba:registry=https://npm.pkg.github.com
@@ -52,6 +59,7 @@ if (npmrcExists) {
     '❌ Token de autenticação não encontrado (NPM_TOKEN / NODE_AUTH_TOKEN / GITHUB_TOKEN)'
   );
   console.error('❌ Ambiente CI/CD detectado e .npmrc não existe. Build abortado.');
+  console.error('❌ Configure NPM_TOKEN como variável de ambiente no Render.');
   process.exit(1);
 } else {
   // Warn in local development but don't fail
