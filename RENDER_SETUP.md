@@ -16,7 +16,12 @@
 
 ### 2. Build Command no Render
 
-O Build Command já está configurado como:
+**IMPORTANTE:** Configure o Build Command no Render como:
+```
+node scripts/setup-npmrc.js && npm ci && npm run build
+```
+
+Ou use o script npm:
 ```
 npm run build:render
 ```
@@ -25,6 +30,8 @@ Este comando executa em sequência:
 1. `node scripts/setup-npmrc.js` - Cria o `.npmrc` com o token do ambiente
 2. `npm ci` - Instala as dependências (com autenticação do .npmrc)
 3. `npm run build` - Faz o build da aplicação
+
+**⚠️ NOTA:** O Render para Static Sites executa `npm install` automaticamente ANTES do Build Command. Para garantir que o `.npmrc` seja criado antes, use o Build Command completo acima em vez de depender apenas do `preinstall` hook.
 
 ### Como Funciona
 
