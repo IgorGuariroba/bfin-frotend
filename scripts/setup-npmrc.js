@@ -25,11 +25,19 @@ const debugLog = (location, message, data, hypothesisId) => {
 };
 
 // #region agent log
+const allEnv = Object.keys(process.env);
+const relevantEnv = allEnv.filter(k => k.includes('NPM') || k.includes('TOKEN') || k.includes('GITHUB') || k.includes('RENDER'));
 debugLog('setup-npmrc.js:10', 'Script iniciado', {
   cwd: cwd(),
-  envKeys: Object.keys(process.env).filter(k => k.includes('NPM') || k.includes('TOKEN')),
+  envKeys: relevantEnv,
+  envValues: relevantEnv.reduce((acc, k) => {
+    const val = process.env[k];
+    acc[k] = val ? (val.length > 20 ? val.substring(0, 20) + '...' : val) : 'undefined';
+    return acc;
+  }, {}),
   hasNpmToken: !!process.env.NPM_TOKEN,
-  nodeVersion: process.version
+  nodeVersion: process.version,
+  argv: process.argv
 }, 'A');
 // #endregion
 

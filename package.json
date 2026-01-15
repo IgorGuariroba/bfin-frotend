@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "preinstall": "node scripts/setup-npmrc.js",
+    "preinstall": "node scripts/setup-npmrc.js || true",
+    "prepublishOnly": "node scripts/setup-npmrc.js || true",
     "setup:npmrc": "node scripts/setup-npmrc.js",
     "install:render": "node scripts/setup-npmrc.js && npm install",
     "verify:npmrc": "node -e \"const fs=require('fs');const cwd=process.cwd();const exists=fs.existsSync('.npmrc');console.log('CWD:',cwd);console.log('.npmrc exists:',exists);if(exists){console.log('Content:',fs.readFileSync('.npmrc','utf8').substring(0,100));}\"",
