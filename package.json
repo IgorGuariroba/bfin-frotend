@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "preinstall": "node scripts/setup-npmrc.js",
+    "preinstall": "node scripts/setup-npmrc.js || true",
     "setup:npmrc": "node scripts/setup-npmrc.js",
     "install:render": "node scripts/setup-npmrc.js && npm install",
     "build:render": "node scripts/setup-npmrc.js && npm ci && npm run build",
