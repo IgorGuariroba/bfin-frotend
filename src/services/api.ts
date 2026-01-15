@@ -1,8 +1,23 @@
 import axios from 'axios';
 
+// Obter URL base da API
+// Em desenvolvimento: usa o proxy do Vite (/api/v1)
+// Em produção: usa a variável de ambiente VITE_API_BASE_URL
+const getBaseURL = () => {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+  if (apiBaseUrl) {
+    // Em produção, usar a URL completa do backend
+    return `${apiBaseUrl}/api/v1`;
+  }
+
+  // Em desenvolvimento, usar o proxy do Vite
+  return '/api/v1';
+};
+
 // Criar instância do axios
 const api = axios.create({
-  baseURL: '/api/v1', // Vite proxy vai redirecionar para http://localhost:3000/api/v1
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -34,7 +49,7 @@ api.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          const { data } = await axios.post('/api/v1/auth/refresh', {
+          const { data } = await axios.post(`${getBaseURL()}/auth/refresh`, {
             refresh_token: refreshToken,
           });
 
