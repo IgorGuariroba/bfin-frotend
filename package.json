@@ -6,8 +6,6 @@
   "scripts": {
     "preinstall": "node scripts/setup-npmrc.js",
     "setup:npmrc": "node scripts/setup-npmrc.js",
-    "install:render": "node scripts/setup-npmrc.js && npm install",
-    "verify:npmrc": "node -e \"const fs=require('fs');const cwd=process.cwd();const exists=fs.existsSync('.npmrc');console.log('CWD:',cwd);console.log('.npmrc exists:',exists);if(exists){console.log('Content:',fs.readFileSync('.npmrc','utf8').substring(0,100));}\"",
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:storybook\"",
     "dev:vite": "vite",
     "dev:storybook": "storybook dev -p 6006",
