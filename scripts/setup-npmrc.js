@@ -49,7 +49,7 @@ if (npmToken) {
 //npm.pkg.github.com/:_authToken=${npmToken}
 `;
   const npmrcPath = '.npmrc';
-  
+
   // #region agent log
   debugLog('setup-npmrc.js:30', 'Antes de escrever .npmrc', {
     path: npmrcPath,
@@ -58,10 +58,10 @@ if (npmToken) {
     contentPreview: npmrcContent.substring(0, 50)
   }, 'C');
   // #endregion
-  
+
   try {
     writeFileSync(npmrcPath, npmrcContent);
-    
+
     // #region agent log
     const written = existsSync(npmrcPath);
     let writtenContent = '';
@@ -73,7 +73,7 @@ if (npmToken) {
       cwd: cwd()
     }, 'D');
     // #endregion
-    
+
     console.log('✅ Arquivo .npmrc criado com sucesso');
   } catch (error) {
     // #region agent log
