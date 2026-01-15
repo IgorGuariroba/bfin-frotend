@@ -24,12 +24,15 @@ const isCI = !!(
   process.env.TRAVIS
 );
 
-// Log for debugging (only in CI/CD)
+// Always log for debugging (especially important in CI/CD)
+console.log('[setup-npmrc] Script iniciado');
 if (isCI) {
   console.log('[setup-npmrc] Ambiente CI/CD detectado');
-  console.log(`[setup-npmrc] Token disponível: ${npmToken ? 'Sim' : 'Não'}`);
-  console.log(`[setup-npmrc] .npmrc existe: ${npmrcExists ? 'Sim' : 'Não'}`);
 }
+console.log(`[setup-npmrc] Token disponível: ${npmToken ? 'Sim' : 'Não'}`);
+console.log(`[setup-npmrc] .npmrc existe: ${npmrcExists ? 'Sim' : 'Não'}`);
+console.log(`[setup-npmrc] Project root: ${projectRoot}`);
+console.log(`[setup-npmrc] .npmrc path: ${npmrcPath}`);
 
 if (npmToken) {
   // Always use token when available (dev or CI/CD)
