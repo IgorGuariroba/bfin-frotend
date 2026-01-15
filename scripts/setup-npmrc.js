@@ -1,7 +1,13 @@
 #!/usr/bin/env node
-import { writeFileSync, existsSync, appendFileSync } from 'fs';
+import { writeFileSync, existsSync, appendFileSync, readFileSync as readFile } from 'fs';
 import { cwd } from 'process';
 import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const projectRoot = join(__dirname, '..');
 
 // Função helper para log estruturado
 const debugLog = (location, message, data, hypothesisId) => {
@@ -56,7 +62,8 @@ if (npmToken) {
   const npmrcContent = `@igorguariroba:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${npmToken}
 `;
-  const npmrcPath = '.npmrc';
+  // Criar .npmrc no diretório do projeto (não no diretório do script)
+  const npmrcPath = join(projectRoot, '.npmrc');
 
   // #region agent log
   debugLog('setup-npmrc.js:30', 'Antes de escrever .npmrc', {
