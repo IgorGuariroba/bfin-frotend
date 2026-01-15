@@ -33,9 +33,50 @@ O problema é que o Render executa `npm install` automaticamente ANTES do Build 
 2. O `.npmrc` seja criado antes do `npm ci`
 3. A autenticação funcione corretamente
 
-## Verificação
+## Como Validar se o NPM_TOKEN está Correto
 
-Após atualizar, nos logs do build você deve ver:
+### Opção 1: Teste Local (se você tiver o token)
+
+```bash
+# Configure o token localmente
+export NPM_TOKEN=seu_token_aqui
+
+# Execute o script de validação
+node scripts/test-npm-token.js
+```
+
+### Opção 2: Teste no Render (Build Command temporário)
+
+Para validar o token no Render, use este Build Command temporário:
+
+```bash
+node scripts/test-npm-token.js && node scripts/setup-npmrc.js && npm ci && npm run build
+```
+
+Ou use o script shell:
+
+```bash
+bash scripts/validate-token-render.sh && node scripts/setup-npmrc.js && npm ci && npm run build
+```
+
+### O que verificar:
+
+1. **Token está configurado?**
+   - Deve aparecer: `NPM_TOKEN: ✅ Configurado`
+
+2. **Token tem formato correto?**
+   - Deve começar com `ghp_` ou `github_pat_`
+
+3. **Token tem permissão?**
+   - Status HTTP deve ser `200` (não `401`)
+   - Se for `401`, o token não tem permissão `read:packages`
+
+4. **Token consegue acessar o pacote?**
+   - Deve conseguir acessar `@igorguariroba/bfin-sdk`
+
+## Verificação Após Atualizar Build Command
+
+Após atualizar o Build Command, nos logs do build você deve ver:
 ```
 [setup-npmrc] Script iniciado
 [setup-npmrc] Ambiente CI/CD detectado
