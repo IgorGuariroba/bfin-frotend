@@ -29,6 +29,8 @@ export default defineConfig({
       }
     }
   },
+  // Expor variáveis de ambiente para o cliente
+  envPrefix: 'VITE_',
   test: {
     projects: [{
       extends: true,

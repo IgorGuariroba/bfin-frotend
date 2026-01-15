@@ -1,13 +1,31 @@
 import { configureBfinApi } from '@igorguariroba/bfin-sdk';
 
 /**
+ * Obtém a URL base da API
+ * Em desenvolvimento: usa o proxy do Vite (string vazia)
+ * Em produção: usa a variável de ambiente VITE_API_BASE_URL
+ */
+const getApiBaseUrl = () => {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+  if (apiBaseUrl) {
+    // Em produção, usar a URL completa do backend
+    // O SDK já inclui /api/v1 nas rotas, então só precisamos da base
+    return apiBaseUrl;
+  }
+
+  // Em desenvolvimento, usar o proxy do Vite (string vazia)
+  return '';
+};
+
+/**
  * Configura o SDK do BFIN com as configurações de autenticação e URL
  */
 export function initializeSdk() {
   const token = localStorage.getItem('@bfin:token');
 
   configureBfinApi({
-    baseUrl: '', // O SDK já inclui /api/v1 nas rotas, então deixamos vazio para usar o proxy do Vite
+    baseUrl: getApiBaseUrl(), // O SDK já inclui /api/v1 nas rotas
     token: token || undefined,
     onTokenExpired: async () => {
       // Tentar refresh do token
