@@ -16,6 +16,7 @@ const npmToken =
 if (npmToken) {
   const npmrcContent = `@igorguariroba:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${npmToken}
+always-auth=true
 `;
   const npmrcPath = join(projectRoot, '.npmrc');
 
