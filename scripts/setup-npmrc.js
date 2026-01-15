@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFileSync, existsSync, readFileSync } from 'fs';
+import { writeFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -13,52 +13,50 @@ const projectRoot = join(__dirname, '..');
 const npmToken =
   process.env.NPM_TOKEN || process.env.NODE_AUTH_TOKEN || process.env.GITHUB_TOKEN;
 const npmrcPath = join(projectRoot, '.npmrc');
-const npmrcExists = existsSync(npmrcPath);
+
+console.log('[setup-npmrc] Script iniciado');
+console.log(`[setup-npmrc] Project root: ${projectRoot}`);
+console.log(`[setup-npmrc] .npmrc path: ${npmrcPath}`);
+console.log(
+  `[setup-npmrc] Token disponível: ${npmToken ? 'Sim' : 'Não'} (${npmToken ? '***' + npmToken.slice(-4) : 'N/A'})`
+);
 
 if (!npmToken) {
   console.warn(
     '⚠️  Token de autenticação não encontrado (NPM_TOKEN / NODE_AUTH_TOKEN / GITHUB_TOKEN).'
   );
-  if (npmrcExists) {
+  if (existsSync(npmrcPath)) {
     console.log('ℹ️  Usando .npmrc existente');
-  }
-  process.exit(0);
-}
-
-// Check if .npmrc exists and contains placeholder that needs replacement
-let needsUpdate = true;
-if (npmrcExists) {
-  try {
-    const existingContent = readFileSync(npmrcPath, 'utf8');
-    // Check if file contains placeholder or if token is different
-    if (
-      existingContent.includes('${NPM_TOKEN}') ||
-      existingContent.includes('${NODE_AUTH_TOKEN}') ||
-      existingContent.includes('${GITHUB_TOKEN}') ||
-      !existingContent.includes(npmToken)
-    ) {
-      needsUpdate = true;
-    } else {
-      needsUpdate = false;
-      console.log('ℹ️  .npmrc já existe e está atualizado');
-    }
-  } catch (error) {
-    // If we can't read it, we'll recreate it
-    needsUpdate = true;
+    process.exit(0);
+  } else {
+    console.error(
+      '❌ .npmrc não existe e token não foi fornecido. A autenticação falhará.'
+    );
+    process.exit(1);
   }
 }
 
-if (needsUpdate) {
-  const npmrcContent = `@igorguariroba:registry=https://npm.pkg.github.com
+// Always update .npmrc with the actual token to ensure it's correct
+// This is critical because the file might have been committed with a placeholder
+const npmrcContent = `@igorguariroba:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${npmToken}
 always-auth=true
 `;
 
-  try {
-    writeFileSync(npmrcPath, npmrcContent);
-    console.log('✅ Arquivo .npmrc criado/atualizado com sucesso');
-  } catch (error) {
-    console.error('❌ Erro ao criar/atualizar .npmrc:', error.message);
+try {
+  writeFileSync(npmrcPath, npmrcContent, { mode: 0o600 });
+  console.log('✅ Arquivo .npmrc criado/atualizado com sucesso');
+  console.log(`[setup-npmrc] .npmrc criado em: ${npmrcPath}`);
+  
+  // Verify the file was created
+  if (existsSync(npmrcPath)) {
+    console.log('[setup-npmrc] Verificação: .npmrc existe após criação');
+  } else {
+    console.error('[setup-npmrc] ERRO: .npmrc não existe após tentativa de criação');
     process.exit(1);
   }
+} catch (error) {
+  console.error('❌ Erro ao criar/atualizar .npmrc:', error.message);
+  console.error('[setup-npmrc] Stack:', error.stack);
+  process.exit(1);
 }
