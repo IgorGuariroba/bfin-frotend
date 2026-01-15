@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "preinstall": "sh -c 'if [ -n \"$NPM_TOKEN\" ]; then echo \"@igorguariroba:registry=https://npm.pkg.github.com\" > .npmrc && echo \"//npm.pkg.github.com/:_authToken=$NPM_TOKEN\" >> .npmrc && echo \"✅ .npmrc criado\"; else echo \"⚠️  NPM_TOKEN não encontrado, pulando criação do .npmrc\"; fi'",
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:storybook\"",
     "dev:vite": "vite",
     "dev:storybook": "storybook dev -p 6006",
