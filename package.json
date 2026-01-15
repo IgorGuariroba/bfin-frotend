@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "preinstall": "node scripts/setup-npmrc.js",
+    "setup:npmrc": "node scripts/setup-npmrc.js",
+    "install:render": "npm run setup:npmrc && npm install",
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:storybook\"",
     "dev:vite": "vite",
     "dev:storybook": "storybook dev -p 6006",
