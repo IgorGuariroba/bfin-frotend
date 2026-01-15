@@ -31,3 +31,6 @@ storybook-static
 .env.local
 .env.production.local
 .env.development.local
+
+# NPM config (contém token)
+.npmrc
