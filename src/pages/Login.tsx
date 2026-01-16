@@ -10,7 +10,6 @@ import {
   Container,
   Alert,
   Flex,
-  HStack,
   IconButton,
 } from '@chakra-ui/react';
 import { MdClose } from 'react-icons/md';

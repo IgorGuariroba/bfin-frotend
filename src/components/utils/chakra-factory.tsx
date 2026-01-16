@@ -154,54 +154,22 @@ export const CustomSvg = chakra('svg');
 export const CustomPath = chakra('path');
 
 /**
- * Exemplo de uso com estilos customizados
- *
- * Você pode criar componentes com estilos padrão:
+ * Exemplo de uso com componentes customizados
+ * Em Chakra v3, aplique estilos diretamente como props
  */
-export const StyledCard = chakra('div', {
-  baseStyle: {
-    bg: 'card',
-    color: 'card.fg',
-    borderRadius: 'lg',
-    p: 6,
-    shadow: 'md',
-  },
-});
+export const StyledCard = chakra('div');
 
 /**
  * Exemplo: Container customizado
  */
-export const StyledContainer = chakra('div', {
-  baseStyle: {
-    maxW: 'container.xl',
-    mx: 'auto',
-    px: 4,
-  },
-});
+export const StyledContainer = chakra('div');
 
 /**
  * Exemplo: Card de destaque
  */
-export const HighlightCard = chakra('div', {
-  baseStyle: {
-    bg: 'primary',
-    color: 'primary.fg',
-    borderRadius: 'xl',
-    p: 8,
-    shadow: 'lg',
-  },
-});
+export const HighlightCard = chakra('div');
 
 /**
  * Exemplo: Badge customizado
  */
-export const StyledBadge = chakra('span', {
-  baseStyle: {
-    display: 'inline-block',
-    px: 2,
-    py: 1,
-    borderRadius: 'md',
-    fontSize: 'sm',
-    fontWeight: 'semibold',
-  },
-});
+export const StyledBadge = chakra('span');

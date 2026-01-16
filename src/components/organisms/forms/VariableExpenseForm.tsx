@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, VStack, Center, Text, Box, Flex, Input, NativeSelect, Field, Menu } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Center, Text, Box, Input, NativeSelect, Field, Menu } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useCreateVariableExpense } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
@@ -26,7 +26,7 @@ interface VariableExpenseFormProps {
 
 export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: categories, isLoading: loadingCategories } = useCategories('expense');
+  const { data: categories, isLoading: loadingCategories } = useCategories();
   const createVariableExpense = useCreateVariableExpense();
 
   const {
@@ -164,7 +164,6 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
               <Menu.Trigger asChild>
                 <Box
                   as="button"
-                  type="button"
                   w="full"
                   display="flex"
                   alignItems="center"
@@ -230,9 +229,9 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                 <Box py={1}>
                   {accounts?.map((account) => (
                     <Menu.Item
-                      key={account.id}
-                      value={account.id}
-                      onClick={() => setValue('accountId', account.id, { shouldValidate: true })}
+                      key={account.id ?? ''}
+                      value={account.id ?? ''}
+                      onClick={() => setValue('accountId', account.id ?? '', { shouldValidate: true })}
                       css={{
                         backgroundColor: selectedAccountId === account.id ? 'var(--primary-600)' : 'transparent',
                         '&:hover': {
@@ -412,7 +411,6 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
             {onCancel && (
               <Text
                 as="button"
-                type="button"
                 onClick={onCancel}
                 textAlign="center"
                 color="var(--primary-600)"

@@ -34,7 +34,7 @@ interface FixedExpenseFormProps {
 
 export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: categories, isLoading: loadingCategories } = useCategories('expense');
+  const { data: categories, isLoading: loadingCategories } = useCategories();
   const createFixedExpense = useCreateFixedExpense();
 
   const {

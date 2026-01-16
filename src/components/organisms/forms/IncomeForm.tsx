@@ -36,7 +36,7 @@ interface IncomeFormProps {
 
 export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: categories, isLoading: loadingCategories } = useCategories('income');
+  const { data: categories, isLoading: loadingCategories } = useCategories();
   const createIncome = useCreateIncome();
 
   const {
