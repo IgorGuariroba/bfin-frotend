@@ -384,7 +384,7 @@ export function Dashboard() {
             bottom="0"
             w="320px"
             bg="var(--primary)"
-            zIndex={10}
+            zIndex={20}
             boxShadow="2xl"
             overflowY="auto"
           >
