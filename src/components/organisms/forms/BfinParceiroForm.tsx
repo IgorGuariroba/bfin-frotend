@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, VStack, Center, Text, Box, Input, Field, Menu } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Center, Text, Box, Input, Field, Menu, chakra } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useAddAccountMember } from '../../../hooks/useAccountMembers';
-import { Mail, Check, ChevronDown, UserCheck, Eye, Users, Info, Zap } from 'lucide-react';
+import { Mail, Check, ChevronDown, UserCheck, Eye, Zap } from 'lucide-react';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
 
@@ -110,8 +110,7 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
             <input type="hidden" {...register('accountId')} />
             <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
               <Menu.Trigger asChild>
-                <Box
-                  as="button"
+                <chakra.button
                   w="full"
                   display="flex"
                   alignItems="center"
@@ -140,7 +139,7 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
                     {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
                   </Text>
                   <ChevronDown size={20} color={iconColors.primaryFg} />
-                </Box>
+                </chakra.button>
               </Menu.Trigger>
               <Menu.Positioner>
                 <Menu.Content
@@ -244,8 +243,7 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
               </Field.Label>
               <VStack gap={3} align="stretch">
                 {/* Member Role */}
-                <Box
-                  as="button"
+                <chakra.button
                   type="button"
                   onClick={() => setValue('role', 'member')}
                   textAlign="left"
@@ -270,11 +268,10 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
                       </Text>
                     </VStack>
                   </HStack>
-                </Box>
+                </chakra.button>
 
                 {/* Viewer Role */}
-                <Box
-                  as="button"
+                <chakra.button
                   type="button"
                   onClick={() => setValue('role', 'viewer')}
                   textAlign="left"
@@ -299,7 +296,7 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
                       </Text>
                     </VStack>
                   </HStack>
-                </Box>
+                </chakra.button>
               </VStack>
             </Field.Root>
 
