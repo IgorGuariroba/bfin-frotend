@@ -151,7 +151,7 @@ export function Dashboard() {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar';
 
     return (
       <Box
