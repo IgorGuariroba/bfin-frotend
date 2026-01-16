@@ -159,8 +159,10 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                       disabled={acceptInvitation.isPending || rejectInvitation.isPending}
                       colorPalette="green"
                     >
-                      <Check size={16} style={{ marginRight: '8px' }} />
-                      Aceitar
+                      <Flex align="center" gap={2}>
+                        <Check size={16} />
+                        Aceitar
+                      </Flex>
                     </Button>
                     <Button
                       onClick={() => handleReject(invitation.token, invitation.account?.account_name || 'Conta')}
@@ -168,8 +170,10 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                       variant="outline"
                       colorPalette="red"
                     >
-                      <X size={16} style={{ marginRight: '8px' }} />
-                      Recusar
+                      <Flex align="center" gap={2}>
+                        <X size={16} />
+                        Recusar
+                      </Flex>
                     </Button>
                   </Flex>
                 </Box>

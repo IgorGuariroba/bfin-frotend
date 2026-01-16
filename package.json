@@ -19,7 +19,8 @@
     "theme:typegen": "npx @chakra-ui/cli typegen src/theme/theme.ts",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "check:tokens": "bash scripts/check-design-tokens.sh"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.30.0",

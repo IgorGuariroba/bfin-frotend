@@ -245,8 +245,10 @@ export function BfinParceiroDialog({ isOpen, onClose }: BfinParceiroDialogProps)
                     disabled={addMember.isPending || !email.trim() || !selectedAccountId}
                     loading={addMember.isPending}
                   >
-                    <Mail size={16} style={{ marginRight: '8px' }} />
-                    Enviar Convite
+                    <Flex align="center" gap={2}>
+                      <Mail size={16} />
+                      Enviar Convite
+                    </Flex>
                   </Button>
                 </HStack>
               </VStack>

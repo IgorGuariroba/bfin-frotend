@@ -172,8 +172,10 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
               onClick={() => setShowAddForm(true)}
               mb={4}
             >
-              <UserPlus size={16} style={{ marginRight: '8px' }} />
-              Adicionar Membro
+              <Flex align="center" gap={2}>
+                <UserPlus size={16} />
+                Adicionar Membro
+              </Flex>
             </Button>
           )}
 

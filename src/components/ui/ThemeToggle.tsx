@@ -32,9 +32,9 @@ export function ThemeToggle({
         onClick={toggleColorMode}
         variant="ghost"
         size={size}
-        bg="rgba(0, 0, 0, 0.3)"
+        bg="blackAlpha.300"
         color="white"
-        _hover={{ bg: 'rgba(0, 0, 0, 0.5)' }}
+        _hover={{ bg: 'blackAlpha.500' }}
         border="none"
         _focus={{ boxShadow: 'none' }}
         borderRadius="md"
