@@ -25,7 +25,7 @@ export const ExampleUsage = () => (
   <Container maxW="container.xl" mx="auto" px={4}>
     <Card bg="card" color="card.fg" borderRadius="lg" p={6} shadow="md">
       <HStack gap={4}>
-        <Badge bg="brand.solid" color="white" px={3} py={1} borderRadius="full">
+        <Badge bg="brand.solid" color="primary.fg" px={3} py={1} borderRadius="full">
           Novo
         </Badge>
         <span>Conteúdo do card</span>

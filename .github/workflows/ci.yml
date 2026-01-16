@@ -47,6 +47,9 @@ jobs:
       - name: 🧹 ESLint
         run: npm run lint
 
+      - name: 🎨 Design Tokens Check
+        run: npm run check:tokens
+
       - name: 🛡️ Security Audit
         run: npm audit --audit-level=moderate
         continue-on-error: true

@@ -113,8 +113,10 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                         ml={4}
                         flexShrink={0}
                       >
-                        <UserPlus size={16} style={{ marginRight: '8px' }} />
-                        Membros
+                        <Flex align="center" gap={2}>
+                          <UserPlus size={16} />
+                          Membros
+                        </Flex>
                       </Button>
                     </Flex>
 

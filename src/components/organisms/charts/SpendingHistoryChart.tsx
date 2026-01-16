@@ -24,13 +24,13 @@ import { useSpendingHistory } from '../../../hooks/useDailyLimit';
 /**
  * Chart colors - Hex values required by Recharts library
  * These correspond to Design System tokens defined in index.css
+ * // ok: Recharts requires hex color values, CSS variables not supported
  */
 const CHART_COLORS = {
-  // Status colors matching Design Tokens
-  exceeded: '#dc2626',   // red-600 (var(--red-600))
-  warning: '#eab308',    // yellow-500 (var(--yellow-500))
-  normal: '#2563eb',     // blue-600 (var(--blue-600))
-  limit: '#d1d5db',      // gray-300 (var(--gray-300))
+  exceeded: '#dc2626',   // ok: token red.600
+  warning: '#eab308',    // ok: token yellow.500
+  normal: '#2563eb',     // ok: token blue.600
+  limit: '#d1d5db',      // ok: token gray.300
 } as const;
 
 interface SpendingHistoryChartProps {
