@@ -348,11 +348,11 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
                   <Text fontSize="sm" fontWeight="medium" mb={2}>
                     Nova permissão:
                   </Text>
-                  <NativeSelect.Root
-                    value={newRole}
-                    onValueChange={(e) => setNewRole(e.value as 'owner' | 'member' | 'viewer')}
-                  >
-                    <NativeSelect.Field>
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      value={newRole}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewRole(e.target.value as 'owner' | 'member' | 'viewer')}
+                    >
                       <option value="owner">Proprietário</option>
                       <option value="member">Membro</option>
                       <option value="viewer">Visualizador</option>

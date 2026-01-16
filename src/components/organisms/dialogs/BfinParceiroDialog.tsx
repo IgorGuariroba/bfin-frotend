@@ -96,11 +96,12 @@ export function BfinParceiroDialog({ isOpen, onClose }: BfinParceiroDialogProps)
                       Nenhuma conta disponível
                     </Text>
                   ) : (
-                    <NativeSelect.Root
-                      value={selectedAccountId}
-                      onValueChange={(e) => setSelectedAccountId(e.value[0])}
-                    >
-                      <NativeSelect.Field placeholder="Selecione uma conta">
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        placeholder="Selecione uma conta"
+                        value={selectedAccountId}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedAccountId(e.target.value)}
+                      >
                         {accounts.map((account) => (
                           <option key={account.id} value={account.id}>
                             {account.account_name}
