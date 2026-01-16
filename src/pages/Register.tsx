@@ -115,8 +115,8 @@ export function Register() {
                 color="var(--primary-foreground)"
                 fontFamily="'Playfair Display SC', serif"
                 letterSpacing="tight"
-                style={{
-                  textShadow: '0 0 30px rgba(255,255,255,0.2)',
+                css={{
+                  textShadow: '0 0 30px var(--chakra-colors-white-alpha-200)',
                 }}
               >
                 BFIN

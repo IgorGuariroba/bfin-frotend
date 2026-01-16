@@ -203,7 +203,7 @@ export function Dashboard() {
                   onClick={() => setExpandedForm(null)}
                   size="sm"
                   color="var(--primary-foreground)"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                 >
                   <ArrowLeft size={20} />
                 </IconButton>
@@ -269,7 +269,7 @@ export function Dashboard() {
         py={3}
         align="center"
         justify="space-between"
-        boxShadow="0 2px 10px rgba(255,255,255,0.1)"
+        boxShadow="0 2px 10px var(--chakra-colors-white-alpha-100)"
       >
         <HStack gap={4}>
           <Text
@@ -292,7 +292,7 @@ export function Dashboard() {
             size="sm"
             variant="ghost"
             color="var(--primary-foreground)"
-            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+            _hover={{ bg: 'whiteAlpha.100' }}
             onClick={handleSignOut}
             border="none"
             _focus={{ boxShadow: 'none' }}
@@ -310,7 +310,7 @@ export function Dashboard() {
           bg="var(--primary)"
           py={6}
           gap={6}
-          boxShadow="2px 0 10px rgba(255,255,255,0.1)"
+          boxShadow="2px 0 10px var(--chakra-colors-white-alpha-100)"
           position="relative"
           zIndex={1}
         >
@@ -320,7 +320,7 @@ export function Dashboard() {
                 aria-label="Home"
                 variant="ghost"
                 color="var(--primary-foreground)"
-                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                _hover={{ bg: 'whiteAlpha.100' }}
                 size="lg"
                 border="none"
                 _focus={{ boxShadow: 'none' }}
@@ -340,7 +340,7 @@ export function Dashboard() {
                 aria-label="Configurações"
                 variant="ghost"
                 color="var(--primary-foreground)"
-                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                _hover={{ bg: 'whiteAlpha.100' }}
                 size="lg"
                 onClick={() => setSidebarExpanded(!sidebarExpanded)}
                 border="none"
@@ -360,7 +360,7 @@ export function Dashboard() {
                 aria-label="Visibilidade"
                 variant="ghost"
                 color="var(--primary-foreground)"
-                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                _hover={{ bg: 'whiteAlpha.100' }}
                 size="lg"
                 border="none"
                 _focus={{ boxShadow: 'none' }}
@@ -411,7 +411,7 @@ export function Dashboard() {
                 </VStack>
               </VStack>
 
-              <Separator borderColor="rgba(255,255,255,0.2)" />
+              <Separator borderColor="whiteAlpha.200" />
 
               {/* Menu Options */}
               <VStack gap={2} align="stretch">
@@ -419,7 +419,7 @@ export function Dashboard() {
                   variant="ghost"
                   color="var(--primary-foreground)"
                   justifyContent="space-between"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                   size="lg"
                 >
                   <HStack>
@@ -433,7 +433,7 @@ export function Dashboard() {
                   variant="ghost"
                   color="var(--primary-foreground)"
                   justifyContent="space-between"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                   size="lg"
                 >
                   <HStack>
@@ -447,7 +447,7 @@ export function Dashboard() {
                   variant="ghost"
                   color="var(--primary-foreground)"
                   justifyContent="space-between"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                   size="lg"
                   onClick={() => setManageAccountsDialogOpen(true)}
                 >
@@ -462,7 +462,7 @@ export function Dashboard() {
                   variant="ghost"
                   color="var(--primary-foreground)"
                   justifyContent="space-between"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                   size="lg"
                 >
                   <HStack>
@@ -476,7 +476,7 @@ export function Dashboard() {
                   variant="ghost"
                   color="var(--primary-foreground)"
                   justifyContent="space-between"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                   size="lg"
                 >
                   <HStack>
@@ -490,7 +490,7 @@ export function Dashboard() {
                   variant="ghost"
                   color="var(--primary-foreground)"
                   justifyContent="space-between"
-                  _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                  _hover={{ bg: 'whiteAlpha.100' }}
                   size="lg"
                 >
                   <HStack>
@@ -508,8 +508,8 @@ export function Dashboard() {
                 bg="transparent"
                 color="var(--primary-foreground)"
                 borderWidth="1px"
-                borderColor="rgba(255,255,255,0.3)"
-                _hover={{ bg: 'rgba(255,255,255,0.1)' }}
+                borderColor="whiteAlpha.300"
+                _hover={{ bg: 'whiteAlpha.100' }}
                 size="lg"
                 onClick={handleSignOut}
               >
@@ -668,7 +668,7 @@ export function Dashboard() {
             left="0"
             right="0"
             bg="var(--primary)"
-            boxShadow="0 -2px 10px rgba(255,255,255,0.1)"
+            boxShadow="0 -2px 10px var(--chakra-colors-white-alpha-100)"
             px={8}
             py={2}
             zIndex={15}
@@ -679,13 +679,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 onClick={() => setExpandedForm(expandedForm === 'pagar' ? null : 'pagar')}
                 gap={1}
@@ -698,13 +698,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 gap={1}
                 onClick={() => setExpandedForm(expandedForm === 'bfin-parceiro' ? null : 'bfin-parceiro')}
@@ -717,13 +717,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 onClick={() => setExpandedForm(expandedForm === 'transferir' ? null : 'transferir')}
                 gap={1}
@@ -736,13 +736,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 onClick={() => setExpandedForm(expandedForm === 'depositar' ? null : 'depositar')}
                 gap={1}
@@ -755,13 +755,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 onClick={() => setExpandedForm(expandedForm === 'emprestimos' ? null : 'emprestimos')}
                 gap={1}
@@ -774,13 +774,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 gap={1}
                 onClick={() => setExpandedForm(expandedForm === 'agendar-pagamento' ? null : 'agendar-pagamento')}
@@ -793,13 +793,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 onClick={() => setExpandedForm(expandedForm === 'recarga-celular' ? null : 'recarga-celular')}
                 gap={1}
@@ -812,13 +812,13 @@ export function Dashboard() {
                 flex="1"
                 h="full"
                 borderRadius="xl"
-                bg="rgba(255,255,255,0.15)"
+                bg="whiteAlpha.200"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
                 cursor="pointer"
-                _hover={{ bg: 'rgba(255,255,255,0.25)' }}
+                _hover={{ bg: 'whiteAlpha.300' }}
                 transition="all 0.2s"
                 onClick={() => setExpandedForm(expandedForm === 'ajustar-limite' ? null : 'ajustar-limite')}
                 gap={1}
@@ -861,7 +861,7 @@ export function Dashboard() {
           <Dialog.Content>
             <Dialog.Header>
               <HStack>
-                <Shield size={20} color="#2563EB" />
+                <Shield size={20} color="var(--chakra-colors-blue-600)" />
                 <Text>Reserva de Emergência</Text>
               </HStack>
             </Dialog.Header>
