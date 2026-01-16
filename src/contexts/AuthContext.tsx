@@ -47,7 +47,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // Validar token buscando dados do usuário
           const userData = await authApi.getApiV1AuthMe();
           setUser(userData);
-        } catch (error) {
+        } catch (_error) {
           // Token inválido, limpar localStorage
           localStorage.removeItem('@bfin:token');
           localStorage.removeItem('@bfin:refreshToken');
