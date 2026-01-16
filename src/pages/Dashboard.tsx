@@ -147,7 +147,7 @@ export function Dashboard() {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento';
 
     return (
       <Box
