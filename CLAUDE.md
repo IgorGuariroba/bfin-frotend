@@ -635,22 +635,145 @@ localStorage.clear()
 
 ## ⚠️ Avisos Importantes
 
+### Código e Arquitetura
 1. **SEMPRE use Chakra UI v3 syntax** - Verifique as regras no `.cursorrules`
 2. **SEMPRE use React Query** para chamadas de API
 3. **SEMPRE valide formulários** com Zod
 4. **SEMPRE use TypeScript** - sem `any`
 5. **SEMPRE siga Atomic Design** para componentes
-6. **NUNCA commite** secrets ou tokens
-7. **NUNCA use `@emotion/styled`** - removido no v3
-8. **NUNCA use `useToast()`** - use `toaster.create()` do v3
-9. **SEMPRE execute validações localmente** antes de push - veja seção CI/CD
-10. **SEMPRE verifique o CI** antes de merge no main
+6. **NUNCA use `@emotion/styled`** - removido no v3
+7. **NUNCA use `useToast()`** - use `toaster.create()` do v3
+
+### Git e CI/CD
+8. **NUNCA faça push direto na branch main** - Sempre crie uma branch de feature
+9. **SEMPRE busque atualizações da main** antes de criar nova branch
+10. **SEMPRE execute validações localmente** antes de push - veja seção CI/CD
+11. **SEMPRE verifique o CI** antes de merge no main
+12. **NUNCA commite** secrets ou tokens
+
+---
+
+## 📝 Workflow Git (IMPORTANTE!)
+
+### Regras de Branch
+
+⚠️ **NUNCA faça push direto na branch `main`!**
+
+### Workflow Correto
+
+```bash
+# 1. Sempre comece buscando atualizações da main
+git checkout main
+git pull origin main
+
+# 2. Crie uma nova branch A PARTIR da main atualizada
+git checkout -b feature/minha-feature
+
+# 3. Faça suas alterações
+# ... desenvolver ...
+
+# 4. Valide localmente (OBRIGATÓRIO)
+npm run type-check && npm run lint && npm test -- --run && npm run build
+
+# 5. Commit e push DA SUA BRANCH
+git add .
+git commit -m "feat: adiciona nova funcionalidade"
+git push origin feature/minha-feature
+
+# 6. Abra Pull Request no GitHub
+# O CI vai executar automaticamente
+
+# 7. Após aprovação e CI verde, merge via GitHub
+# Deploy automático será acionado
+```
+
+### Tipos de Branches
+
+- **`main`** - Branch de produção (protegida, só via PR)
+- **`develop`** - Branch de desenvolvimento (se houver)
+- **`feature/*`** - Novas funcionalidades (ex: `feature/login`)
+- **`fix/*`** - Correções de bugs (ex: `fix/button-hover`)
+- **`chore/*`** - Manutenção (ex: `chore/update-deps`)
+- **`docs/*`** - Documentação (ex: `docs/update-readme`)
+
+### Exemplo Completo
+
+```bash
+# Situação: Quero adicionar validação de email
+
+# 1. Atualizar main
+git checkout main
+git pull origin main
+
+# 2. Criar branch de feature
+git checkout -b feature/email-validation
+
+# 3. Desenvolver
+# ... código ...
+
+# 4. Validar localmente
+npm run type-check
+npm run lint
+npm test -- --run
+npm run build
+
+# 5. Commit
+git add .
+git commit -m "feat: adiciona validação de email no formulário de login"
+
+# 6. Push da branch (NÃO da main!)
+git push origin feature/email-validation
+
+# 7. Criar PR no GitHub
+# https://github.com/IgorGuariroba/bfin-frotend/pulls
+
+# 8. Aguardar CI passar ✅
+
+# 9. Merge via GitHub após aprovação
+```
+
+### ❌ Nunca Faça Isso
+
+```bash
+# ❌ ERRADO - Push direto na main
+git checkout main
+git add .
+git commit -m "mudanças"
+git push origin main
+
+# ❌ ERRADO - Criar branch sem atualizar main
+git checkout -b feature/nova-feature
+# (sem fazer git pull da main antes)
+
+# ❌ ERRADO - Merge local sem PR
+git checkout main
+git merge feature/minha-feature
+git push origin main
+```
+
+### ✅ Sempre Faça Isso
+
+```bash
+# ✅ CORRETO
+git checkout main                    # Vai para main
+git pull origin main                 # Atualiza main
+git checkout -b feature/nova-feature # Cria branch a partir da main atualizada
+# ... desenvolver ...
+git push origin feature/nova-feature # Push da branch (não da main!)
+# ... criar PR no GitHub ...
+# ... aguardar aprovação e CI ...
+# ... merge via GitHub ...
+```
 
 ---
 
 ## 🎯 Checklist para Novas Features
 
-### Antes de Commitar
+### Antes de Começar
+- [ ] Atualizar branch main: `git checkout main && git pull origin main`
+- [ ] Criar branch de feature: `git checkout -b feature/nome-da-feature`
+
+### Durante o Desenvolvimento
 - [ ] Componente criado na pasta correta (atoms/molecules/organisms)
 - [ ] TypeScript types definidos
 - [ ] Props documentadas
@@ -672,11 +795,18 @@ npm run build          # ✅ Build
 npm audit              # ✅ Segurança
 ```
 
+### Commit e Push
+- [ ] Commit com mensagem descritiva (Conventional Commits)
+- [ ] Push da branch de feature (NÃO da main!)
+- [ ] Verificar se está na branch correta antes de push
+
 ### Após Push
+- [ ] Abrir Pull Request no GitHub
 - [ ] Verificar se o CI passou no GitHub Actions
-- [ ] Corrigir erros do CI imediatamente
+- [ ] Corrigir erros do CI imediatamente (se houver)
 - [ ] Aguardar aprovação de revisores
 - [ ] Merge só após CI verde ✅
+- [ ] Nunca fazer merge local - sempre via GitHub PR
 
 ---
 
