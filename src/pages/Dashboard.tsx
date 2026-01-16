@@ -20,7 +20,7 @@ import {
 import { Button } from '../components/atoms/Button';
 import { CreateAccountForm } from '../components/organisms/forms';
 import { AccountsDialog, InvitationsDialog, BfinParceiroDialog } from '../components/organisms/dialogs';
-import { VariableExpenseForm, IncomeForm, FixedExpenseForm } from '../components/organisms/forms';
+import { VariableExpenseForm, IncomeForm, FixedExpenseForm, BfinParceiroForm } from '../components/organisms/forms';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
@@ -105,14 +105,10 @@ export function Dashboard() {
           );
         case 'bfin-parceiro':
           return (
-            <Box>
-              <Text mb={4} color="var(--muted-foreground)">
-                Use o menu lateral para convidar um parceiro ou clique no botão abaixo.
-              </Text>
-              <Button onClick={() => setBfinParceiroDialogOpen(true)}>
-                Abrir Diálogo de Convite
-              </Button>
-            </Box>
+            <BfinParceiroForm
+              onSuccess={() => setExpandedForm(null)}
+              onCancel={() => setExpandedForm(null)}
+            />
           );
         case 'transferir':
           return (
@@ -151,7 +147,7 @@ export function Dashboard() {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro';
 
     return (
       <Box
