@@ -4,10 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "preinstall": "node scripts/setup-npmrc.js || true",
     "setup:npmrc": "node scripts/setup-npmrc.js",
     "install:all": "node scripts/setup-npmrc.js && npm install",
-    "build:prod": "node scripts/setup-npmrc.js && npm install && npm run build",
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:storybook\"",
     "dev:vite": "vite",
     "dev:storybook": "storybook dev -p 6006",
