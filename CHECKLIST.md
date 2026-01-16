@@ -40,8 +40,11 @@ Acesse: `https://github.com/SEU_USUARIO/bfin-frontend/settings/secrets/actions`
   - Gerar em: https://github.com/settings/tokens
   - Permissão: `read:packages`
 
+### Opcional (para deploy e produção)
+
 - [ ] `VITE_API_BASE_URL` - URL da API backend
   - Valor: `https://bfin-backend.onrender.com` (ou sua URL)
+  - ⚠️ **Nota**: Opcional para CI (usa `http://localhost:3000` como fallback)
 
 ### Opcional (para deploy automático)
 

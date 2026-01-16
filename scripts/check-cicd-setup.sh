@@ -132,7 +132,7 @@ echo "🔐 Verificando variáveis de ambiente..."
 
 if [ -f ".env" ]; then
   check 0 "Arquivo .env existe"
-  
+
   if grep -q "NPM_TOKEN=" .env; then
     if grep -q "NPM_TOKEN=.*[^=]" .env; then
       check 0 "NPM_TOKEN configurado no .env"
@@ -142,7 +142,7 @@ if [ -f ".env" ]; then
   else
     check 1 "NPM_TOKEN não encontrado no .env"
   fi
-  
+
   if grep -q "VITE_API_BASE_URL=" .env; then
     check 0 "VITE_API_BASE_URL configurado no .env"
   else

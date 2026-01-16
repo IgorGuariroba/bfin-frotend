@@ -88,8 +88,8 @@ Configure os seguintes secrets no GitHub:
 | Secret | Descrição | Como Obter |
 |--------|-----------|------------|
 | `NPM_TOKEN` | Token do GitHub para acessar SDK privado | [GitHub Settings > Tokens](https://github.com/settings/tokens) |
-| `VITE_API_BASE_URL` | URL base da API | Ex: `https://bfin-backend.onrender.com` |
-| `RENDER_DEPLOY_HOOK_URL` | Webhook do Render para deploy | Render Dashboard > Settings > Deploy Hook |
+| `VITE_API_BASE_URL` | URL base da API (opcional para CI, recomendado para deploy) | Ex: `https://bfin-backend.onrender.com` |
+| `RENDER_DEPLOY_HOOK_URL` | Webhook do Render para deploy (opcional) | Render Dashboard > Settings > Deploy Hook |
 
 ### Como Configurar Secrets
 

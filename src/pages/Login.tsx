@@ -223,6 +223,33 @@ export function Login() {
                 >
                   ENTRAR
                 </Button>
+
+                {/* Separador */}
+                <Flex align="center" gap="4" my="2">
+                  <Box flex="1" h="1px" bg="var(--border)" />
+                  <Text color="var(--muted-foreground)" fontSize="xs" fontWeight="medium">
+                    OU
+                  </Text>
+                  <Box flex="1" h="1px" bg="var(--border)" />
+                </Flex>
+
+                {/* Botão Registre-se */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  fontSize="sm"
+                  fontWeight="bold"
+                  letterSpacing="wide"
+                  borderColor="var(--primary)"
+                  color="var(--primary)"
+                  _hover={{
+                    bg: "var(--primary)",
+                    color: "var(--primary-foreground)",
+                  }}
+                  onClick={() => navigate('/register')}
+                >
+                  REGISTRE-SE
+                </Button>
               </VStack>
             </form>
           </Box>
