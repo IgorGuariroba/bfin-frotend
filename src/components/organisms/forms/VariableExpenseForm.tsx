@@ -346,22 +346,22 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
               </Box>
             )}
 
-            {/* Box informativo verde claro */}
+            {/* Box informativo verde claro/escuro */}
             <Box
-              bg="brand.50"
+              bg={{ base: 'brand.50', _dark: 'brand.950' }}
               borderWidth="1px"
-              borderColor="brand.200"
+              borderColor={{ base: 'brand.200', _dark: 'brand.800' }}
               borderRadius="lg"
               p={4}
               mt={2}
             >
               <HStack gap={2} mb={3}>
                 <Zap size={18} color={iconColors.brandDark} />
-                <Text fontWeight="semibold"  fontSize="sm">
+                <Text fontWeight="semibold" color={{ base: 'brand.700', _dark: 'brand.300' }} fontSize="sm">
                   Como funciona:
                 </Text>
               </HStack>
-              <VStack gap={2} align="stretch" fontSize="sm" color="var(--muted-foreground)">
+              <VStack gap={2} align="stretch" fontSize="sm" color="muted.fg">
                 <HStack gap={2}>
                   <Check size={16} color={iconColors.brandDark} />
                   <Text>O valor será <strong>debitado imediatamente</strong> da sua conta</Text>
@@ -379,13 +379,13 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
 
             {createVariableExpense.isError && (
               <Box
-                bg="red.50"
+                bg={{ base: 'red.50', _dark: 'red.950' }}
                 borderWidth="1px"
-                borderColor="red.200"
+                borderColor={{ base: 'red.200', _dark: 'red.800' }}
                 borderRadius="lg"
                 p={4}
               >
-                <Text fontSize="sm" color="red.600">
+                <Text fontSize="sm" color={{ base: 'red.600', _dark: 'red.300' }}>
                   {createVariableExpense.error instanceof Error
                     ? createVariableExpense.error.message
                     : 'Erro ao criar despesa variável'}
