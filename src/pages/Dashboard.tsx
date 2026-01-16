@@ -43,6 +43,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { iconColors, customShadows } from '../theme';
 
 export function Dashboard() {
   const { user, signOut } = useAuth();
@@ -269,7 +270,7 @@ export function Dashboard() {
         py={3}
         align="center"
         justify="space-between"
-        boxShadow="0 2px 10px var(--chakra-colors-white-alpha-100)"
+        boxShadow={customShadows.whiteGlow.sm}
       >
         <HStack gap={4}>
           <Text
@@ -310,7 +311,7 @@ export function Dashboard() {
           bg="var(--primary)"
           py={6}
           gap={6}
-          boxShadow="2px 0 10px var(--chakra-colors-white-alpha-100)"
+          boxShadow={customShadows.whiteGlow.side}
           position="relative"
           zIndex={1}
         >
@@ -668,7 +669,7 @@ export function Dashboard() {
             left="0"
             right="0"
             bg="var(--primary)"
-            boxShadow="0 -2px 10px var(--chakra-colors-white-alpha-100)"
+            boxShadow={customShadows.whiteGlow.top}
             px={8}
             py={2}
             zIndex={15}
@@ -861,7 +862,7 @@ export function Dashboard() {
           <Dialog.Content>
             <Dialog.Header>
               <HStack>
-                <Shield size={20} color="var(--chakra-colors-blue-600)" />
+                <Shield size={20} color={iconColors.info} />
                 <Text>Reserva de Emergência</Text>
               </HStack>
             </Dialog.Header>

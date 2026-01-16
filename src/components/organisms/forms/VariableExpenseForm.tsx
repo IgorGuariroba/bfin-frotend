@@ -9,6 +9,7 @@ import { useAccounts } from '../../../hooks/useAccounts';
 import { useCategories } from '../../../hooks/useCategories';
 import type { CreateVariableExpenseDTO } from '../../../types/transaction';
 import { Pencil, Tag, Zap, Check, ChevronDown } from 'lucide-react';
+import { iconColors } from '../../../theme';
 
 const variableExpenseSchema = z.object({
   accountId: z.string().min(1, 'Conta é obrigatória'),
@@ -180,7 +181,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                   transition="all 0.2s"
                   css={{
                     '&:hover': {
-                      backgroundColor: 'var(--primary-600)',
+                      backgroundColor: iconColors.brandDark,
                     },
                     '&:focus': {
                       outline: 'none',
@@ -218,8 +219,8 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                   borderBottomColor="white"
                 >
                   <HStack gap={2}>
-                    <Check size={16} color="var(--primary-foreground)" />
-                    <Text fontSize="sm" fontWeight="bold" color="var(--primary-foreground)">
+                    <Check size={16} color={iconColors.primaryFg} />
+                    <Text fontSize="sm" fontWeight="bold" color="primary.fg">
                       Selecione uma conta
                     </Text>
                   </HStack>
@@ -233,9 +234,9 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                       value={account.id ?? ''}
                       onClick={() => setValue('accountId', account.id ?? '', { shouldValidate: true })}
                       css={{
-                        backgroundColor: selectedAccountId === account.id ? 'var(--primary-600)' : 'transparent',
+                        backgroundColor: selectedAccountId === account.id ? iconColors.brandDark : 'transparent',
                         '&:hover': {
-                          backgroundColor: 'var(--primary-600)',
+                          backgroundColor: iconColors.brandDark,
                         },
                       }}
                       px={3}
@@ -347,30 +348,30 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
 
             {/* Box informativo verde claro */}
             <Box
-              bg="var(--primary-50)"
+              bg="brand.50"
               borderWidth="1px"
-              borderColor="var(--primary-200)"
+              borderColor="brand.200"
               borderRadius="lg"
               p={4}
               mt={2}
             >
               <HStack gap={2} mb={3}>
-                <Zap size={18} color="var(--primary-600)" />
-                <Text fontWeight="semibold" color="var(--card-foreground)" fontSize="sm">
+                <Zap size={18} color={iconColors.brandDark} />
+                <Text fontWeight="semibold"  fontSize="sm">
                   Como funciona:
                 </Text>
               </HStack>
               <VStack gap={2} align="stretch" fontSize="sm" color="var(--muted-foreground)">
                 <HStack gap={2}>
-                  <Check size={16} color="var(--primary-600)" />
+                  <Check size={16} color={iconColors.brandDark} />
                   <Text>O valor será <strong>debitado imediatamente</strong> da sua conta</Text>
                 </HStack>
                 <HStack gap={2}>
-                  <Check size={16} color="var(--primary-600)" />
+                  <Check size={16} color={iconColors.brandDark} />
                   <Text>Perfeito para gastos do dia a dia</Text>
                 </HStack>
                 <HStack gap={2}>
-                  <Check size={16} color="var(--primary-600)" />
+                  <Check size={16} color={iconColors.brandDark} />
                   <Text>Reduz o saldo disponível na hora</Text>
                 </HStack>
               </VStack>
@@ -413,7 +414,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                 as="button"
                 onClick={onCancel}
                 textAlign="center"
-                color="var(--primary-600)"
+                color={iconColors.brandDark}
                 fontSize="sm"
                 fontWeight="medium"
                 _hover={{ textDecoration: 'underline' }}

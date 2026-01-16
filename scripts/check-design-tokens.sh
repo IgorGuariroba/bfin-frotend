@@ -18,6 +18,19 @@ else
 fi
 
 echo ""
+echo "Verificando uso de variaveis CSS de paleta diretamente..."
+PALETTE_VARS=$(rg -n "var\(--primary-[0-9]|var\(--gray-[0-9]|var\(--blue-[0-9]|var\(--red-[0-9]|var\(--chakra-colors-" --glob "*.tsx" --glob "!*.stories.tsx" --glob "!*.test.tsx" src/components/ src/pages/ 2>/dev/null | grep -v "// ok:" | grep -v "tokens.ts")
+
+if [ -n "$PALETTE_VARS" ]; then
+  echo "Variaveis de paleta usadas diretamente (use iconColors ou tokens):"
+  echo "$PALETTE_VARS"
+  echo ""
+  ERRORS=$((ERRORS + 1))
+else
+  echo "Nenhuma variavel de paleta usada diretamente"
+fi
+
+echo ""
 echo "Verificando uso de colorScheme (deprecado no Chakra v3)..."
 COLOR_SCHEME=$(rg -n "colorScheme=" --glob "*.tsx" src/components/ src/pages/ 2>/dev/null)
 

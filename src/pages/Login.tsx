@@ -114,7 +114,7 @@ export function Login() {
                 fontFamily="'Playfair Display SC', serif"
                 letterSpacing="tight"
                 css={{
-                  textShadow: '0 0 30px var(--chakra-colors-white-alpha-200)',
+                  textShadow: '0 0 30px rgba(255, 255, 255, 0.2)', // ok: whiteAlpha.200
                 }}
               >
                 BFIN
