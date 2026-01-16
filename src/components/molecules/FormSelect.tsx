@@ -22,7 +22,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
             borderColor="brand.500"
             borderWidth="1px"
             borderRadius="lg"
-            color="white"
+            color="primary.fg"
             px={4}
             py={2}
             _hover={{ bg: "brand.600" }}
@@ -30,7 +30,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
           >
             {children}
           </NativeSelect.Field>
-          <NativeSelect.Indicator color="white" />
+          <NativeSelect.Indicator color="primary.fg" />
         </NativeSelect.Root>
         {error && <Field.ErrorText>{error}</Field.ErrorText>}
         {helperText && !error && <Field.HelperText>{helperText}</Field.HelperText>}

@@ -173,10 +173,10 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                   py={3}
                   fontSize="md"
                   fontWeight="medium"
-                  color="white"
+                  color="primary.fg"
                   bg="var(--primary)"
                   borderWidth="1px"
-                  borderColor="white"
+                  borderColor="primary.fg"
                   borderRadius="full"
                   transition="all 0.2s"
                   css={{
@@ -189,10 +189,10 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                     },
                   }}
                 >
-                  <Text color="white">
+                  <Text color="primary.fg">
                     {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
                   </Text>
-                  <ChevronDown size={20} color="white" />
+                  <ChevronDown size={20} color={iconColors.primaryFg} />
                 </Box>
               </Menu.Trigger>
               <Menu.Positioner>
@@ -203,7 +203,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                   borderRadius="lg"
                   boxShadow="lg"
                   borderWidth="1px"
-                  borderColor="white"
+                  borderColor="primary.fg"
                   p={0}
                   css={{
                     zIndex: 'var(--z-dropdown)',
@@ -216,7 +216,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
                   bg="var(--primary)"
                   borderTopRadius="lg"
                   borderBottomWidth="1px"
-                  borderBottomColor="white"
+                  borderBottomColor="primary.fg"
                 >
                   <HStack gap={2}>
                     <Check size={16} color={iconColors.primaryFg} />

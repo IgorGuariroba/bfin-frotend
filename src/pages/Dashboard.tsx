@@ -395,13 +395,13 @@ export function Dashboard() {
                   <Box
                     w="180px"
                     h="180px"
-                    bg="white"
+                    bg="card"
                     borderRadius="xl"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
                   >
-                    <Text fontSize="xs" color="gray.600">QR Code</Text>
+                    <Text fontSize="xs" color="muted.fg">QR Code</Text>
                   </Box>
                 </Flex>
 

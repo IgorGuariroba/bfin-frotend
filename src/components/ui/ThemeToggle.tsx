@@ -33,7 +33,7 @@ export function ThemeToggle({
         variant="ghost"
         size={size}
         bg="blackAlpha.300"
-        color="white"
+        color="primary.fg"
         _hover={{ bg: 'blackAlpha.500' }}
         border="none"
         _focus={{ boxShadow: 'none' }}

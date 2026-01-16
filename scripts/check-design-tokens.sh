@@ -6,7 +6,7 @@ echo ""
 ERRORS=0
 
 echo "Buscando cores hardcoded em componentes e paginas..."
-HARDCODED_COLORS=$(rg -n "(rgba?\([0-9]|#[0-9a-fA-F]{3,8}['\"]|hsl\([0-9])" --glob "*.tsx" --glob "!*.stories.tsx" --glob "!*.test.tsx" src/components/ src/pages/ 2>/dev/null | grep -v "// token:" | grep -v "// ok:")
+HARDCODED_COLORS=$(rg -n "(rgba?\([0-9]|#[0-9a-fA-F]{3,8}['\"]|hsl\([0-9]|(color|bg|background|borderColor|borderBottomColor|borderTopColor|borderLeftColor|borderRightColor)=\"(white|black)\")" --glob "*.tsx" --glob "!*.stories.tsx" --glob "!*.test.tsx" src/components/ src/pages/ 2>/dev/null | grep -v "// token:" | grep -v "// ok:")
 
 if [ -n "$HARDCODED_COLORS" ]; then
   echo "Cores hardcoded encontradas:"
