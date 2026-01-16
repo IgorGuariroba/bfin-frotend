@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import axios from 'axios';
 import { Stack, HStack, VStack, Center, Text, Box, Input, Field, Menu, chakra } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useAccounts } from '../../../hooks/useAccounts';
@@ -69,8 +70,12 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error: any) {
-      toast.error('Erro ao enviar convite', error.response?.data?.error || 'Erro desconhecido');
+    } catch (error: unknown) {
+      let errorMessage = 'Erro desconhecido';
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.error || error.message;
+      }
+      toast.error('Erro ao enviar convite', errorMessage);
     }
   };
 
