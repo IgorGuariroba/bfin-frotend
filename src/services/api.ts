@@ -60,7 +60,7 @@ api.interceptors.response.use(
           // Repetir requisição original
           error.config.headers.Authorization = `Bearer ${data.tokens.access_token}`;
           return api.request(error.config);
-        } catch (refreshError) {
+        } catch (_refreshError) {
           // Refresh falhou, fazer logout
           localStorage.removeItem('@bfin:token');
           localStorage.removeItem('@bfin:refreshToken');

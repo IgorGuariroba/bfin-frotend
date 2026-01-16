@@ -33,11 +33,13 @@ Este guia explica como configurar os secrets necessários para o CI/CD funcionar
 
 ---
 
-### 2. VITE_API_BASE_URL (Obrigatório)
+### 2. VITE_API_BASE_URL (Opcional - recomendado para deploy)
 
 **Descrição**: URL base da API backend
 
 **Valor**: `https://bfin-backend.onrender.com` (ou sua URL)
+
+**⚠️ Nota**: Este secret é opcional para testes do CI. Se não configurado, o CI usará `http://localhost:3000` como fallback. Configure apenas se quiser usar a URL de produção no build.
 
 #### Como configurar:
 
@@ -77,10 +79,10 @@ Este guia explica como configurar os secrets necessários para o CI/CD funcionar
 ### Testar se os secrets estão configurados
 
 1. Acesse: `https://github.com/SEU_USUARIO/bfin-frontend/settings/secrets/actions`
-2. Você deve ver:
-   - ✅ `NPM_TOKEN`
-   - ✅ `VITE_API_BASE_URL`
-   - ✅ `RENDER_DEPLOY_HOOK_URL` (opcional)
+2. Você deve ver (mínimo):
+   - ✅ `NPM_TOKEN` (obrigatório)
+   - 📌 `VITE_API_BASE_URL` (opcional - recomendado para deploy)
+   - 📌 `RENDER_DEPLOY_HOOK_URL` (opcional - só para deploy automático)
 
 ### Testar o CI/CD
 

@@ -8,7 +8,12 @@ import { initializeSdk } from './config/sdk'
 // Inicializar SDK do BFIN
 initializeSdk()
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')
+if (!rootElement) {
+  throw new Error('Root element not found')
+}
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <Provider>
       <App />

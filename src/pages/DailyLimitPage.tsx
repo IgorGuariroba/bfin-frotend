@@ -21,9 +21,9 @@ import { SpendingHistoryChart } from '../components/organisms/charts';
 export function DailyLimitPage() {
   const navigate = useNavigate();
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const accountIds = accounts?.map((acc) => acc.id) || [];
+  const accountIds = accounts?.map((acc) => acc.id ?? '').filter(Boolean) as string[];
   const { data: dailyLimit, isLoading: loadingDailyLimit } = useTotalDailyLimit(accountIds);
-  const { data: spendingHistory, isLoading: loadingHistory } = useSpendingHistory(accountIds, 30);
+  const { data: _spendingHistory, isLoading: loadingHistory } = useSpendingHistory(accountIds, 30);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {

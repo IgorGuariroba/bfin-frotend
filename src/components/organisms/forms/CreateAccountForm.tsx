@@ -83,9 +83,7 @@ export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProp
 
         {createAccount.isError && (
           <InfoBox variant="error">
-            {createAccount.error instanceof Error
-              ? createAccount.error.message
-              : 'Erro ao criar conta'}
+            Erro ao criar conta. Tente novamente.
           </InfoBox>
         )}
 

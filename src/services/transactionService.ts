@@ -96,7 +96,7 @@ export const transactionService = {
   /**
    * Duplicate transaction
    */
-  async duplicate(id: string): Promise<any> {
+  async duplicate(id: string): Promise<{ transaction: Transaction; message: string }> {
     return customInstance({
       url: `/api/v1/transactions/${id}/duplicate`,
       method: 'POST',

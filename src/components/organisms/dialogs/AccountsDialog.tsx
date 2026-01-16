@@ -81,6 +81,8 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                               Padrão
                             </Badge>
                           )}
+                          {/* TODO: Adicionar campo is_shared no SDK */}
+                          {/* @ts-expect-error - Campo não existe no tipo Account ainda */}
                           {account.is_shared && (
                             <Badge colorPalette="brand" fontSize="xs" px={2} py={1}>
                               <Flex align="center" gap={1}>
@@ -89,11 +91,14 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                               </Flex>
                             </Badge>
                           )}
+                          {/* TODO: Adicionar campo user_role no SDK */}
+                          {/* @ts-expect-error - Campo não existe no tipo Account ainda */}
                           {account.user_role === 'owner' && (
                             <Badge colorPalette="yellow" fontSize="xs" px={2} py={1}>
                               Proprietário
                             </Badge>
                           )}
+                          {/* @ts-expect-error - Campo não existe no tipo Account ainda */}
                           {account.user_role === 'member' && (
                             <Badge colorPalette="brand" fontSize="xs" px={2} py={1}>
                               Membro
@@ -103,7 +108,7 @@ export function AccountsDialog({ isOpen, onClose }: AccountsDialogProps) {
                       </Box>
 
                       <Button
-                        onClick={() => handleManageMembers(account.id, account.account_name)}
+                        onClick={() => handleManageMembers(account.id ?? '', account.account_name ?? 'Conta')}
                         size="sm"
                         ml={4}
                         flexShrink={0}

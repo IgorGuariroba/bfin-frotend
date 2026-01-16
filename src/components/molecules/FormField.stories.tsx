@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FormField } from './FormField';
 
 const meta = {
@@ -68,6 +68,10 @@ export const Disabled: Story = {
 };
 
 export const Types: Story = {
+  args: {
+    label: 'Types Example',
+    type: 'text',
+  },
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '400px' }}>
       <FormField label="Texto" type="text" placeholder="Digite um texto" />

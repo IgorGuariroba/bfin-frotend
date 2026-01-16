@@ -22,6 +22,15 @@ import { useTransactions, useDeleteTransaction, useUpdateTransaction, useMarkAsP
 import { useCategories } from '../../../hooks/useCategories';
 import { confirm } from '../../ui/ConfirmDialog';
 import { toast } from '../../../lib/toast';
+import type { Transaction } from '../../../types/transaction';
+
+interface AxiosError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
 
 interface TransactionListProps {
   accountId?: string;
@@ -35,7 +44,7 @@ export function TransactionList({ accountId }: TransactionListProps) {
   const duplicateTransaction = useDuplicateTransaction();
   const { data: categoriesData } = useCategories();
 
-  const [editingTransaction, setEditingTransaction] = useState<any>(null);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [editForm, setEditForm] = useState({
     amount: 0,
     description: '',
@@ -83,7 +92,7 @@ export function TransactionList({ accountId }: TransactionListProps) {
     return typeMap[type] || type;
   };
 
-  const handleEdit = (transaction: any) => {
+  const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
     setEditForm({
       amount: Number(transaction.amount),
@@ -106,8 +115,9 @@ export function TransactionList({ accountId }: TransactionListProps) {
       try {
         await deleteTransaction.mutateAsync(id);
         toast.success('Transação excluída com sucesso!');
-      } catch (error: any) {
-        toast.error('Erro ao excluir transação', error.response?.data?.error);
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
+        toast.error('Erro ao excluir transação', axiosError.response?.data?.error);
       }
     }
   };
@@ -126,8 +136,9 @@ export function TransactionList({ accountId }: TransactionListProps) {
       });
       setEditingTransaction(null);
       toast.success('Transação atualizada com sucesso!');
-    } catch (error: any) {
-      toast.error('Erro ao atualizar transação', error.response?.data?.error);
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      toast.error('Erro ao atualizar transação', axiosError.response?.data?.error);
     }
   };
 
@@ -144,8 +155,9 @@ export function TransactionList({ accountId }: TransactionListProps) {
       try {
         await markAsPaid.mutateAsync(id);
         toast.success('Despesa marcada como paga!');
-      } catch (error: any) {
-        toast.error('Erro ao marcar como paga', error.response?.data?.error);
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
+        toast.error('Erro ao marcar como paga', axiosError.response?.data?.error);
       }
     }
   };
@@ -163,8 +175,9 @@ export function TransactionList({ accountId }: TransactionListProps) {
       try {
         await duplicateTransaction.mutateAsync(id);
         toast.success('Transação duplicada com sucesso!');
-      } catch (error: any) {
-        toast.error('Erro ao duplicar transação', error.response?.data?.error);
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
+        toast.error('Erro ao duplicar transação', axiosError.response?.data?.error);
       }
     }
   };

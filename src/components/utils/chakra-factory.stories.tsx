@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { VStack, HStack, Stack } from '@chakra-ui/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { VStack, HStack } from '@chakra-ui/react';
 import {
   CustomDiv,
   CustomSection,
@@ -15,7 +15,6 @@ import {
   CustomH2,
   CustomH3,
   CustomLink,
-  CustomImage,
   CustomTable,
   CustomTr,
   CustomTd,

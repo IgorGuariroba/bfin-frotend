@@ -2,7 +2,6 @@ import {
   IconButton,
   Button,
   Icon,
-  Tooltip,
 } from '@chakra-ui/react';
 import { useColorMode } from '../../hooks/useColorMode';
 import { Sun, Moon } from 'lucide-react';
@@ -24,32 +23,24 @@ export function ThemeToggle({
   const ariaLabel = isDark
     ? 'Mudar para modo claro'
     : 'Mudar para modo escuro';
-  const tooltipLabel = isDark
-    ? 'Mudar para modo claro'
-    : 'Mudar para modo escuro';
 
   // Variant: Icon Button (compact, for headers)
   if (variant === 'icon') {
     return (
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <IconButton
-            aria-label={ariaLabel}
-            onClick={toggleColorMode}
-            variant="ghost"
-            size={size}
-            color="var(--primary-foreground)"
-            _hover={{ bg: 'rgba(255,255,255,0.1)' }}
-            border="none"
-            _focus={{ boxShadow: 'none' }}
-          >
-            <Icon as={isDark ? Sun : Moon} boxSize={size === 'sm' ? 4 : 5} />
-          </IconButton>
-        </Tooltip.Trigger>
-        <Tooltip.Positioner>
-          <Tooltip.Content>{tooltipLabel}</Tooltip.Content>
-        </Tooltip.Positioner>
-      </Tooltip.Root>
+      <IconButton
+        aria-label={ariaLabel}
+        onClick={toggleColorMode}
+        variant="ghost"
+        size={size}
+        bg="rgba(0, 0, 0, 0.3)"
+        color="white"
+        _hover={{ bg: 'rgba(0, 0, 0, 0.5)' }}
+        border="none"
+        _focus={{ boxShadow: 'none' }}
+        borderRadius="md"
+      >
+        <Icon as={isDark ? Sun : Moon} boxSize={size === 'sm' ? 4 : 5} />
+      </IconButton>
     );
   }
 

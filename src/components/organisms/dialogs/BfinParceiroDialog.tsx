@@ -16,6 +16,14 @@ import { useAccounts } from '../../../hooks/useAccounts';
 import { useAddAccountMember } from '../../../hooks/useAccountMembers';
 import { toast } from '../../../lib/toast';
 
+interface AxiosError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
+
 interface BfinParceiroDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -56,8 +64,9 @@ export function BfinParceiroDialog({ isOpen, onClose }: BfinParceiroDialogProps)
       setSelectedRole('member');
       toast.success('Convite enviado com sucesso!');
       onClose();
-    } catch (error: any) {
-      toast.error('Erro ao enviar convite', error.response?.data?.error);
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      toast.error('Erro ao enviar convite', axiosError.response?.data?.error);
     }
   };
 
@@ -96,11 +105,12 @@ export function BfinParceiroDialog({ isOpen, onClose }: BfinParceiroDialogProps)
                       Nenhuma conta disponível
                     </Text>
                   ) : (
-                    <NativeSelect.Root
-                      value={selectedAccountId}
-                      onValueChange={(e) => setSelectedAccountId(e.value[0])}
-                    >
-                      <NativeSelect.Field placeholder="Selecione uma conta">
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        placeholder="Selecione uma conta"
+                        value={selectedAccountId}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedAccountId(e.target.value)}
+                      >
                         {accounts.map((account) => (
                           <option key={account.id} value={account.id}>
                             {account.account_name}

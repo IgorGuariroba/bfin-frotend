@@ -19,6 +19,7 @@ export function ColorModeProvider({
 }: ColorModeProviderProps) {
   return (
     <ThemeProvider
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       attribute={attribute as any}
       defaultTheme={defaultTheme}
       enableSystem={enableSystem}

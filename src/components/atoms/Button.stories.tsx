@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
 
 const meta = {
@@ -11,7 +11,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['solid', 'outline', 'ghost', 'link'],
+      options: ['solid', 'outline', 'ghost', 'subtle', 'surface', 'plain'],
     },
     size: {
       control: 'select',
@@ -45,7 +45,7 @@ export const Variants: Story = {
       <Button variant="solid">Solid</Button>
       <Button variant="outline">Outline</Button>
       <Button variant="ghost">Ghost</Button>
-      <Button variant="link">Link</Button>
+      <Button variant="subtle">Subtle</Button>
     </div>
   ),
 };

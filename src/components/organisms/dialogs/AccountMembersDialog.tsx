@@ -21,6 +21,14 @@ import { useAccountMembers, useAddAccountMember, useRemoveAccountMember, useUpda
 import { confirm } from '../../ui/ConfirmDialog';
 import { toast } from '../../../lib/toast';
 
+interface AxiosError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
+
 interface AccountMembersDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -93,8 +101,9 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
       setSelectedRole('member');
       setShowAddForm(false);
       toast.success('Convite enviado com sucesso!');
-    } catch (error: any) {
-      toast.error('Erro ao enviar convite', error.response?.data?.error);
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      toast.error('Erro ao enviar convite', axiosError.response?.data?.error);
     }
   };
 
@@ -111,8 +120,9 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
       try {
         await removeMember.mutateAsync({ accountId, userId });
         toast.success('Membro removido com sucesso!');
-      } catch (error: any) {
-        toast.error('Erro ao remover membro', error.response?.data?.error);
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
+        toast.error('Erro ao remover membro', axiosError.response?.data?.error);
       }
     }
   };
@@ -135,8 +145,9 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
       setShowRoleDialog(false);
       setRoleChangeData(null);
       toast.success('Permissão atualizada com sucesso!');
-    } catch (error: any) {
-      toast.error('Erro ao atualizar permissão', error.response?.data?.error);
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      toast.error('Erro ao atualizar permissão', axiosError.response?.data?.error);
     }
   };
 
@@ -348,11 +359,11 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
                   <Text fontSize="sm" fontWeight="medium" mb={2}>
                     Nova permissão:
                   </Text>
-                  <NativeSelect.Root
-                    value={newRole}
-                    onValueChange={(e) => setNewRole(e.value as 'owner' | 'member' | 'viewer')}
-                  >
-                    <NativeSelect.Field>
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      value={newRole}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewRole(e.target.value as 'owner' | 'member' | 'viewer')}
+                    >
                       <option value="owner">Proprietário</option>
                       <option value="member">Membro</option>
                       <option value="viewer">Visualizador</option>

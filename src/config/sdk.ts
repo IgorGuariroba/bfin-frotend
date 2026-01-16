@@ -52,7 +52,7 @@ export function initializeSdk() {
           configureBfinApi({
             token: response.access_token,
           });
-        } catch (error) {
+        } catch (_error) {
           // Refresh falhou, fazer logout
           clearAuth();
         }

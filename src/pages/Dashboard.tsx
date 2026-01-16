@@ -11,7 +11,6 @@ import {
   Progress,
   IconButton,
   Dialog,
-  Alert,
   List,
   Tooltip,
   Icon,
@@ -44,7 +43,6 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
-import { toast } from '../lib/toast';
 
 export function Dashboard() {
   const { user, signOut } = useAuth();
@@ -57,9 +55,7 @@ export function Dashboard() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | null>(null);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: invitations = [] } = useMyInvitations();
-
-  const accountIds = accounts?.map((acc) => acc.id) || [];
+  const { data: _invitations = [] } = useMyInvitations();
 
   function handleSignOut() {
     signOut();
