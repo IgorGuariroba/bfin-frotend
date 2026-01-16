@@ -32,5 +32,6 @@ storybook-static
 .env.production.local
 .env.development.local
 
-# NPM config (contém token, não versionar)
-.npmrc
+# NPM config local (contém token hardcoded, não versionar)
+# .npmrc com ${NPM_TOKEN} pode ser versionado
+.npmrc.local
