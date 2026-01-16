@@ -46,8 +46,9 @@ export function Login() {
     try {
       await signIn(email, password);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Erro ao fazer login');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao fazer login';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

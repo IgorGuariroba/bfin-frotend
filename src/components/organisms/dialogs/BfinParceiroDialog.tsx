@@ -16,6 +16,14 @@ import { useAccounts } from '../../../hooks/useAccounts';
 import { useAddAccountMember } from '../../../hooks/useAccountMembers';
 import { toast } from '../../../lib/toast';
 
+interface AxiosError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
+
 interface BfinParceiroDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -56,8 +64,9 @@ export function BfinParceiroDialog({ isOpen, onClose }: BfinParceiroDialogProps)
       setSelectedRole('member');
       toast.success('Convite enviado com sucesso!');
       onClose();
-    } catch (error: any) {
-      toast.error('Erro ao enviar convite', error.response?.data?.error);
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      toast.error('Erro ao enviar convite', axiosError.response?.data?.error);
     }
   };
 

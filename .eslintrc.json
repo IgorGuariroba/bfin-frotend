@@ -11,7 +11,7 @@
     "plugin:react-hooks/recommended",
     "plugin:storybook/recommended"
   ],
-  "ignorePatterns": ["dist", ".eslintrc.json"],
+  "ignorePatterns": ["dist", ".eslintrc.json", "scripts/**/*.js"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",

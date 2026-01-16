@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { VStack, HStack } from '@chakra-ui/react';
 import {
   CustomDiv,

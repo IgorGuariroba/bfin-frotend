@@ -15,6 +15,14 @@ import { useMyInvitations, useAcceptInvitation, useRejectInvitation } from '../.
 import { confirm } from '../../ui/ConfirmDialog';
 import { toast } from '../../../lib/toast';
 
+interface AxiosError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
+
 interface InvitationsDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -56,8 +64,9 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
       try {
         await acceptInvitation.mutateAsync(token);
         toast.success('Convite aceito com sucesso!');
-      } catch (error: any) {
-        toast.error('Erro ao aceitar convite', error.response?.data?.error);
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
+        toast.error('Erro ao aceitar convite', axiosError.response?.data?.error);
       }
     }
   };
@@ -75,8 +84,9 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
       try {
         await rejectInvitation.mutateAsync(token);
         toast.info('Convite rejeitado');
-      } catch (error: any) {
-        toast.error('Erro ao rejeitar convite', error.response?.data?.error);
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError;
+        toast.error('Erro ao rejeitar convite', axiosError.response?.data?.error);
       }
     }
   };

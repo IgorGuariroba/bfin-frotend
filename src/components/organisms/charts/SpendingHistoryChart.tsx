@@ -99,12 +99,21 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
     return CHART_COLORS.normal;
   };
 
+  interface TooltipPayloadItem {
+    payload: ChartDataItem;
+  }
+
+  interface CustomTooltipProps {
+    active?: boolean;
+    payload?: TooltipPayloadItem[];
+  }
+
   const CustomTooltip = ({
     active,
     payload,
-  }: any) => {
+  }: CustomTooltipProps) => {
     if (active && payload && payload.length > 0 && payload[0]) {
-      const data = (payload[0] as any).payload as ChartDataItem;
+      const data = payload[0].payload;
 
       return (
         <Box bg="card" p={3} borderWidth="1px" borderColor="gray.200" borderRadius="md" shadow="lg">
@@ -245,9 +254,9 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
             name="Gasto"
             radius={[4, 4, 0, 0]}
             fill={CHART_COLORS.normal}
-            shape={(props: any) => {
-              const { x, y, width, height, payload } = props;
-              const color = getBarColor(payload);
+            shape={(props: unknown) => {
+              const { x = 0, y = 0, width = 0, height = 0, payload } = props as { x?: number; y?: number; width?: number; height?: number; payload?: ChartDataItem };
+              const color = payload ? getBarColor(payload) : CHART_COLORS.normal;
               return (
                 <rect
                   x={x}

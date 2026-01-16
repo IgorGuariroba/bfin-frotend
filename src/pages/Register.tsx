@@ -42,8 +42,9 @@ export function Register() {
     try {
       await signUp(email, password, fullName);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Erro ao criar conta');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

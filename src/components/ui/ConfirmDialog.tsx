@@ -79,6 +79,7 @@ export function ConfirmDialog() {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function confirm(options: ConfirmDialogOptions): Promise<boolean> {
   return new Promise((resolve) => {
     confirmDialogState = { resolve, options };

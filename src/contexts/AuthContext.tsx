@@ -5,6 +5,14 @@ import {
 } from '@igorguariroba/bfin-sdk';
 import { updateSdkToken } from '../config/sdk';
 
+interface AxiosError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
 const authApi = getAuthentication();
 
 type User = SdkUser;
@@ -73,8 +81,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       updateSdkToken(response.tokens.access_token);
 
       setUser(response.user);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Erro ao fazer login');
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      throw new Error(axiosError.response?.data?.message || 'Erro ao fazer login');
     }
   }
 
@@ -99,8 +108,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       updateSdkToken(response.tokens.access_token);
 
       setUser(response.user);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Erro ao criar conta');
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError;
+      throw new Error(axiosError.response?.data?.message || 'Erro ao criar conta');
     }
   }
 
@@ -129,6 +139,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
 
