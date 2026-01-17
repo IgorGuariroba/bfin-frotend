@@ -58,14 +58,15 @@ export function Sidebar({
     }
   }, [isMobile, hiddenOnMobile, sidebarState]);
 
-  // Atualizar estado quando mudar de desktop para mobile
+  // Atualizar estado quando mudar de desktop para mobile (só mudança de viewport)
   useEffect(() => {
-    if (isMobile && hiddenOnMobile) {
+    if (isMobile && hiddenOnMobile && sidebarState !== 'hidden') {
       setSidebarState('hidden');
     } else if (!isMobile && sidebarState === 'hidden') {
       setSidebarState('collapsed');
     }
-  }, [isMobile, hiddenOnMobile, sidebarState]);
+  }, [isMobile, hiddenOnMobile]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Nota: sidebarState foi intencionalmente removido das dependências para evitar loops infinitos
 
   // Notificar mudanças de estado
   useEffect(() => {
