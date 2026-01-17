@@ -27,7 +27,8 @@ import {
   FixedExpenseForm,
   BfinParceiroForm,
   Extrato,
-  CreateAccountForm
+  CreateAccountForm,
+  DailyLimitForm
 } from '../components/organisms';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
@@ -147,18 +148,17 @@ export function Dashboard() {
           );
         case 'ajustar-limite':
           return (
-            <Box>
-              <Text color="var(--muted-foreground)">
-                Funcionalidade de ajuste de limite em desenvolvimento.
-              </Text>
-            </Box>
+            <DailyLimitForm
+              onSuccess={() => setExpandedForm(null)}
+              onCancel={() => setExpandedForm(null)}
+            />
           );
         default:
           return null;
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'extrato';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato';
 
     return (
       <Box
