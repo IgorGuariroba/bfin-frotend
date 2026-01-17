@@ -362,7 +362,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                     type="text"
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    isRequired
+                    required
                   />
 
                   <FormField
@@ -371,14 +371,14 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                     step="0.01"
                     value={editForm.amount}
                     onChange={(e) => setEditForm({ ...editForm, amount: Number(e.target.value) })}
-                    isRequired
+                    required
                   />
 
                   <FormSelect
                     label="Categoria"
                     value={editForm.categoryId}
                     onChange={(e) => setEditForm({ ...editForm, categoryId: e.target.value })}
-                    isRequired
+                    required
                   >
                     <option value="">Selecione uma categoria</option>
                     {categoriesData?.map((category) => (

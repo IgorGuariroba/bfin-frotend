@@ -62,7 +62,7 @@ export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProp
         <FormField
           label="Nome da Conta"
           placeholder="Ex: Conta Corrente, Nubank, etc."
-          isRequired
+          required
           error={errors.account_name?.message}
           {...register('account_name')}
         />

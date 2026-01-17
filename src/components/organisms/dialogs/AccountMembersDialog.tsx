@@ -191,7 +191,7 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@exemplo.com"
-                  isRequired
+                  required
                 />
 
                 <FormSelect
