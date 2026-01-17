@@ -5,13 +5,13 @@ interface FormFieldProps extends InputProps {
   label: string;
   error?: string;
   helperText?: string;
-  isRequired?: boolean;
+  required?: boolean;
 }
 
 export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
-  ({ label, error, helperText, isRequired, ...inputProps }, ref) => {
+  ({ label, error, helperText, required, ...inputProps }, ref) => {
     return (
-      <Field.Root invalid={!!error} required={isRequired}>
+      <Field.Root invalid={!!error} required={required}>
         <Field.Label>{label}</Field.Label>
         <Input ref={ref} {...inputProps} />
         {error && <Field.ErrorText>{error}</Field.ErrorText>}

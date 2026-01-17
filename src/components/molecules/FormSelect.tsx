@@ -5,14 +5,14 @@ interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> 
   label: string;
   error?: string;
   helperText?: string;
-  isRequired?: boolean;
+  required?: boolean;
   children?: React.ReactNode;
 }
 
 export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
-  ({ label, error, helperText, isRequired, children, ...selectProps }, ref) => {
+  ({ label, error, helperText, required, children, ...selectProps }, ref) => {
     return (
-      <Field.Root invalid={!!error} required={isRequired}>
+      <Field.Root invalid={!!error} required={required}>
         <Field.Label>{label}</Field.Label>
         <NativeSelect.Root>
           <NativeSelect.Field
