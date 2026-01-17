@@ -9,7 +9,7 @@ const meta = {
   },
   tags: ['autodocs'],
   argTypes: {
-    isRequired: {
+    required: {
       control: 'boolean',
     },
     disabled: {
@@ -38,7 +38,7 @@ export const Default: Story = {
 export const Required: Story = {
   args: {
     label: 'Conta',
-    isRequired: true,
+    required: true,
     children: (
       <>
         <option value="">Selecione uma conta</option>

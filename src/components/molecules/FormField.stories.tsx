@@ -13,7 +13,7 @@ const meta = {
       control: 'select',
       options: ['text', 'email', 'password', 'number', 'tel', 'url'],
     },
-    isRequired: {
+    required: {
       control: 'boolean',
     },
     disabled: {
@@ -37,7 +37,7 @@ export const Required: Story = {
   args: {
     label: 'Nome',
     placeholder: 'Digite seu nome',
-    isRequired: true,
+    required: true,
   },
 };
 
