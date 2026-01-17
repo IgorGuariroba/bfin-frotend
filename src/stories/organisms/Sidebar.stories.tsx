@@ -175,14 +175,14 @@ export const MobileWithOverlay: Story = {
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: true,
+    defaultExpanded: false, // Mudado para false para testar o toggle
     showQRCode: true,
   },
   parameters: {
     viewport: { defaultViewport: 'mobile' },
     docs: {
       description: {
-        story: 'Sidebar expandida no mobile com backdrop overlay. Clique fora para fechar.',
+        story: 'No mobile, clique no botão de configurações (⚙️) para abrir a sidebar com backdrop overlay. Clique fora da sidebar para fechar.',
       },
     },
   },
@@ -273,6 +273,32 @@ export const DisabledMenuItem: Story = {
     docs: {
       description: {
         story: 'Sidebar com item de menu desabilitado (Recurso Premium).',
+      },
+    },
+  },
+};
+
+export const MobileToggleTest: Story = {
+  args: {
+    menuItems: [
+      {
+        id: 'test-item',
+        icon: Settings,
+        label: 'Item de Teste',
+        onClick: () => alert('Item de teste clicado! A sidebar deve fechar automaticamente no mobile.'),
+      },
+    ],
+    onHomeClick: () => alert('Home clicado! A sidebar deve fechar no mobile.'),
+    onSignOut: () => alert('Desconectar clicado!'),
+    onVisibilityClick: () => alert('Visibilidade clicada!'),
+    defaultExpanded: false,
+    showQRCode: false,
+  },
+  parameters: {
+    viewport: { defaultViewport: 'mobile' },
+    docs: {
+      description: {
+        story: '🧪 TESTE MOBILE: Clique no ⚙️ para abrir, teste os cliques nos itens, e verifique se a sidebar fecha corretamente. Teste também mudando o tamanho da tela.',
       },
     },
   },

@@ -29,12 +29,12 @@ export function Sidebar({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const isMobile = useBreakpointValue({ base: true, md: false });
 
-  // Close sidebar on mobile when window resizes
+  // Close sidebar when switching from desktop to mobile
   useEffect(() => {
-    if (isMobile && isExpanded) {
+    if (isMobile) {
       setIsExpanded(false);
     }
-  }, [isMobile, isExpanded]);
+  }, [isMobile]);
 
   const handleToggleExpanded = () => {
     setIsExpanded(!isExpanded);
