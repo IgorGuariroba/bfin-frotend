@@ -10,6 +10,7 @@ import { useCategories } from '../../../hooks/useCategories';
 import type { CreateFixedExpenseDTO } from '../../../types/transaction';
 import { Pencil, Tag, Zap, Check, ChevronDown, Calendar } from 'lucide-react';
 import { iconColors } from '../../../theme';
+import { toast } from '../../../lib/toast';
 
 const fixedExpenseSchema = z.object({
   accountId: z.string().min(1, 'Conta é obrigatória'),
@@ -76,12 +77,15 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
       };
 
       await createFixedExpense.mutateAsync(payload);
+      
+      toast.success('Despesa fixa agendada com sucesso!');
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       console.error('Error creating fixed expense:', error);
+      toast.error('Erro ao agendar despesa fixa');
     }
   };
 

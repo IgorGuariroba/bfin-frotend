@@ -10,6 +10,7 @@ import { useCategories } from '../../../hooks/useCategories';
 import type { CreateVariableExpenseDTO } from '../../../types/transaction';
 import { Pencil, Tag, Zap, Check, ChevronDown } from 'lucide-react';
 import { iconColors } from '../../../theme';
+import { toast } from '../../../lib/toast';
 
 const variableExpenseSchema = z.object({
   accountId: z.string().min(1, 'Conta é obrigatória'),
@@ -68,12 +69,15 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
       };
 
       await createVariableExpense.mutateAsync(payload);
+      
+      toast.success('Despesa variável criada com sucesso!');
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       console.error('Error creating variable expense:', error);
+      toast.error('Erro ao criar despesa variável');
     }
   };
 

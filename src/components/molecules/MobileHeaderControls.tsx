@@ -22,24 +22,6 @@ export function MobileHeaderControls({
 
   return (
     <HStack gap={2}>
-      {/* Botão Home - sempre visível no mobile quando sidebar está oculta */}
-      {showHomeButton && sidebarState === 'hidden' && (
-        <IconButton
-          aria-label="Home"
-          variant="ghost"
-          color="var(--primary-foreground)"
-          _hover={{ bg: 'whiteAlpha.100' }}
-          _active={{ bg: 'whiteAlpha.200', transform: 'scale(0.95)' }}
-          size="md"
-          border="none"
-          _focus={{ boxShadow: 'none' }}
-          onClick={onHomeClick}
-          transition="all 0.2s"
-        >
-          <Home size={20} />
-        </IconButton>
-      )}
-
       {/* Botão Hambúrguer - para abrir/fechar sidebar */}
       <IconButton
         aria-label={sidebarState === 'hidden' ? 'Abrir menu' : 'Fechar menu'}
@@ -59,6 +41,24 @@ export function MobileHeaderControls({
       >
         <Menu size={20} />
       </IconButton>
+
+      {/* Botão Home - sempre visível no mobile quando sidebar está oculta */}
+      {showHomeButton && sidebarState === 'hidden' && (
+        <IconButton
+          aria-label="Home"
+          variant="ghost"
+          color="var(--primary-foreground)"
+          _hover={{ bg: 'whiteAlpha.100' }}
+          _active={{ bg: 'whiteAlpha.200', transform: 'scale(0.95)' }}
+          size="md"
+          border="none"
+          _focus={{ boxShadow: 'none' }}
+          onClick={onHomeClick}
+          transition="all 0.2s"
+        >
+          <Home size={20} />
+        </IconButton>
+      )}
     </HStack>
   );
 }

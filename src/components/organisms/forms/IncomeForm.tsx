@@ -10,6 +10,7 @@ import { useCategories } from '../../../hooks/useCategories';
 import type { CreateIncomeDTO } from '../../../types/transaction';
 import { Pencil, Tag, Calendar, Check, ChevronDown, Zap } from 'lucide-react';
 import { iconColors } from '../../../theme';
+import { toast } from '../../../lib/toast';
 
 const incomeSchema = z.object({
   accountId: z.string().min(1, 'Conta é obrigatória'),
@@ -76,12 +77,15 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
       };
 
       await createIncome.mutateAsync(payload);
+      
+      toast.success('Receita adicionada com sucesso!');
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       console.error('Error creating income:', error);
+      toast.error('Erro ao adicionar receita');
     }
   };
 
