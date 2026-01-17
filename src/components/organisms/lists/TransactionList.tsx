@@ -34,9 +34,10 @@ interface AxiosError {
 
 interface TransactionListProps {
   accountId?: string;
+  maxH?: string | number;
 }
 
-export function TransactionList({ accountId }: TransactionListProps) {
+export function TransactionList({ accountId, maxH = '96' }: TransactionListProps) {
   const { data, isLoading, isError } = useTransactions({ accountId });
   const deleteTransaction = useDeleteTransaction();
   const updateTransaction = useUpdateTransaction();
@@ -224,7 +225,7 @@ export function TransactionList({ accountId }: TransactionListProps) {
       </Box>
 
       {/* Transaction List */}
-      <Stack gap={2} maxH="96" overflowY="auto">
+      <Stack gap={2} maxH={maxH} overflowY="auto">
         {data.transactions.map((transaction) => (
           <Box
             key={transaction.id}
