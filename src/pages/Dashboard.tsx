@@ -18,9 +18,17 @@ import {
   Separator,
 } from '@chakra-ui/react';
 import { Button } from '../components/atoms/Button';
-import { CreateAccountForm } from '../components/organisms/forms';
-import { AccountsDialog, InvitationsDialog, BfinParceiroDialog } from '../components/organisms/dialogs';
-import { VariableExpenseForm, IncomeForm, FixedExpenseForm, BfinParceiroForm } from '../components/organisms/forms';
+import {
+  AccountsDialog,
+  InvitationsDialog,
+  BfinParceiroDialog,
+  VariableExpenseForm,
+  IncomeForm,
+  FixedExpenseForm,
+  BfinParceiroForm,
+  Extrato,
+  CreateAccountForm
+} from '../components/organisms';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
@@ -54,7 +62,7 @@ export function Dashboard() {
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | null>(null);
+  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | null>(null);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
 
@@ -76,12 +84,15 @@ export function Dashboard() {
         case 'agendar-pagamento': return 'Agendar Pagamento';
         case 'recarga-celular': return 'Recarga de Celular';
         case 'ajustar-limite': return 'Ajustar Limite';
+        case 'extrato': return 'Extrato da Conta';
         default: return '';
       }
     };
 
     const getContent = () => {
       switch (expandedForm) {
+        case 'extrato':
+          return <Extrato />;
         case 'pagar':
           return (
             <VariableExpenseForm
@@ -147,7 +158,7 @@ export function Dashboard() {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'extrato';
 
     return (
       <Box
@@ -189,7 +200,9 @@ export function Dashboard() {
           },
         }}
       >
-        {hasGreenHeader ? (
+        {expandedForm === 'extrato' ? (
+          <Extrato onBack={() => setExpandedForm(null)} />
+        ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}
             <Box bg="var(--primary)" px={6} py={6} pb={8}>
@@ -560,7 +573,7 @@ export function Dashboard() {
                   bg="var(--primary)"
                   color="var(--primary-foreground)"
                   _hover={{ opacity: 0.9 }}
-                  onClick={() => setManageAccountsDialogOpen(true)}
+                  onClick={() => setExpandedForm('extrato')}
                 >
                   ACESSAR
                 </Button>
