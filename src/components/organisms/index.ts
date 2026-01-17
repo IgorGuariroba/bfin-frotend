@@ -4,3 +4,4 @@ export * from './dialogs';
 export * from './lists';
 export * from './charts';
 export * from './Extrato';
+export * from './FooterActions';

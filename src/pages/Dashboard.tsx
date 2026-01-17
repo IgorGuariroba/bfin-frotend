@@ -28,13 +28,13 @@ import {
   BfinParceiroForm,
   Extrato,
   CreateAccountForm,
-  DailyLimitForm
+  DailyLimitForm,
+  FooterActions
 } from '../components/organisms';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
   Shield,
-  Calendar,
   Wallet,
   Mail,
   Home,
@@ -43,11 +43,6 @@ import {
   CreditCard,
   DollarSign,
   Users,
-  Send,
-  Download,
-  Smartphone,
-  Sliders,
-  BarChart3,
   X,
   ArrowLeft
 } from 'lucide-react';
@@ -671,173 +666,11 @@ export function Dashboard() {
           </Grid>
           )}
 
-          {/* Footer - Actions */}
-          <Box
-            position="fixed"
-            bottom="0"
-            left="0"
-            right="0"
-            bg="var(--primary)"
-            boxShadow={customShadows.whiteGlow.top}
-            px={8}
-            py={2}
-            zIndex={15}
-            h="90px"
-          >
-            <Flex justify="space-between" align="stretch" gap={2} h="full">
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                onClick={() => setExpandedForm(expandedForm === 'pagar' ? null : 'pagar')}
-                gap={1}
-              >
-                <BarChart3 size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Pagar</Text>
-              </Box>
-
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                gap={1}
-                onClick={() => setExpandedForm(expandedForm === 'bfin-parceiro' ? null : 'bfin-parceiro')}
-              >
-                <Users size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Bfin Parceiro</Text>
-              </Box>
-
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                onClick={() => setExpandedForm(expandedForm === 'transferir' ? null : 'transferir')}
-                gap={1}
-              >
-                <Send size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Transferir</Text>
-              </Box>
-
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                onClick={() => setExpandedForm(expandedForm === 'depositar' ? null : 'depositar')}
-                gap={1}
-              >
-                <Download size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Depositar</Text>
-              </Box>
-
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                onClick={() => setExpandedForm(expandedForm === 'emprestimos' ? null : 'emprestimos')}
-                gap={1}
-              >
-                <DollarSign size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Empréstimos</Text>
-              </Box>
-
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                gap={1}
-                onClick={() => setExpandedForm(expandedForm === 'agendar-pagamento' ? null : 'agendar-pagamento')}
-              >
-                <Calendar size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Agendar pagamento</Text>
-              </Box>
-
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                onClick={() => setExpandedForm(expandedForm === 'recarga-celular' ? null : 'recarga-celular')}
-                gap={1}
-              >
-                <Smartphone size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Recarga de celular</Text>
-              </Box>
-
-              <Box
-                flex="1"
-                h="full"
-                borderRadius="xl"
-                bg="whiteAlpha.200"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                cursor="pointer"
-                _hover={{ bg: 'whiteAlpha.300' }}
-                transition="all 0.2s"
-                onClick={() => setExpandedForm(expandedForm === 'ajustar-limite' ? null : 'ajustar-limite')}
-                gap={1}
-              >
-                <Sliders size={22} color="var(--primary-foreground)" />
-                <Text color="var(--primary-foreground)" fontSize="2xs">Ajustar limite</Text>
-              </Box>
-            </Flex>
-          </Box>
+          {/* Footer Actions */}
+          <FooterActions
+            expandedForm={expandedForm}
+            onFormSelect={setExpandedForm}
+          />
         </Flex>
       </Flex>
 
