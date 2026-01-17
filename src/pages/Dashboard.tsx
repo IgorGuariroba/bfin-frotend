@@ -12,10 +12,7 @@ import {
   IconButton,
   Dialog,
   List,
-  Tooltip,
-  Icon,
   Grid,
-  Separator,
 } from '@chakra-ui/react';
 import { Button } from '../components/atoms/Button';
 import {
@@ -29,17 +26,16 @@ import {
   Extrato,
   CreateAccountForm,
   DailyLimitForm,
-  FooterActions
+  FooterActions,
+  Sidebar
 } from '../components/organisms';
+import type { MenuItem } from '../components/organisms/SidebarExpanded';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
   Shield,
   Wallet,
   Mail,
-  Home,
-  Settings,
-  Eye,
   CreditCard,
   DollarSign,
   Users,
@@ -57,7 +53,6 @@ export function Dashboard() {
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | null>(null);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
@@ -66,6 +61,56 @@ export function Dashboard() {
     signOut();
     navigate('/login');
   }
+
+  // Sidebar menu items configuration
+  const sidebarMenuItems: MenuItem[] = [
+    {
+      id: 'help',
+      icon: Shield,
+      label: 'Me ajuda',
+      onClick: () => {
+        // TODO: Implement help functionality
+      },
+    },
+    {
+      id: 'profile',
+      icon: Users,
+      label: 'Perfil',
+      onClick: () => {
+        // TODO: Implement profile functionality
+      },
+    },
+    {
+      id: 'configure-account',
+      icon: DollarSign,
+      label: 'Configurar conta',
+      onClick: () => setManageAccountsDialogOpen(true),
+    },
+    {
+      id: 'configure-card',
+      icon: CreditCard,
+      label: 'Configurar cartão',
+      onClick: () => {
+        // TODO: Implement card configuration
+      },
+    },
+    {
+      id: 'business-account',
+      icon: Wallet,
+      label: 'Pedir conta PJ',
+      onClick: () => {
+        // TODO: Implement business account request
+      },
+    },
+    {
+      id: 'notifications',
+      icon: Mail,
+      label: 'Configurar notificações',
+      onClick: () => {
+        // TODO: Implement notifications configuration
+      },
+    },
+  ];
 
   const renderExpandedContent = () => {
     if (!expandedForm) return null;
@@ -309,220 +354,15 @@ export function Dashboard() {
 
       {/* Main Layout - Sidebar + Content */}
       <Flex flex="1" overflow="hidden" position="relative">
-        {/* Sidebar Collapsed */}
-        <VStack
-          w="80px"
-          bg="var(--primary)"
-          py={6}
-          gap={6}
-          boxShadow={customShadows.whiteGlow.side}
-          position="relative"
-          zIndex={1}
-        >
-          <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              <IconButton
-                aria-label="Home"
-                variant="ghost"
-                color="var(--primary-foreground)"
-                _hover={{ bg: 'whiteAlpha.100' }}
-                size="lg"
-                border="none"
-                _focus={{ boxShadow: 'none' }}
-                onClick={() => setExpandedForm(null)}
-              >
-                <Home size={24} />
-              </IconButton>
-            </Tooltip.Trigger>
-            <Tooltip.Positioner>
-              <Tooltip.Content>Home</Tooltip.Content>
-            </Tooltip.Positioner>
-          </Tooltip.Root>
-
-          <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              <IconButton
-                aria-label="Configurações"
-                variant="ghost"
-                color="var(--primary-foreground)"
-                _hover={{ bg: 'whiteAlpha.100' }}
-                size="lg"
-                onClick={() => setSidebarExpanded(!sidebarExpanded)}
-                border="none"
-                _focus={{ boxShadow: 'none' }}
-              >
-                <Settings size={24} />
-              </IconButton>
-            </Tooltip.Trigger>
-            <Tooltip.Positioner>
-              <Tooltip.Content>Ocultar configurações</Tooltip.Content>
-            </Tooltip.Positioner>
-          </Tooltip.Root>
-
-          <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              <IconButton
-                aria-label="Visibilidade"
-                variant="ghost"
-                color="var(--primary-foreground)"
-                _hover={{ bg: 'whiteAlpha.100' }}
-                size="lg"
-                border="none"
-                _focus={{ boxShadow: 'none' }}
-              >
-                <Eye size={24} />
-              </IconButton>
-            </Tooltip.Trigger>
-            <Tooltip.Positioner>
-              <Tooltip.Content>Visibilidade</Tooltip.Content>
-            </Tooltip.Positioner>
-          </Tooltip.Root>
-        </VStack>
-
-        {/* Sidebar Expanded */}
-        {sidebarExpanded && (
-          <Box
-            position="absolute"
-            left="80px"
-            top="0"
-            bottom="0"
-            w="320px"
-            bg="var(--primary)"
-            zIndex={20}
-            boxShadow="2xl"
-            overflowY="auto"
-          >
-            <VStack p={6} gap={6} align="stretch">
-              {/* QR Code and Account Info */}
-              <VStack gap={4} align="stretch">
-                <Flex justify="center">
-                  <Box
-                    w="180px"
-                    h="180px"
-                    bg="card"
-                    borderRadius="xl"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Text fontSize="xs" color="muted.fg">QR Code</Text>
-                  </Box>
-                </Flex>
-
-                <VStack align="flex-start" gap={0} fontSize="xs" color="var(--primary-foreground)" opacity={0.8}>
-                  <Text>Agência: 0001</Text>
-                  <Text>Conta: 1000001-0</Text>
-                  <Text>Banco: 260 - BFIN Pagamentos S.A.</Text>
-                </VStack>
-              </VStack>
-
-              <Separator borderColor="whiteAlpha.200" />
-
-              {/* Menu Options */}
-              <VStack gap={2} align="stretch">
-                <Button
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  justifyContent="space-between"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                  size="lg"
-                >
-                  <HStack>
-                    <Icon as={Shield} boxSize={5} />
-                    <Text>Me ajuda</Text>
-                  </HStack>
-                  <Text>›</Text>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  justifyContent="space-between"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                  size="lg"
-                >
-                  <HStack>
-                    <Icon as={Users} boxSize={5} />
-                    <Text>Perfil</Text>
-                  </HStack>
-                  <Text>›</Text>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  justifyContent="space-between"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                  size="lg"
-                  onClick={() => setManageAccountsDialogOpen(true)}
-                >
-                  <HStack>
-                    <Icon as={DollarSign} boxSize={5} />
-                    <Text>Configurar conta</Text>
-                  </HStack>
-                  <Text>›</Text>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  justifyContent="space-between"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                  size="lg"
-                >
-                  <HStack>
-                    <Icon as={CreditCard} boxSize={5} />
-                    <Text>Configurar cartão</Text>
-                  </HStack>
-                  <Text>›</Text>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  justifyContent="space-between"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                  size="lg"
-                >
-                  <HStack>
-                    <Icon as={Wallet} boxSize={5} />
-                    <Text>Pedir conta PJ</Text>
-                  </HStack>
-                  <Text>›</Text>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  color="var(--primary-foreground)"
-                  justifyContent="space-between"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                  size="lg"
-                >
-                  <HStack>
-                    <Icon as={Mail} boxSize={5} />
-                    <Text>Configurar notificações</Text>
-                  </HStack>
-                  <Text>›</Text>
-                </Button>
-              </VStack>
-
-              <Box flex="1" />
-
-              <Button
-                variant="solid"
-                bg="transparent"
-                color="var(--primary-foreground)"
-                borderWidth="1px"
-                borderColor="whiteAlpha.300"
-                _hover={{ bg: 'whiteAlpha.100' }}
-                size="lg"
-                onClick={handleSignOut}
-              >
-                DESCONECTAR
-              </Button>
-            </VStack>
-          </Box>
-        )}
+        {/* Sidebar */}
+        <Sidebar
+          menuItems={sidebarMenuItems}
+          onHomeClick={() => setExpandedForm(null)}
+          onSignOut={handleSignOut}
+          onVisibilityClick={() => {
+            // TODO: Implement visibility toggle
+          }}
+        />
 
         {/* Content Area */}
         <Flex flex="1" direction="column" overflow="auto" position="relative">
