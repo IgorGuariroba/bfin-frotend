@@ -117,17 +117,23 @@ const minimalMenuItems: MenuItem[] = [
   },
 ];
 
-export const Desktop: Story = {
+export const DesktopCollapsed: Story = {
   args: {
     menuItems: defaultMenuItems,
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: false,
+    hiddenOnMobile: false,
+    defaultDesktopState: 'collapsed',
     showQRCode: true,
   },
   parameters: {
     viewport: { defaultViewport: 'desktop' },
+    docs: {
+      description: {
+        story: 'Sidebar no desktop iniciando colapsada. Clique no ⚙️ para expandir.',
+      },
+    },
   },
 };
 
@@ -137,52 +143,55 @@ export const DesktopExpanded: Story = {
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: true,
+    hiddenOnMobile: false,
+    defaultDesktopState: 'expanded',
     showQRCode: true,
   },
   parameters: {
     viewport: { defaultViewport: 'desktop' },
     docs: {
       description: {
-        story: 'Sidebar iniciando no estado expandido no desktop.',
+        story: 'Sidebar no desktop iniciando expandida. Clique no ⚙️ para colapsar.',
       },
     },
   },
 };
 
-export const Mobile: Story = {
+export const MobileHidden: Story = {
   args: {
     menuItems: defaultMenuItems,
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: false,
+    hiddenOnMobile: true,
+    defaultMobileState: 'hidden',
     showQRCode: true,
   },
   parameters: {
     viewport: { defaultViewport: 'mobile' },
     docs: {
       description: {
-        story: 'No mobile, a sidebar colapsada é menor (60px) e a expandida tem backdrop overlay.',
+        story: '🚀 NOVA FUNCIONALIDADE: Sidebar completamente oculta no mobile! Maximiza espaço da tela. Precisará de botão no header para abrir.',
       },
     },
   },
 };
 
-export const MobileWithOverlay: Story = {
+export const MobileSlideDemo: Story = {
   args: {
     menuItems: defaultMenuItems,
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: false, // Mudado para false para testar o toggle
+    hiddenOnMobile: true,
+    defaultMobileState: 'expanded',
     showQRCode: true,
   },
   parameters: {
     viewport: { defaultViewport: 'mobile' },
     docs: {
       description: {
-        story: 'No mobile, clique no botão de configurações (⚙️) para abrir a sidebar com backdrop overlay. Clique fora da sidebar para fechar.',
+        story: '✨ DEMO SLIDE: Sidebar deslizando da lateral no mobile com backdrop overlay. Clique fora para fechar.',
       },
     },
   },
@@ -194,7 +203,8 @@ export const MinimalMenu: Story = {
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: false,
+    hiddenOnMobile: false,
+    defaultDesktopState: 'collapsed',
     showQRCode: true,
   },
   parameters: {
@@ -213,7 +223,8 @@ export const WithoutQRCode: Story = {
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: true,
+    hiddenOnMobile: false,
+    defaultDesktopState: 'expanded',
     showQRCode: false,
   },
   parameters: {
@@ -232,7 +243,8 @@ export const CustomAccountInfo: Story = {
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: true,
+    hiddenOnMobile: false,
+    defaultDesktopState: 'expanded',
     showQRCode: true,
     accountInfo: {
       agency: '1234',
@@ -265,7 +277,8 @@ export const DisabledMenuItem: Story = {
     onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: true,
+    hiddenOnMobile: false,
+    defaultDesktopState: 'expanded',
     showQRCode: true,
   },
   parameters: {
@@ -278,7 +291,7 @@ export const DisabledMenuItem: Story = {
   },
 };
 
-export const MobileToggleTest: Story = {
+export const MobileHiddenWithControls: Story = {
   args: {
     menuItems: [
       {
@@ -288,17 +301,18 @@ export const MobileToggleTest: Story = {
         onClick: () => alert('Item de teste clicado! A sidebar deve fechar automaticamente no mobile.'),
       },
     ],
-    onHomeClick: () => alert('Home clicado! A sidebar deve fechar no mobile.'),
+    onHomeClick: () => alert('Home clicado!'),
     onSignOut: () => alert('Desconectar clicado!'),
     onVisibilityClick: () => alert('Visibilidade clicada!'),
-    defaultExpanded: false,
+    hiddenOnMobile: true,
+    defaultMobileState: 'hidden',
     showQRCode: false,
   },
   parameters: {
     viewport: { defaultViewport: 'mobile' },
     docs: {
       description: {
-        story: '🧪 TESTE MOBILE: Clique no ⚙️ para abrir, teste os cliques nos itens, e verifique se a sidebar fecha corretamente. Teste também mudando o tamanho da tela.',
+        story: '🎯 INTEGRAÇÃO COMPLETA: Simula como ficará no Dashboard real. Sidebar oculta + controles no header necessários para funcionar.',
       },
     },
   },

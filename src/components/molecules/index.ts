@@ -4,3 +4,4 @@ export { BalanceCard } from './BalanceCard';
 export { StatusBadge } from './StatusBadge';
 export { RoleDisplay } from './RoleDisplay';
 export { InfoBox } from './InfoBox';
+export { MobileHeaderControls } from './MobileHeaderControls';

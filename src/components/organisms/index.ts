@@ -8,3 +8,6 @@ export * from './FooterActions';
 export * from './Sidebar';
 export * from './SidebarCollapsed';
 export * from './SidebarExpanded';
+
+// Export types
+export type { SidebarState } from '../../types/sidebar';

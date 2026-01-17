@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -27,9 +27,11 @@ import {
   CreateAccountForm,
   DailyLimitForm,
   FooterActions,
-  Sidebar
+  Sidebar,
+  SidebarState
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
+import { MobileHeaderControls } from '../components/molecules';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
@@ -54,6 +56,7 @@ export function Dashboard() {
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
   const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | null>(null);
+  const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
 
@@ -61,6 +64,21 @@ export function Dashboard() {
     signOut();
     navigate('/login');
   }
+
+  // Callback para receber mudanças de estado da sidebar
+  const handleSidebarStateChange = (newState: SidebarState) => {
+    setSidebarState(newState);
+  };
+
+  // Ref para controlar a sidebar externamente
+  const sidebarToggleRef = useRef<(() => void) | null>(null);
+
+  // Função para toggle da sidebar (usada pelo MobileHeaderControls)
+  const handleToggleSidebar = () => {
+    if (sidebarToggleRef.current) {
+      sidebarToggleRef.current();
+    }
+  };
 
   // Sidebar menu items configuration
   const sidebarMenuItems: MenuItem[] = [
@@ -322,6 +340,14 @@ export function Dashboard() {
         boxShadow={customShadows.whiteGlow.sm}
       >
         <HStack gap={4}>
+          {/* Controles móveis - aparecem apenas no mobile */}
+          <MobileHeaderControls
+            sidebarState={sidebarState}
+            onToggleSidebar={handleToggleSidebar}
+            onHomeClick={() => setExpandedForm(null)}
+            showHomeButton={true}
+          />
+
           <Text
             fontSize="3xl"
             fontWeight="extrabold"
@@ -362,6 +388,11 @@ export function Dashboard() {
           onVisibilityClick={() => {
             // TODO: Implement visibility toggle
           }}
+          onToggleSidebar={handleSidebarStateChange}
+          toggleRef={sidebarToggleRef}
+          hiddenOnMobile={true}
+          defaultMobileState="hidden"
+          defaultDesktopState="collapsed"
         />
 
         {/* Content Area */}
