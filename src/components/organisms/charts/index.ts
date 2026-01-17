@@ -1,2 +1,1 @@
-// Chart organisms
-export { default as SpendingHistoryChart } from './SpendingHistoryChart';
+export * from './SpendingHistoryChart';

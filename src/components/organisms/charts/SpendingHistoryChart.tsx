@@ -46,7 +46,7 @@ interface ChartDataItem {
   status: 'ok' | 'warning' | 'exceeded';
 }
 
-const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
+export const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
   accountIds,
   days = 7,
 }) => {
@@ -301,4 +301,4 @@ const SpendingHistoryChart: React.FC<SpendingHistoryChartProps> = ({
   );
 };
 
-export default SpendingHistoryChart;
+

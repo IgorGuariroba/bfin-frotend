@@ -8,6 +8,7 @@ import { FormField } from '../../molecules/FormField';
 import { FormSelect } from '../../molecules/FormSelect';
 import { InfoBox } from '../../molecules/InfoBox';
 import { usePostApiV1Accounts } from '@igorguariroba/bfin-sdk/react-query';
+import { toast } from '../../../lib/toast';
 
 const createAccountSchema = z.object({
   account_name: z.string().min(1, 'Nome da conta é obrigatório'),
@@ -29,9 +30,13 @@ export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProp
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['accounts'] });
+        toast.success('Conta criada com sucesso!');
         if (onSuccess) {
           onSuccess();
         }
+      },
+      onError: () => {
+        toast.error('Erro ao criar conta');
       },
     },
   });
