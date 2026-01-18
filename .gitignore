@@ -35,3 +35,4 @@ storybook-static
 # NPM config local (contém token hardcoded, não versionar)
 # .npmrc com ${NPM_TOKEN} pode ser versionado
 .npmrc.local
+.npmrc

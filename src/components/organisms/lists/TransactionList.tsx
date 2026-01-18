@@ -43,7 +43,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
   const updateTransaction = useUpdateTransaction();
   const markAsPaid = useMarkAsPaid();
   const duplicateTransaction = useDuplicateTransaction();
-  const { data: categoriesData } = useCategories();
+  const { data: categoriesData } = useCategories(accountId);
 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [editForm, setEditForm] = useState({
@@ -361,7 +361,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                     label="Descrição"
                     type="text"
                     value={editForm.description}
-                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, description: e.target.value })}
                     required
                   />
 
@@ -370,14 +370,14 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                     type="number"
                     step="0.01"
                     value={editForm.amount}
-                    onChange={(e) => setEditForm({ ...editForm, amount: Number(e.target.value) })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, amount: Number(e.target.value) })}
                     required
                   />
 
                   <FormSelect
                     label="Categoria"
                     value={editForm.categoryId}
-                    onChange={(e) => setEditForm({ ...editForm, categoryId: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEditForm({ ...editForm, categoryId: e.target.value })}
                     required
                   >
                     <option value="">Selecione uma categoria</option>
@@ -393,7 +393,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                       label="Data de Vencimento"
                       type="date"
                       value={editForm.dueDate}
-                      onChange={(e) => setEditForm({ ...editForm, dueDate: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, dueDate: e.target.value })}
                     />
                   )}
 

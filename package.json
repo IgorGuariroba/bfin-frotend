@@ -3,6 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "setup:npmrc": "node scripts/setup-npmrc.js",
     "install:all": "node scripts/setup-npmrc.js && npm install",
@@ -27,7 +31,7 @@
     "@chakra-ui/react": "^3.30.0",
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^3.3.4",
-    "@igorguariroba/bfin-sdk": "^0.4.0",
+    "@igorguariroba/bfin-sdk": "^0.6.0",
     "@tanstack/react-query": "^5.17.9",
     "axios": "^1.6.5",
     "date-fns": "^2.30.0",

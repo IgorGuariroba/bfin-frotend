@@ -28,8 +28,6 @@ interface VariableExpenseFormProps {
 
 export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: categories, isLoading: loadingCategories } = useCategories();
-  const createVariableExpense = useCreateVariableExpense();
 
   const {
     register,
@@ -48,6 +46,13 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
   const amount = watch('amount') || 0;
   const selectedAccountId = watch('accountId');
   const [isEditingAmount, setIsEditingAmount] = useState(false);
+
+  // Busca categorias apenas quando uma conta estiver selecionada
+  const { data: allCategories, isLoading: loadingCategories } = useCategories(selectedAccountId);
+  const createVariableExpense = useCreateVariableExpense();
+
+  // Filtra apenas categorias do tipo 'expense'
+  const categories = allCategories?.filter((category) => category.type === 'expense');
 
   const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
 
