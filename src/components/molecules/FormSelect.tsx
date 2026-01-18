@@ -7,6 +7,9 @@ interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> 
   helperText?: string;
   required?: boolean;
   children?: React.ReactNode;
+  // Permite passar props do Chakra
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any; 
 }
 
 export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
@@ -18,19 +21,12 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
           <NativeSelect.Field
             ref={ref}
             {...selectProps}
-            bg="brand.500"
-            borderColor="brand.500"
-            borderWidth="1px"
-            borderRadius="lg"
-            color="primary.fg"
             px={4}
             py={2}
-            _hover={{ bg: "brand.600" }}
-            _focus={{ borderColor: "brand.600", boxShadow: "none" }}
           >
             {children}
           </NativeSelect.Field>
-          <NativeSelect.Indicator color="primary.fg" />
+          <NativeSelect.Indicator />
         </NativeSelect.Root>
         {error && <Field.ErrorText>{error}</Field.ErrorText>}
         {helperText && !error && <Field.HelperText>{helperText}</Field.HelperText>}

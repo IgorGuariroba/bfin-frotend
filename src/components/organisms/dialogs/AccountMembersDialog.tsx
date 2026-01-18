@@ -197,7 +197,7 @@ export function AccountMembersDialog({ isOpen, onClose, accountId, accountName }
                 <FormSelect
                   label="Permissão"
                   value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value as 'owner' | 'member' | 'viewer')}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedRole(e.target.value as 'owner' | 'member' | 'viewer')}
                 >
                   <option value="viewer">Visualizador - Apenas visualiza</option>
                   <option value="member">Membro - Pode criar transações</option>
