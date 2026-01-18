@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { accountMemberService } from '../services/accountMemberService';
+import { useCacheInvalidation } from './useCacheInvalidation';
 
 export function useAccountMembers(accountId: string) {
   return useQuery({
@@ -43,13 +44,13 @@ export function useMyInvitations() {
 
 export function useAcceptInvitation() {
   const queryClient = useQueryClient();
+  const { invalidateAccountRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: (token: string) => accountMemberService.acceptInvitation(token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-invitations'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['account-members'] });
+      invalidateAccountRelatedQueries();
     },
   });
 }

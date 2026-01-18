@@ -1,13 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useQueryClient } from '@tanstack/react-query';
 import { Stack, HStack, Checkbox } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { FormField } from '../../molecules/FormField';
 import { FormSelect } from '../../molecules/FormSelect';
 import { InfoBox } from '../../molecules/InfoBox';
 import { usePostApiV1Accounts } from '@igorguariroba/bfin-sdk/react-query';
+import { useCacheInvalidation } from '../../../hooks/useCacheInvalidation';
 import { toast } from '../../../lib/toast';
 
 const createAccountSchema = z.object({
@@ -24,12 +24,12 @@ interface CreateAccountFormProps {
 }
 
 export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProps) {
-  const queryClient = useQueryClient();
+  const { invalidateAccountRelatedQueries } = useCacheInvalidation();
 
   const createAccount = usePostApiV1Accounts({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['accounts'] });
+        invalidateAccountRelatedQueries();
         toast.success('Conta criada com sucesso!');
         if (onSuccess) {
           onSuccess();
@@ -63,7 +63,7 @@ export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProp
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap={4}>
+      <Stack gap={4} minH="100vh" pb={8}>
         <FormField
           label="Nome da Conta"
           placeholder="Ex: Conta Corrente, Nubank, etc."
