@@ -35,8 +35,6 @@ interface FixedExpenseFormProps {
 
 export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: categories, isLoading: loadingCategories } = useCategories();
-  const createFixedExpense = useCreateFixedExpense();
 
   const {
     register,
@@ -56,6 +54,13 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
   const amount = watch('amount') || 0;
   const selectedAccountId = watch('accountId');
   const [isEditingAmount, setIsEditingAmount] = useState(false);
+
+  // Busca categorias apenas quando uma conta estiver selecionada
+  const { data: allCategories, isLoading: loadingCategories } = useCategories(selectedAccountId);
+  const createFixedExpense = useCreateFixedExpense();
+
+  // Filtra apenas categorias do tipo 'expense'
+  const categories = allCategories?.filter((category) => category.type === 'expense');
 
   const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
 
