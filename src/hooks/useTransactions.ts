@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { transactionService } from '../services/transactionService';
+import { useCacheInvalidation } from './useCacheInvalidation';
 import type {
   CreateIncomeDTO,
   CreateFixedExpenseDTO,
@@ -23,55 +24,41 @@ export function useTransaction(id: string) {
 }
 
 export function useCreateIncome() {
-  const queryClient = useQueryClient();
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: (data: CreateIncomeDTO) => transactionService.createIncome(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-      queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+      // Usar invalidação centralizada para garantir que todas as queries relevantes sejam atualizadas
+      invalidateTransactionRelatedQueries();
     },
   });
 }
 
 export function useCreateFixedExpense() {
-  const queryClient = useQueryClient();
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: (data: CreateFixedExpenseDTO) => transactionService.createFixedExpense(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-      queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+      invalidateTransactionRelatedQueries();
     },
   });
 }
 
 export function useCreateVariableExpense() {
-  const queryClient = useQueryClient();
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: (data: CreateVariableExpenseDTO) => transactionService.createVariableExpense(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-      queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+      invalidateTransactionRelatedQueries();
     },
   });
 }
 
 export function useUpdateTransaction() {
-  const queryClient = useQueryClient();
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: ({ id, data }: {
@@ -84,60 +71,40 @@ export function useUpdateTransaction() {
       }
     }) => transactionService.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-      queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+      invalidateTransactionRelatedQueries();
     },
   });
 }
 
 export function useMarkAsPaid() {
-  const queryClient = useQueryClient();
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: (id: string) => transactionService.markAsPaid(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-      queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+      invalidateTransactionRelatedQueries();
     },
   });
 }
 
 export function useDuplicateTransaction() {
-  const queryClient = useQueryClient();
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: (id: string) => transactionService.duplicate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-      queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+      invalidateTransactionRelatedQueries();
     },
   });
 }
 
 export function useDeleteTransaction() {
-  const queryClient = useQueryClient();
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
     mutationFn: (id: string) => transactionService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-      queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-      queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+      invalidateTransactionRelatedQueries();
     },
   });
 }

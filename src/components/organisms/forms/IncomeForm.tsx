@@ -45,7 +45,7 @@ interface CreatedTransactionData {
 }
 
 export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
-  const { data: accounts, isLoading: loadingAccounts } = useAccounts();
+  const { data: accounts, isLoading: loadingAccounts, refetchAccounts } = useAccounts();
 
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [buttonState, setButtonState] = useState<'idle' | 'loading' | 'success'>('idle');
@@ -105,6 +105,9 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
       };
 
       const result = await createIncome.mutateAsync(payload);
+
+      // Forçar atualização dos dados de accounts
+      await refetchAccounts();
 
       // Preparar dados para o modal de confirmação
       setCreatedTransaction({
