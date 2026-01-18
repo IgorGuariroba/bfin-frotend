@@ -119,7 +119,7 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap={0} align="stretch">
+      <VStack gap={0} align="stretch" minH="100vh" pb={8}>
         {/* Valor em destaque no header verde */}
         <Box mb={6}>
           {isEditingLimit ? (
@@ -277,6 +277,7 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
           p={6}
           shadow="md"
           mt={4}
+          mb={8}
         >
           <VStack gap={6} align="stretch">
             {/* Gráfico circular com informações */}
@@ -438,6 +439,7 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
                 fontWeight="medium"
                 _hover={{ textDecoration: 'underline' }}
                 cursor="pointer"
+                pb={4}
               >
                 Cancelar
               </Text>

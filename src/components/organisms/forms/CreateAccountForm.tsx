@@ -63,7 +63,7 @@ export function CreateAccountForm({ onSuccess, onCancel }: CreateAccountFormProp
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap={4}>
+      <Stack gap={4} minH="100vh" pb={8}>
         <FormField
           label="Nome da Conta"
           placeholder="Ex: Conta Corrente, Nubank, etc."

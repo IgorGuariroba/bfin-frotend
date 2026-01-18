@@ -58,7 +58,7 @@ export function CategoryForm({ onSuccess, onCancel, defaultType = 'expense', acc
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-      <VStack gap={6} align="stretch">
+      <VStack gap={6} align="stretch" minH="100vh" pb={8}>
         <FormField
           label="Nome da Categoria"
           error={errors.name?.message}

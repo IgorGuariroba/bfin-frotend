@@ -100,7 +100,7 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap={0} align="stretch">
+      <VStack gap={0} align="stretch" minH="100vh" pb={8}>
         {/* Header - Seleção de Conta e Título */}
         <Box mb={6}>
           <Center mb={4}>
@@ -215,6 +215,7 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
           p={6}
           shadow="md"
           mt={4}
+          mb={8}
         >
           <VStack gap={6} align="stretch">
             {/* Email */}
@@ -362,6 +363,7 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
                 fontWeight="medium"
                 _hover={{ textDecoration: 'underline' }}
                 cursor="pointer"
+                pb={4}
               >
                 Cancelar
               </Text>
