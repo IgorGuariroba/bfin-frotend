@@ -68,7 +68,8 @@ export function Login() {
       </Box>
 
       <Container maxW="md" py={{ base: "8", md: "16" }} px={{ base: "4", sm: "8" }}>
-        <VStack gap="0" w="full">
+        <form onSubmit={handleSubmit}>
+          <VStack gap="0" w="full">
           {/* Card Superior - Informações da Conta e Logo */}
           <Box
             w="full"
@@ -125,6 +126,8 @@ export function Login() {
             <Flex justify="space-between" align="center">
               <Input
                 type="email"
+                name="email"
+                id="email"
                 placeholder="Digite seu email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -141,7 +144,8 @@ export function Login() {
                   boxShadow: "none",
                   outline: "none"
                 }}
-                autoComplete="email"
+                autoComplete="username email"
+                required
               />
               <Link
                 color="var(--primary-foreground)"
@@ -165,8 +169,7 @@ export function Login() {
             p="8"
             boxShadow="2xl"
           >
-            <form onSubmit={handleSubmit}>
-              <VStack gap="6" align="stretch">
+            <VStack gap="6" align="stretch">
                 {error && (
                   <Alert.Root status="error" borderRadius="lg" variant="subtle">
                     <Alert.Indicator />
@@ -188,6 +191,8 @@ export function Login() {
                 <Box>
                   <Input
                     type="password"
+                    name="password"
+                    id="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -250,10 +255,10 @@ export function Login() {
                 >
                   REGISTRE-SE
                 </Button>
-              </VStack>
-            </form>
+            </VStack>
           </Box>
-        </VStack>
+          </VStack>
+        </form>
       </Container>
     </Flex>
   );
