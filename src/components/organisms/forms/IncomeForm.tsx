@@ -133,7 +133,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap={0} align="stretch">
+        <VStack gap={0} align="stretch" minH="100vh" pb={8}>
           {/* Header - Valor */}
           <Box mb={6}>
             {isEditingAmount ? (
@@ -289,6 +289,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
             p={6}
             shadow="md"
             mt={4}
+            mb={8}
           >
             <VStack gap={6} align="stretch">
               {/* Descrição */}
@@ -482,6 +483,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                   fontWeight="medium"
                   _hover={{ textDecoration: 'underline' }}
                   cursor="pointer"
+                  pb={4}
                 >
                   Cancelar
                 </Text>
