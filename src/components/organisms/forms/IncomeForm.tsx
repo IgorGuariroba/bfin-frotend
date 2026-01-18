@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, VStack, Center, Text, Box, Input, NativeSelect, Field, Menu, Checkbox, IconButton } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Center, Text, Box, Input, NativeSelect, Field, Menu, Checkbox, IconButton, Dialog } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useCreateIncome } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useCategories } from '../../../hooks/useCategories';
 import type { CreateIncomeDTO } from '../../../types/transaction';
-import { Pencil, Tag, Calendar, Check, ChevronDown, Zap, Plus } from 'lucide-react';
+import { Pencil, Tag, Calendar, Check, ChevronDown, Zap, Plus, CheckCircle2 } from 'lucide-react';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
 import { CreateCategoryDialog } from '../dialogs/CreateCategoryDialog';
@@ -36,17 +36,28 @@ interface IncomeFormProps {
   onCancel?: () => void;
 }
 
+interface CreatedTransactionData {
+  amount: number;
+  description: string;
+  accountName?: string;
+  categoryName?: string;
+  formattedAmount: string;
+}
+
 export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
 
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [buttonState, setButtonState] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [createdTransaction, setCreatedTransaction] = useState<CreatedTransactionData | null>(null);
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<IncomeFormData>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
@@ -85,22 +96,55 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
   };
 
   const onSubmit = async (data: IncomeFormData) => {
+    setButtonState('loading');
+
     try {
       const payload: CreateIncomeDTO = {
         ...data,
         amount: Number(data.amount),
       };
 
-      await createIncome.mutateAsync(payload);
+      const result = await createIncome.mutateAsync(payload);
+
+      // Preparar dados para o modal de confirmação
+      setCreatedTransaction({
+        ...result,
+        amount: Number(data.amount),
+        description: data.description,
+        accountName: selectedAccount?.account_name,
+        categoryName: categories?.find(c => c.id === data.categoryId)?.name,
+        formattedAmount: formatCurrency(Number(data.amount)),
+      });
+
+      // Mudar estado do botão para sucesso
+      setButtonState('success');
+
+      // Mostrar modal de confirmação após uma pequena pausa
+      setTimeout(() => {
+        setShowConfirmationModal(true);
+      }, 800);
 
       toast.success('Receita adicionada com sucesso!');
 
-      if (onSuccess) {
-        onSuccess();
-      }
     } catch (error) {
       console.error('Error creating income:', error);
       toast.error('Erro ao adicionar receita');
+      setButtonState('idle');
+    }
+  };
+
+  const handleConfirmationClose = () => {
+    setShowConfirmationModal(false);
+    setButtonState('idle');
+
+    // Reset suave do formulário
+    setValue('amount', 0);
+    setValue('description', '');
+    setValue('categoryId', '');
+
+    // Chamar callback de sucesso
+    if (onSuccess) {
+      setTimeout(() => onSuccess(), 300);
     }
   };
 
@@ -460,16 +504,28 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
               {/* Botão Salvar */}
               <Button
                 type="submit"
-                loading={isSubmitting || createIncome.isPending}
+                loading={buttonState === 'loading'}
+                disabled={buttonState === 'success'}
                 w="full"
                 size="lg"
-                bg="var(--primary)"
+                bg={buttonState === 'success' ? 'green.500' : 'var(--primary)'}
                 color="var(--primary-foreground)"
                 borderRadius="full"
-                _hover={{ opacity: 0.9 }}
+                _hover={{
+                  opacity: buttonState === 'success' ? 1 : 0.9,
+                  transform: buttonState === 'success' ? 'scale(1.02)' : 'none'
+                }}
+                transition="all 0.3s ease"
                 mt={4}
               >
-                Confirmar Depósito
+                {buttonState === 'success' ? (
+                  <HStack gap={2}>
+                    <CheckCircle2 size={18} />
+                    <Text>Depósito Confirmado!</Text>
+                  </HStack>
+                ) : (
+                  'Confirmar Depósito'
+                )}
               </Button>
 
               {/* Cancelar */}
@@ -500,6 +556,142 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
         defaultType="income"
         accountId={selectedAccountId || ''}
       />
+
+      {/* Modal de Confirmação */}
+      <Dialog.Root open={showConfirmationModal} onOpenChange={(details: { open: boolean }) => setShowConfirmationModal(details.open)}>
+        <Dialog.Backdrop
+          bg="rgba(0, 0, 0, 0.5)"
+          backdropFilter="blur(4px)"
+        />
+        <Dialog.Positioner>
+          <Dialog.Content
+            bg="var(--card)"
+            borderRadius="2xl"
+            p={0}
+            maxW="md"
+            w="90%"
+            mx={4}
+            css={{
+              animation: 'slideInScale 0.3s ease-out',
+              '@keyframes slideInScale': {
+                '0%': {
+                  opacity: 0,
+                  transform: 'translateY(20px) scale(0.95)',
+                },
+                '100%': {
+                  opacity: 1,
+                  transform: 'translateY(0) scale(1)',
+                },
+              },
+            }}
+          >
+            {/* Header Verde */}
+            <Box
+              bg="green.500"
+              color="white"
+              p={6}
+              borderTopRadius="2xl"
+              textAlign="center"
+            >
+              <VStack gap={3}>
+                <Box
+                  bg="white"
+                  color="green.500"
+                  borderRadius="full"
+                  p={3}
+                  css={{
+                    animation: 'pulse 2s infinite',
+                    '@keyframes pulse': {
+                      '0%, 100%': { transform: 'scale(1)' },
+                      '50%': { transform: 'scale(1.05)' },
+                    },
+                  }}
+                >
+                  <CheckCircle2 size={32} />
+                </Box>
+                <VStack gap={1}>
+                  <Text fontSize="xl" fontWeight="bold">
+                    Depósito Confirmado!
+                  </Text>
+                  <Text fontSize="3xl" fontWeight="bold">
+                    {createdTransaction?.formattedAmount}
+                  </Text>
+                  <Text fontSize="sm" opacity={0.9}>
+                    foi adicionado com sucesso
+                  </Text>
+                </VStack>
+              </VStack>
+            </Box>
+
+            {/* Detalhes */}
+            <Box p={6}>
+              <VStack gap={4} align="stretch">
+                <Text fontSize="lg" fontWeight="semibold" color="var(--foreground)">
+                  Detalhes da Transação
+                </Text>
+
+                <VStack gap={3} align="stretch">
+                  <HStack justify="space-between" p={3} bg="var(--muted)" borderRadius="lg">
+                    <Text color="var(--muted-foreground)">Conta:</Text>
+                    <Text fontWeight="medium" color="var(--foreground)">
+                      {createdTransaction?.accountName}
+                    </Text>
+                  </HStack>
+
+                  <HStack justify="space-between" p={3} bg="var(--muted)" borderRadius="lg">
+                    <Text color="var(--muted-foreground)">Categoria:</Text>
+                    <Text fontWeight="medium" color="var(--foreground)">
+                      {createdTransaction?.categoryName}
+                    </Text>
+                  </HStack>
+
+                  <HStack justify="space-between" p={3} bg="var(--muted)" borderRadius="lg">
+                    <Text color="var(--muted-foreground)">Descrição:</Text>
+                    <Text fontWeight="medium" color="var(--foreground)">
+                      {createdTransaction?.description}
+                    </Text>
+                  </HStack>
+
+                  <HStack justify="space-between" p={3} bg="var(--muted)" borderRadius="lg">
+                    <Text color="var(--muted-foreground)">Data:</Text>
+                    <Text fontWeight="medium" color="var(--foreground)">
+                      {new Date().toLocaleDateString('pt-BR')}
+                    </Text>
+                  </HStack>
+                </VStack>
+
+                {/* Botões */}
+                <VStack gap={3} mt={4}>
+                  <Button
+                    onClick={handleConfirmationClose}
+                    w="full"
+                    size="lg"
+                    bg="green.500"
+                    color="white"
+                    borderRadius="full"
+                    _hover={{ bg: 'green.600' }}
+                  >
+                    Novo Depósito
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      setShowConfirmationModal(false);
+                      setButtonState('idle');
+                      if (onSuccess) onSuccess();
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    color="var(--muted-foreground)"
+                  >
+                    Voltar ao Dashboard
+                  </Button>
+                </VStack>
+              </VStack>
+            </Box>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
     </>
   );
 }
