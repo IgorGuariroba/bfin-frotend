@@ -4,6 +4,9 @@ export type { ButtonProps } from './Button';
 export { Input, FormControl, FormLabel, FormErrorMessage, FormHelperText } from './Input';
 export type { InputProps } from './Input';
 
+export { CalendarDay } from './CalendarDay';
+export { EventDot } from './EventDot';
+
 // Re-export commonly used Chakra atoms
 export {
   Box,
