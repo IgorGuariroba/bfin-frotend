@@ -10,6 +10,12 @@
  * All colors use HSL format for easy manipulation
  */
 
+/* ═════════════════════════════════════════════════════════════════════════════
+ * CALENDAR STYLES
+ * Importar estilos personalizados do React Day Picker
+ * ═════════════════════════════════════════════════════════════════════════════ */
+@import './components/ui/calendar/calendar.css';
+
 :root {
   /* ═══════════════════════════════════════════════════════════════════════════
    * EMERALD GREEN PALETTE (Primary Scale)

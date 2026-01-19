@@ -8,7 +8,6 @@ import {
   Text,
   VStack,
   HStack,
-  Progress,
   IconButton,
   Dialog,
   List,
@@ -28,10 +27,11 @@ import {
   DailyLimitForm,
   FooterActions,
   Sidebar,
-  SidebarState
+  SidebarState,
+  Calendar
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
-import { MobileHeaderControls } from '../components/molecules';
+import { MobileHeaderControls, CalendarWidget } from '../components/molecules';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
@@ -42,7 +42,8 @@ import {
   DollarSign,
   Users,
   X,
-  ArrowLeft
+  ArrowLeft,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { iconColors, customShadows } from '../theme';
@@ -55,7 +56,7 @@ export function Dashboard() {
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
-  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | null>(null);
+  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | null>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
@@ -82,6 +83,12 @@ export function Dashboard() {
 
   // Sidebar menu items configuration
   const sidebarMenuItems: MenuItem[] = [
+    {
+      id: 'calendar',
+      icon: CalendarIcon,
+      label: 'Calendário',
+      onClick: () => setExpandedForm('calendario'),
+    },
     {
       id: 'help',
       icon: Shield,
@@ -144,6 +151,7 @@ export function Dashboard() {
         case 'recarga-celular': return 'Recarga de Celular';
         case 'ajustar-limite': return 'Ajustar Limite';
         case 'extrato': return 'Extrato da Conta';
+        case 'calendario': return 'Calendário de Contas';
         default: return '';
       }
     };
@@ -211,12 +219,20 @@ export function Dashboard() {
               onCancel={() => setExpandedForm(null)}
             />
           );
+        case 'calendario':
+          return (
+            <Calendar
+              showFilters={true}
+              compact={false}
+              height="calc(100vh - 200px)"
+            />
+          );
         default:
           return null;
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
 
     return (
       <Box
@@ -449,90 +465,9 @@ export function Dashboard() {
 
             {/* Right Column - Info & Charts */}
             <VStack gap={6} align="stretch">
-              {/* Progress Bars */}
-              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
-                <VStack gap={4} align="stretch">
-                  {/* Barra 1 - Cartão de Crédito */}
-                  <Box>
-                    <HStack justify="space-between" mb={2}>
-                      <Text fontSize="sm" color="var(--muted-foreground)">disponível</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
-                        {formatCurrency(totals.availableBalance)}
-                      </Text>
-                    </HStack>
-                    <Progress.Root value={60} size="lg" colorPalette="green">
-                      <Progress.Track>
-                        <Progress.Range />
-                      </Progress.Track>
-                    </Progress.Root>
-                  </Box>
-
-                  <Box>
-                    <HStack justify="space-between" mb={2}>
-                      <Text fontSize="sm" color="var(--muted-foreground)">atual</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
-                        {formatCurrency(totals.lockedBalance)}
-                      </Text>
-                    </HStack>
-                    <Progress.Root value={40} size="lg" colorPalette="blue">
-                      <Progress.Track>
-                        <Progress.Range />
-                      </Progress.Track>
-                    </Progress.Root>
-                  </Box>
-
-                  <Box>
-                    <HStack justify="space-between" mb={2}>
-                      <Text fontSize="sm" color="var(--muted-foreground)">próximas</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
-                        {formatCurrency(totals.emergencyReserve)}
-                      </Text>
-                    </HStack>
-                    <Progress.Root value={30} size="lg" colorPalette="orange">
-                      <Progress.Track>
-                        <Progress.Range />
-                      </Progress.Track>
-                    </Progress.Root>
-                  </Box>
-
-                  <VStack align="stretch" gap={2} mt={4} fontSize="xs" color="var(--muted-foreground)">
-                    <Text>Gastos: gastos referentes ao mês de Dezembro</Text>
-                    <Text>Cartão final: XXX XXX XXX 1510</Text>
-                    <Text>Bandeira: Master Card Platinum</Text>
-                  </VStack>
-                </VStack>
-              </Box>
-
-              {/* Bfinconta Info */}
-              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
-                <VStack gap={4} align="stretch">
-                  <HStack justify="space-between">
-                    <Text fontSize="sm" color="var(--muted-foreground)">saldo disponível</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
-                      {formatCurrency(totals.availableBalance)}
-                    </Text>
-                  </HStack>
-
-                  <HStack justify="space-between">
-                    <Text fontSize="sm" color="var(--muted-foreground)">total investido</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
-                      {formatCurrency(totals.emergencyReserve)}
-                    </Text>
-                  </HStack>
-
-                  <Progress.Root value={70} size="lg" colorPalette="green" mt={4}>
-                    <Progress.Track>
-                      <Progress.Range />
-                    </Progress.Track>
-                  </Progress.Root>
-
-                  <VStack align="stretch" gap={1} mt={4} fontSize="xs" color="var(--muted-foreground)">
-                    <Text><Text as="span" color="var(--accent)" fontWeight="bold">Em azul:</Text> representa o valor atual em sua conta corrente</Text>
-                    <Text><Text as="span" color="green.500" fontWeight="bold">Em verde:</Text> representa todos os seus investimentos</Text>
-                  </VStack>
-                </VStack>
-              </Box>
-
+              <CalendarWidget
+                onViewFullCalendar={() => setExpandedForm('calendario')}
+              />
             </VStack>
           </Grid>
           )}

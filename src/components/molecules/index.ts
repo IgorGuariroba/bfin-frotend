@@ -5,3 +5,6 @@ export { StatusBadge } from './StatusBadge';
 export { RoleDisplay } from './RoleDisplay';
 export { InfoBox } from './InfoBox';
 export { MobileHeaderControls } from './MobileHeaderControls';
+export { CalendarHeader } from './CalendarHeader';
+export { CalendarFilters } from './CalendarFilters';
+export { CalendarWidget } from './CalendarWidget';
