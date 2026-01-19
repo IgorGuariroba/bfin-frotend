@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, VStack, Center, Text, Box, Input, NativeSelect, Field, Menu } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Center, Text, Box, Input, NativeSelect, Field, Menu, IconButton } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useCreateVariableExpense } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useCategories } from '../../../hooks/useCategories';
 import type { CreateVariableExpenseDTO } from '../../../types/transaction';
-import { Pencil, Tag, Zap, Check, ChevronDown } from 'lucide-react';
+import { Pencil, Tag, Zap, Check, ChevronDown, Plus } from 'lucide-react';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
+import { CreateCategoryDialog } from '../dialogs/CreateCategoryDialog';
+import type { Category } from '@igorguariroba/bfin-sdk/client';
 
 const variableExpenseSchema = z.object({
   accountId: z.string().min(1, 'Conta é obrigatória'),
@@ -28,6 +30,8 @@ interface VariableExpenseFormProps {
 
 export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
+
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
 
   const {
     register,
@@ -65,6 +69,12 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
       }
     }
   }, [accounts, selectedAccountId, setValue]);
+
+  const handleCategoryCreated = (newCategory: Category) => {
+    if (newCategory.id) {
+      setValue('categoryId', newCategory.id, { shouldValidate: true });
+    }
+  };
 
   const onSubmit = async (data: VariableExpenseFormData) => {
     try {
@@ -113,9 +123,10 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap={0} align="stretch" minH="100vh" pb={8}>
-        {/* Valor em destaque no header verde */}
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <VStack gap={0} align="stretch" minH="100vh" pb={8}>
+          {/* Valor em destaque no header verde */}
         <Box mb={6}>
           {isEditingAmount ? (
             <Input
@@ -306,28 +317,46 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
               <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
                 Categoria
               </Field.Label>
-              <Box position="relative">
-                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
-                  <Tag size={18} color="var(--muted-foreground)" />
+              <HStack gap={2}>
+                <Box position="relative" flex={1}>
+                  <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                    <Tag size={18} color="var(--muted-foreground)" />
+                  </Box>
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      {...register('categoryId')}
+                      placeholder="Selecione uma categoria"
+                      pl={10}
+                      borderColor="var(--border)"
+                      borderRadius="full"
+                      _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                    >
+                      {categories?.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
                 </Box>
-                <NativeSelect.Root>
-                  <NativeSelect.Field
-                    {...register('categoryId')}
-                    placeholder="Selecione uma categoria"
-                    pl={10}
-                    borderColor="var(--border)"
-                    borderRadius="full"
-                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                  >
-                    {categories?.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </NativeSelect.Field>
-                  <NativeSelect.Indicator />
-                </NativeSelect.Root>
-              </Box>
+                <IconButton
+                  aria-label="Nova Categoria"
+                  onClick={() => {
+                    if (!selectedAccountId) {
+                      toast.error('Selecione uma conta primeiro');
+                      return;
+                    }
+                    setIsCategoryDialogOpen(true);
+                  }}
+                  variant="outline"
+                  borderRadius="full"
+                  borderColor="var(--border)"
+                  disabled={!selectedAccountId}
+                >
+                  <Plus size={18} />
+                </IconButton>
+              </HStack>
               {errors.categoryId && (
                 <Field.ErrorText>{errors.categoryId.message}</Field.ErrorText>
               )}
@@ -438,5 +467,14 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
         </Box>
       </VStack>
     </form>
+
+    <CreateCategoryDialog
+      open={isCategoryDialogOpen}
+      onOpenChange={(e) => setIsCategoryDialogOpen(e.open)}
+      onCategoryCreated={handleCategoryCreated}
+      defaultType="expense"
+      accountId={selectedAccountId || ''}
+    />
+    </>
   );
 }

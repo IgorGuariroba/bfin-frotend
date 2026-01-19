@@ -215,7 +215,6 @@ export function Dashboard() {
         case 'ajustar-limite':
           return (
             <DailyLimitForm
-              onSuccess={() => setExpandedForm(null)}
               onCancel={() => setExpandedForm(null)}
             />
           );

@@ -1,7 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import {
   Stack,
   HStack,
@@ -9,51 +6,23 @@ import {
   Center,
   Text,
   Box,
-  Input,
-  Field,
   Menu,
 } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useAccounts } from '../../../hooks/useAccounts';
-import { useTotalDailyLimit } from '../../../hooks/useDailyLimit';
-import { ChevronDown, Check, Zap } from 'lucide-react';
+import { useDailyLimit } from '../../../hooks/useDailyLimit';
+import { ChevronDown, Check, Zap, Info, Calendar, DollarSign } from 'lucide-react';
 import { iconColors } from '../../../theme';
 
-const dailyLimitSchema = z.object({
-  accountId: z.string().min(1, 'Conta é obrigatória'),
-  newLimit: z.number().positive('Limite deve ser positivo'),
-});
-
-type DailyLimitFormData = z.infer<typeof dailyLimitSchema>;
-
-interface DailyLimitFormProps {
-  onSuccess?: () => void;
+interface DailyLimitDisplayProps {
   onCancel?: () => void;
 }
 
-export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
+export function DailyLimitForm({ onCancel }: DailyLimitDisplayProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const accountIds = accounts?.map(acc => acc.id ?? '') ?? [];
-  const { data: limitData, isLoading: loadingLimit } = useTotalDailyLimit(accountIds);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<DailyLimitFormData>({
-    resolver: zodResolver(dailyLimitSchema),
-    defaultValues: {
-      accountId: '',
-      newLimit: 0,
-    },
-  });
-
-  const newLimit = watch('newLimit') || 0;
-  const selectedAccountId = watch('accountId');
-  const [isEditingLimit, setIsEditingLimit] = useState(false);
-
+  const { data: limitData, isLoading: loadingLimit } = useDailyLimit(selectedAccountId);
   const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
 
   // Define a conta padrão quando as contas forem carregadas
@@ -61,24 +30,10 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
     if (accounts && accounts.length > 0 && !selectedAccountId) {
       const defaultAccount = accounts.find((acc) => acc.is_default) || accounts[0];
       if (defaultAccount?.id) {
-        setValue('accountId', defaultAccount.id, { shouldValidate: true });
-        setValue('newLimit', limitData?.totalDailyLimit || 100.50);
+        setSelectedAccountId(defaultAccount.id);
       }
     }
-  }, [accounts, selectedAccountId, setValue, limitData]);
-
-  const onSubmit = async (_data: DailyLimitFormData) => {
-    try {
-      // TODO: Implementar a atualização do limite diário via API
-      // Temporary placeholder - will be implemented with API integration
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error('Error updating daily limit:', error);
-    }
-  };
+  }, [accounts, selectedAccountId]);
 
   if (loadingAccounts || loadingLimit) {
     return (
@@ -106,10 +61,25 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
     }).format(value);
   };
 
-  const currentLimit = limitData?.totalDailyLimit || 100.50;
-  const spentToday = limitData?.totalSpentToday || 45.25;
-  const remaining = limitData?.totalRemaining || 55.25;
+  const formatDate = (date: string) => {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(date));
+  };
+
+  // Usar dados reais do limitData ou valores de exemplo baseados na estrutura fornecida
+  const dailyLimit = limitData?.dailyLimit || 100.50;
+  const availableBalance = limitData?.availableBalance || 3015;
+  const daysConsidered = limitData?.daysConsidered || 30;
+  const spentToday = limitData?.spentToday || 45.25;
+  const remaining = limitData?.remaining || 55.25;
   const percentageUsed = limitData?.percentageUsed || 45.02;
+  const exceeded = limitData?.exceeded || false;
+  const calculatedAt = limitData?.calculatedAt || new Date().toISOString();
 
   // Calcular o valor do stroke-dasharray para o círculo
   const circleRadius = 60;
@@ -118,156 +88,120 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
   const strokeDashoffset = circumference - (percentageUsed / 100) * circumference;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap={0} align="stretch" minH="100vh" pb={8}>
-        {/* Valor em destaque no header verde */}
-        <Box mb={6}>
-          {isEditingLimit ? (
-            <Input
-              type="number"
-              step="0.01"
-              autoFocus
-              defaultValue={newLimit || currentLimit}
-              fontSize="4xl"
-              fontWeight="bold"
+    <VStack gap={0} align="stretch" minH="100vh" pb={8}>
+      {/* Valor em destaque no header verde */}
+      <Box mb={6}>
+        <VStack gap={2} align="center">
+          <Text
+            fontSize="4xl"
+            fontWeight="bold"
+            color="var(--primary-foreground)"
+          >
+            {formatCurrency(dailyLimit)}
+          </Text>
+          <HStack gap={2} align="center">
+            <Info size={16} color="var(--primary-foreground)" />
+            <Text
+              fontSize="sm"
               color="var(--primary-foreground)"
-              bg="transparent"
-              border="none"
-              borderBottom="2px solid var(--primary-foreground)"
-              borderRadius="0"
-              p={0}
-              mb={4}
-              onBlur={(e) => {
-                const value = parseFloat(e.target.value) || 0;
-                setValue('newLimit', value);
-                setIsEditingLimit(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const value = parseFloat((e.target as HTMLInputElement).value) || 0;
-                  setValue('newLimit', value);
-                  setIsEditingLimit(false);
-                }
-              }}
+              opacity={0.8}
+            >
+              Limite calculado automaticamente
+            </Text>
+          </HStack>
+        </VStack>
+
+        {/* Dropdown de Conta Customizado */}
+        <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
+          <Menu.Trigger asChild>
+            <Box
+              as="button"
+              w="full"
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              px={4}
+              py={3}
+              fontSize="md"
+              fontWeight="medium"
+              color="primary.fg"
+              bg="var(--primary)"
+              borderWidth="1px"
+              borderColor="primary.fg"
+              borderRadius="full"
+              transition="all 0.2s"
               css={{
-                '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': {
-                  display: 'none',
+                '&:hover': {
+                  backgroundColor: iconColors.brandDark,
+                },
+                '&:focus': {
+                  outline: 'none',
+                  boxShadow: 'none',
                 },
               }}
-            />
-          ) : (
-            <Text
-              fontSize="4xl"
-              fontWeight="bold"
-              color="var(--primary-foreground)"
-              mb={4}
-              cursor="pointer"
-              onClick={() => setIsEditingLimit(true)}
-              _hover={{ opacity: 0.8 }}
             >
-              {formatCurrency(newLimit || currentLimit)}
-            </Text>
-          )}
+              <Text color="primary.fg">
+                {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
+              </Text>
+              <ChevronDown size={20} color={iconColors.primaryFg} />
+            </Box>
+          </Menu.Trigger>
+          <Menu.Positioner>
+            <Menu.Content
+              maxH="300px"
+              overflowY="auto"
+              bg="var(--primary)"
+              borderRadius="lg"
+              boxShadow="lg"
+              borderWidth="1px"
+              borderColor="primary.fg"
+              p={0}
+              css={{
+                zIndex: 'var(--z-dropdown)',
+              }}
+            >
+            {/* Cabeçalho do Menu */}
+            <Box
+              px={3}
+              py={2}
+              bg="var(--primary)"
+              borderTopRadius="lg"
+              borderBottomWidth="1px"
+              borderBottomColor="primary.fg"
+            >
+              <HStack gap={2}>
+                <Check size={16} color={iconColors.primaryFg} />
+                <Text fontSize="sm" fontWeight="bold" color="primary.fg">
+                  Selecione uma conta
+                </Text>
+              </HStack>
+            </Box>
 
-          {/* Dropdown de Conta Customizado */}
-          <Field.Root invalid={!!errors.accountId}>
-            <input type="hidden" {...register('accountId')} />
-            <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
-              <Menu.Trigger asChild>
-                <Box
-                  as="button"
-                  w="full"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  px={4}
-                  py={3}
-                  fontSize="md"
-                  fontWeight="medium"
-                  color="primary.fg"
-                  bg="var(--primary)"
-                  borderWidth="1px"
-                  borderColor="primary.fg"
-                  borderRadius="full"
-                  transition="all 0.2s"
+            {/* Lista de Contas */}
+            <Box py={1}>
+              {accounts?.map((account) => (
+                <Menu.Item
+                  key={account.id ?? ''}
+                  value={account.id ?? ''}
+                  onClick={() => setSelectedAccountId(account.id ?? '')}
                   css={{
+                    backgroundColor: selectedAccountId === account.id ? iconColors.brandDark : 'transparent',
                     '&:hover': {
                       backgroundColor: iconColors.brandDark,
                     },
-                    '&:focus': {
-                      outline: 'none',
-                      boxShadow: 'none',
-                    },
                   }}
-                >
-                  <Text color="primary.fg">
-                    {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
-                  </Text>
-                  <ChevronDown size={20} color={iconColors.primaryFg} />
-                </Box>
-              </Menu.Trigger>
-              <Menu.Positioner>
-                <Menu.Content
-                  maxH="300px"
-                  overflowY="auto"
-                  bg="var(--primary)"
-                  borderRadius="lg"
-                  boxShadow="lg"
-                  borderWidth="1px"
-                  borderColor="primary.fg"
-                  p={0}
-                  css={{
-                    zIndex: 'var(--z-dropdown)',
-                  }}
-                >
-                {/* Cabeçalho do Menu */}
-                <Box
                   px={3}
                   py={2}
-                  bg="var(--primary)"
-                  borderTopRadius="lg"
-                  borderBottomWidth="1px"
-                  borderBottomColor="primary.fg"
                 >
-                  <HStack gap={2}>
-                    <Check size={16} color={iconColors.primaryFg} />
-                    <Text fontSize="sm" fontWeight="bold" color="primary.fg">
-                      Selecione uma conta
-                    </Text>
-                  </HStack>
-                </Box>
-
-                {/* Lista de Contas */}
-                <Box py={1}>
-                  {accounts?.map((account) => (
-                    <Menu.Item
-                      key={account.id ?? ''}
-                      value={account.id ?? ''}
-                      onClick={() => setValue('accountId', account.id ?? '', { shouldValidate: true })}
-                      css={{
-                        backgroundColor: selectedAccountId === account.id ? iconColors.brandDark : 'transparent',
-                        '&:hover': {
-                          backgroundColor: iconColors.brandDark,
-                        },
-                      }}
-                      px={3}
-                      py={2}
-                    >
-                      <Text fontSize="sm" color="var(--primary-foreground)">
-                        {account.account_name}
-                      </Text>
-                    </Menu.Item>
-                  ))}
-                </Box>
-                </Menu.Content>
-              </Menu.Positioner>
-            </Menu.Root>
-            {errors.accountId && (
-              <Field.ErrorText color="var(--primary-foreground)" mt={2} fontSize="sm">
-                {errors.accountId.message}
-              </Field.ErrorText>
-            )}
-          </Field.Root>
+                  <Text fontSize="sm" color="var(--primary-foreground)">
+                    {account.account_name}
+                  </Text>
+                </Menu.Item>
+              ))}
+            </Box>
+            </Menu.Content>
+          </Menu.Positioner>
+        </Menu.Root>
         </Box>
 
         {/* Card branco com conteúdo */}
@@ -344,7 +278,11 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
                   <Text fontSize="sm" color="var(--muted-foreground)">
                     Gasto Hoje
                   </Text>
-                  <Text fontSize="lg" fontWeight="bold" color="var(--card-foreground)">
+                  <Text
+                    fontSize="lg"
+                    fontWeight="bold"
+                    color={exceeded ? "red.500" : "var(--card-foreground)"}
+                  >
                     {formatCurrency(spentToday)}
                   </Text>
                 </VStack>
@@ -353,34 +291,64 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
                   <Text fontSize="sm" color="var(--muted-foreground)">
                     Restante
                   </Text>
-                  <Text fontSize="lg" fontWeight="bold" color="var(--primary)">
+                  <Text
+                    fontSize="lg"
+                    fontWeight="bold"
+                    color={exceeded ? "red.500" : "var(--primary)"}
+                  >
                     {formatCurrency(remaining)}
                   </Text>
                 </VStack>
               </HStack>
             </VStack>
 
-            {/* Campo Valor oculto para validação */}
-            <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
-              <Input
-                type="number"
-                step="0.01"
-                {...register('newLimit', { valueAsNumber: true })}
-              />
-            </Box>
-
-            {/* Mensagem de erro do valor */}
-            {errors.newLimit && (
+            {/* Informações sobre o cálculo */}
+            <VStack gap={4} align="stretch">
               <Box
-                bg="red.50"
-                borderWidth="1px"
-                borderColor="red.200"
+                bg={{ base: 'gray.50', _dark: 'gray.800' }}
                 borderRadius="lg"
-                p={3}
+                p={4}
               >
-                <Text fontSize="sm" color="red.600">{errors.newLimit.message}</Text>
+                <HStack gap={2} mb={3}>
+                  <Info size={18} color={iconColors.brandDark} />
+                  <Text fontWeight="semibold" color="var(--card-foreground)" fontSize="sm">
+                    Informações do Cálculo
+                  </Text>
+                </HStack>
+                <VStack gap={3} align="stretch">
+                  <HStack justify="space-between">
+                    <HStack gap={2}>
+                      <DollarSign size={16} color="var(--muted-foreground)" />
+                      <Text fontSize="sm" color="var(--muted-foreground)">
+                        Saldo disponível:
+                      </Text>
+                    </HStack>
+                    <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
+                      {formatCurrency(availableBalance)}
+                    </Text>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <HStack gap={2}>
+                      <Calendar size={16} color="var(--muted-foreground)" />
+                      <Text fontSize="sm" color="var(--muted-foreground)">
+                        Dias considerados:
+                      </Text>
+                    </HStack>
+                    <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
+                      {daysConsidered} dias
+                    </Text>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <Text fontSize="sm" color="var(--muted-foreground)">
+                      Calculado em:
+                    </Text>
+                    <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
+                      {formatDate(calculatedAt)}
+                    </Text>
+                  </HStack>
+                </VStack>
               </Box>
-            )}
+            </VStack>
 
             {/* Box informativo verde */}
             <Box
@@ -400,11 +368,11 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
               <VStack gap={2} align="stretch" fontSize="sm" color="muted.fg">
                 <HStack gap={2}>
                   <Check size={16} color={iconColors.brandDark} />
-                  <Text>O limite é <strong>calculado automaticamente</strong> baseado na sua renda</Text>
+                  <Text>O limite é <strong>calculado automaticamente</strong> baseado no seu saldo disponível</Text>
                 </HStack>
                 <HStack gap={2}>
                   <Check size={16} color={iconColors.brandDark} />
-                  <Text>Você pode <strong>ajustar manualmente</strong> conforme sua necessidade</Text>
+                  <Text>O cálculo considera os <strong>próximos {daysConsidered} dias</strong> para otimizar seus gastos</Text>
                 </HStack>
                 <HStack gap={2}>
                   <Check size={16} color={iconColors.brandDark} />
@@ -413,40 +381,21 @@ export function DailyLimitForm({ onSuccess, onCancel }: DailyLimitFormProps) {
               </VStack>
             </Box>
 
-            {/* Botão verde grande */}
-            <Button
-              type="submit"
-              loading={isSubmitting}
-              w="full"
-              size="lg"
-              bg="var(--primary)"
-              color="var(--primary-foreground)"
-              borderRadius="full"
-              _hover={{ opacity: 0.9 }}
-              mt={4}
-            >
-              Atualizar Limite
-            </Button>
-
-            {/* Link Cancelar */}
+            {/* Botão Voltar */}
             {onCancel && (
-              <Text
-                as="button"
+              <Button
                 onClick={onCancel}
-                textAlign="center"
-                color={iconColors.brandDark}
-                fontSize="sm"
-                fontWeight="medium"
-                _hover={{ textDecoration: 'underline' }}
-                cursor="pointer"
-                pb={4}
+                w="full"
+                size="lg"
+                variant="outline"
+                borderRadius="full"
+                mt={4}
               >
-                Cancelar
-              </Text>
+                Voltar
+              </Button>
             )}
           </VStack>
         </Box>
       </VStack>
-    </form>
   );
 }
