@@ -8,7 +8,6 @@ import {
   Text,
   VStack,
   HStack,
-  Progress,
   IconButton,
   Dialog,
   List,
@@ -449,89 +448,6 @@ export function Dashboard() {
 
             {/* Right Column - Info & Charts */}
             <VStack gap={6} align="stretch">
-              {/* Progress Bars */}
-              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
-                <VStack gap={4} align="stretch">
-                  {/* Barra 1 - Cartão de Crédito */}
-                  <Box>
-                    <HStack justify="space-between" mb={2}>
-                      <Text fontSize="sm" color="var(--muted-foreground)">disponível</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
-                        {formatCurrency(totals.availableBalance)}
-                      </Text>
-                    </HStack>
-                    <Progress.Root value={60} size="lg" colorPalette="green">
-                      <Progress.Track>
-                        <Progress.Range />
-                      </Progress.Track>
-                    </Progress.Root>
-                  </Box>
-
-                  <Box>
-                    <HStack justify="space-between" mb={2}>
-                      <Text fontSize="sm" color="var(--muted-foreground)">atual</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
-                        {formatCurrency(totals.lockedBalance)}
-                      </Text>
-                    </HStack>
-                    <Progress.Root value={40} size="lg" colorPalette="blue">
-                      <Progress.Track>
-                        <Progress.Range />
-                      </Progress.Track>
-                    </Progress.Root>
-                  </Box>
-
-                  <Box>
-                    <HStack justify="space-between" mb={2}>
-                      <Text fontSize="sm" color="var(--muted-foreground)">próximas</Text>
-                      <Text fontSize="lg" fontWeight="bold" color="var(--muted-foreground)">
-                        {formatCurrency(totals.emergencyReserve)}
-                      </Text>
-                    </HStack>
-                    <Progress.Root value={30} size="lg" colorPalette="orange">
-                      <Progress.Track>
-                        <Progress.Range />
-                      </Progress.Track>
-                    </Progress.Root>
-                  </Box>
-
-                  <VStack align="stretch" gap={2} mt={4} fontSize="xs" color="var(--muted-foreground)">
-                    <Text>Gastos: gastos referentes ao mês de Dezembro</Text>
-                    <Text>Cartão final: XXX XXX XXX 1510</Text>
-                    <Text>Bandeira: Master Card Platinum</Text>
-                  </VStack>
-                </VStack>
-              </Box>
-
-              {/* Bfinconta Info */}
-              <Box bg="var(--card)" borderRadius="xl" p={6} shadow="md">
-                <VStack gap={4} align="stretch">
-                  <HStack justify="space-between">
-                    <Text fontSize="sm" color="var(--muted-foreground)">saldo disponível</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
-                      {formatCurrency(totals.availableBalance)}
-                    </Text>
-                  </HStack>
-
-                  <HStack justify="space-between">
-                    <Text fontSize="sm" color="var(--muted-foreground)">total investido</Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--muted-foreground)">
-                      {formatCurrency(totals.emergencyReserve)}
-                    </Text>
-                  </HStack>
-
-                  <Progress.Root value={70} size="lg" colorPalette="green" mt={4}>
-                    <Progress.Track>
-                      <Progress.Range />
-                    </Progress.Track>
-                  </Progress.Root>
-
-                  <VStack align="stretch" gap={1} mt={4} fontSize="xs" color="var(--muted-foreground)">
-                    <Text><Text as="span" color="var(--accent)" fontWeight="bold">Em azul:</Text> representa o valor atual em sua conta corrente</Text>
-                    <Text><Text as="span" color="green.500" fontWeight="bold">Em verde:</Text> representa todos os seus investimentos</Text>
-                  </VStack>
-                </VStack>
-              </Box>
 
             </VStack>
           </Grid>
