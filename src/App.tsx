@@ -9,6 +9,7 @@ import { AllTransactionsPage } from './pages/AllTransactionsPage';
 import { AddIncomePage } from './pages/AddIncomePage';
 import { AddFixedExpensePage } from './pages/AddFixedExpensePage';
 import { AddVariableExpensePage } from './pages/AddVariableExpensePage';
+import { CalendarPage } from './pages/CalendarPage';
 
 // Loading component using Chakra UI
 function LoadingScreen() {
@@ -114,6 +115,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <AddVariableExpensePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/calendar"
+        element={
+          <PrivateRoute>
+            <CalendarPage />
           </PrivateRoute>
         }
       />

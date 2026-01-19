@@ -27,10 +27,11 @@ import {
   DailyLimitForm,
   FooterActions,
   Sidebar,
-  SidebarState
+  SidebarState,
+  Calendar
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
-import { MobileHeaderControls } from '../components/molecules';
+import { MobileHeaderControls, CalendarWidget } from '../components/molecules';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
@@ -41,7 +42,8 @@ import {
   DollarSign,
   Users,
   X,
-  ArrowLeft
+  ArrowLeft,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { iconColors, customShadows } from '../theme';
@@ -54,7 +56,7 @@ export function Dashboard() {
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
-  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | null>(null);
+  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | null>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
@@ -81,6 +83,12 @@ export function Dashboard() {
 
   // Sidebar menu items configuration
   const sidebarMenuItems: MenuItem[] = [
+    {
+      id: 'calendar',
+      icon: CalendarIcon,
+      label: 'Calendário',
+      onClick: () => setExpandedForm('calendario'),
+    },
     {
       id: 'help',
       icon: Shield,
@@ -143,6 +151,7 @@ export function Dashboard() {
         case 'recarga-celular': return 'Recarga de Celular';
         case 'ajustar-limite': return 'Ajustar Limite';
         case 'extrato': return 'Extrato da Conta';
+        case 'calendario': return 'Calendário de Contas';
         default: return '';
       }
     };
@@ -210,12 +219,20 @@ export function Dashboard() {
               onCancel={() => setExpandedForm(null)}
             />
           );
+        case 'calendario':
+          return (
+            <Calendar
+              showFilters={true}
+              compact={false}
+              height="calc(100vh - 200px)"
+            />
+          );
         default:
           return null;
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
 
     return (
       <Box
@@ -448,7 +465,9 @@ export function Dashboard() {
 
             {/* Right Column - Info & Charts */}
             <VStack gap={6} align="stretch">
-
+              <CalendarWidget
+                onViewFullCalendar={() => setExpandedForm('calendario')}
+              />
             </VStack>
           </Grid>
           )}
