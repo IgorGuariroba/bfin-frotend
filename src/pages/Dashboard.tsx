@@ -28,7 +28,8 @@ import {
   FooterActions,
   Sidebar,
   SidebarState,
-  Calendar
+  Calendar,
+  ExpandedFormType
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
 import { MobileHeaderControls, CalendarWidget } from '../components/molecules';
@@ -56,7 +57,7 @@ export function Dashboard() {
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
-  const [expandedForm, setExpandedForm] = useState<'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | null>(null);
+  const [expandedForm, setExpandedForm] = useState<ExpandedFormType>(null);
   const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();

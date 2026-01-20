@@ -31,7 +31,7 @@
     "@chakra-ui/react": "^3.30.0",
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^3.3.4",
-    "@igorguariroba/bfin-sdk": "^0.6.0",
+    "@igorguariroba/bfin-sdk": "^0.8.0",
     "@tanstack/react-query": "^5.17.9",
     "axios": "^1.6.5",
     "date-fns": "^2.30.0",
