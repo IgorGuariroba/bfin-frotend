@@ -24,13 +24,57 @@ export function useCalendar(
       const startDate = startOfMonth(currentDate)
       const endDate = endOfMonth(currentDate)
 
-      const response = await transactionService.list({
-        startDate: format(startDate, 'yyyy-MM-dd'),
-        endDate: format(endDate, 'yyyy-MM-dd'),
-        ...filters
+      // CORREÇÃO: API espera formato date-time (ISO), não date
+      // Documentação da API confirma: format: "date-time" para startDate e endDate
+      const startDateISO = startDate.toISOString()  // "2026-01-01T03:00:00.000Z"
+      const endDateISO = endDate.toISOString()      // "2026-01-31T03:00:00.000Z"
+
+      // eslint-disable-next-line no-console
+      console.log('📅 [useCalendar] Correção aplicada - usando formato ISO date-time:', {
+        formato_antigo: {
+          startDate: format(startDate, 'yyyy-MM-dd'),
+          endDate: format(endDate, 'yyyy-MM-dd')
+        },
+        formato_correto: {
+          startDate: startDateISO,
+          endDate: endDateISO
+        },
+        filters,
+        currentDate: format(currentDate, 'yyyy-MM-dd')
       })
 
-      return transformTransactionsToEvents(response.transactions, currentDate)
+      try {
+        const response = await transactionService.list({
+          startDate: startDateISO,
+          endDate: endDateISO,
+          ...filters
+        })
+
+        // eslint-disable-next-line no-console
+        console.log('✅ [useCalendar] Resposta da API:', response)
+
+        return transformTransactionsToEvents(response.transactions, currentDate)
+      } catch (error) {
+        console.error('❌ [useCalendar] Erro na API:', error)
+
+        // Log detalhado do erro
+        if (error instanceof Error) {
+          console.error('❌ Error message:', error.message)
+          console.error('❌ Error stack:', error.stack)
+        }
+
+        // Se for um erro axios, log dos detalhes da resposta
+        if (error && typeof error === 'object' && 'response' in error) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const axiosError = error as any
+          console.error('❌ Status:', axiosError.response?.status)
+          console.error('❌ Data:', axiosError.response?.data)
+          console.error('❌ Headers:', axiosError.response?.headers)
+          console.error('❌ Config:', axiosError.config)
+        }
+
+        throw error
+      }
     },
     staleTime: 1000 * 60 * 5, // 5 minutos
     gcTime: 1000 * 60 * 30,   // 30 minutos
@@ -123,7 +167,7 @@ function transformTransactionsToEvents(
     date: format(new Date(transaction.due_date), 'yyyy-MM-dd'),
     transaction,
     type: transaction.type,
-    amount: transaction.amount,
+    amount: Number(transaction.amount) || 0,
     description: transaction.description,
     category: transaction.category?.name || 'Sem categoria',
     status: getTransactionStatus(transaction),

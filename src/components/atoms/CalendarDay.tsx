@@ -136,7 +136,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
           >
             {events.map(event => (
               <span key={event.id}>
-                {event.description}, R$ {event.amount.toFixed(2)}, {
+                {event.description}, R$ {Number(event.amount || 0).toFixed(2)}, {
                   event.status === 'paid' ? 'Pago' :
                   event.status === 'pending' ? 'Pendente' :
                   'Vencido'
