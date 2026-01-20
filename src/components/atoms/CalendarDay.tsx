@@ -62,6 +62,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   return (
     <Box
       {...sizeProps}
+      colorPalette="orange"
       borderRadius="sm"
       display="flex"
       alignItems="center"
@@ -72,16 +73,16 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
       onKeyDown={handleKeyDown}
       bg={
         isSelected
-          ? 'orange.500'
+          ? 'colorPalette.500'
           : isToday
-            ? 'orange.50'
+            ? 'colorPalette.50'
             : 'transparent'
       }
       color={
         isSelected
-          ? 'white'
+          ? 'colorPalette.fg'
           : isToday
-            ? 'orange.900'
+            ? 'colorPalette.900'
             : isCurrentMonth
               ? 'fg.default'
               : 'fg.muted'
@@ -90,20 +91,20 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
       opacity={isCurrentMonth ? 1 : 0.4}
       transition="all 0.2s"
       _hover={isCurrentMonth ? {
-        bg: isSelected ? 'orange.600' : 'gray.100',
+        bg: isSelected ? 'colorPalette.600' : 'bg.muted',
         transform: hasEvents ? 'scale(1.05)' : 'none',
       } : {}}
       _dark={{
-        bg: isSelected ? 'orange.500' : isToday ? 'orange.900' : 'transparent',
+        bg: isSelected ? 'colorPalette.500' : isToday ? 'colorPalette.800' : 'transparent',
         color: isSelected
-          ? 'white'
+          ? 'colorPalette.fg'
           : isToday
-            ? 'orange.100'
+            ? 'colorPalette.100'
             : isCurrentMonth
               ? 'fg.default'
               : 'fg.muted',
         _hover: isCurrentMonth ? {
-          bg: isSelected ? 'orange.600' : 'gray.700',
+          bg: isSelected ? 'colorPalette.600' : 'bg.subtle',
         } : {},
       }}
       aria-label={getDateAriaLabel(date, events)}
