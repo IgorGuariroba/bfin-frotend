@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { customShadows } from '../../theme';
 
-type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | null;
+export type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | null;
 
 interface FooterActionsProps {
   expandedForm: ExpandedFormType;
@@ -77,18 +77,14 @@ export function FooterActions({ expandedForm, onFormSelect }: FooterActionsProps
       px={{ base: 4, md: 8 }}
       py={{ base: 3, md: 2 }}
       zIndex={15}
-      minH={{ base: "100px", md: "90px" }}
-      maxH={{ base: "120px", md: "90px" }}
     >
       <Flex
         gap={{ base: 3, md: 2 }}
-        h="full"
-        align="stretch"
+        align="stretch" // Isso faz todos os itens terem a mesma altura
         justify={{ base: "flex-start", md: "space-between" }}
         overflowX={{ base: "auto", md: "visible" }}
         pb={{ base: 2, md: 0 }}
         css={{
-          // Estilização da scrollbar no mobile
           '&::-webkit-scrollbar': {
             height: '4px',
           },
@@ -107,9 +103,8 @@ export function FooterActions({ expandedForm, onFormSelect }: FooterActionsProps
         {footerActions.map(({ key, icon: IconComponent, label }) => (
           <Box
             key={key}
-            flex={{ base: "none", md: "1" }}
-            minW={{ base: "80px", md: "auto" }}
-            h="full"
+            flex={{ base: "0 0 80px", md: "1" }}
+            minW={{ base: "80px", md: "0" }}
             borderRadius={{ base: "lg", md: "xl" }}
             bg="whiteAlpha.200"
             display="flex"
@@ -121,25 +116,27 @@ export function FooterActions({ expandedForm, onFormSelect }: FooterActionsProps
             _active={{ bg: 'whiteAlpha.400', transform: 'scale(0.95)' }}
             transition="all 0.2s"
             onClick={() => handleActionClick(key)}
-            gap={{ base: 2, md: 1 }}
-            px={{ base: 3, md: 2 }}
-            py={{ base: 2, md: 1 }}
+            gap={{ base: 1.5, md: 1 }}
+            px={{ base: 2, md: 2 }}
+            py={{ base: 2, md: 5}}
           >
             <IconComponent
               size={24}
               color="var(--primary-foreground)"
+              style={{ flexShrink: 0 }}
             />
             <Text
               color="var(--primary-foreground)"
               fontSize={{ base: "xs", md: "2xs" }}
               fontWeight="medium"
               textAlign="center"
-              lineHeight="tight"
+              lineHeight="1.2"
               overflow="hidden"
               css={{
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
+                wordBreak: 'break-word',
               }}
             >
               {label}
