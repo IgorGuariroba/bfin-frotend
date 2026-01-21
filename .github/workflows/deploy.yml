@@ -1,58 +1,38 @@
-name: Deploy to Production
+name: Deploy Frontend
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch: # Permite execução manual
+    branches: [main]
 
 jobs:
   deploy:
-    name: 🚀 Deploy to Render
     runs-on: ubuntu-latest
-    # Só faz deploy se o CI passou
-    needs: []
-
     steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@f017a9c9de7d4d6be828d430ea4f4783e70be687 # v3
         with:
-          node-version: '20'
-          cache: 'npm'
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🔐 Setup NPM Authentication
-        run: |
-          echo "@igorguariroba:registry=https://npm.pkg.github.com" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@d65f2339be5d9d9474fd947bb42934f064fb9d2c # v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ghcr.io/igorguariroba/bfin-frontend:latest
 
-      - name: 📦 Install dependencies
-        run: npm ci
-
-      - name: 🔎 TypeScript Check
-        run: npm run type-check
-
-      - name: 🏗️ Build Application
-        run: npm run build
-        env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-
-      - name: 🚀 Trigger Render Deploy
-        if: success()
-        run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-        continue-on-error: true
-
-      - name: ✅ Deploy Summary
-        run: |
-          echo "# 🚀 Deploy Completed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Environment:** Production" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Deployed by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@91f3272 # v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/bfin
+            docker pull ghcr.io/igorguariroba/bfin-frontend:latest
+            docker compose up -d frontend
