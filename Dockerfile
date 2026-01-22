@@ -1,6 +1,13 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# Build arguments
 ARG NPM_TOKEN
+ARG VITE_API_BASE_URL  # ← ADICIONE ESTA LINHA
+
+# Set environment variable for Vite
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 COPY package*.json ./
 RUN echo "@igorguariroba:registry=https://npm.pkg.github.com" > .npmrc && \
     echo "//npm.pkg.github.com/:_authToken=${NPM_TOKEN}" >> .npmrc
