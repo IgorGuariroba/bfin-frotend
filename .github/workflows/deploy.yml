@@ -9,17 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@v4
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@f017a9c9de7d4d6be828d430ea4f4783e70be687 # v3
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@d65f2339be5d9d9474fd947bb42934f064fb9d2c # v5
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
@@ -27,7 +27,7 @@ jobs:
           tags: ghcr.io/igorguariroba/bfin-frontend:latest
 
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
