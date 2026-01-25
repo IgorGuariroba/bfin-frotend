@@ -1,0 +1,176 @@
+{
+  "name": "BFIN Frontend Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+
+  // Features to add to the dev container
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "azureDnsAutoDetection": true,
+      "installDockerBuildx": true,
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
+    }
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally
+  "forwardPorts": [
+    5173,  // Vite dev server
+    6006,  // Storybook
+    3000   // API proxy (development)
+  ],
+
+  // Port attributes
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "6006": {
+      "label": "Storybook",
+      "onAutoForward": "notify"
+    },
+    "3000": {
+      "label": "API Backend (Local)",
+      "onAutoForward": "silent"
+    }
+  },
+
+  // Configure VS Code settings and extensions
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "typescript.suggest.autoImports": true,
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "emmet.includeLanguages": {
+          "typescript": "html",
+          "typescriptreact": "html"
+        },
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/.git": true,
+          "**/.DS_Store": true,
+          "**/dist": true,
+          "**/coverage": true
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/dist": true,
+          "**/coverage": true,
+          "**/.storybook/static": true
+        }
+      },
+      "extensions": [
+        // TypeScript and JavaScript
+        "ms-vscode.vscode-typescript-next",
+
+        // React and JSX
+        "ms-vscode.vscode-react-native",
+        "bradlc.vscode-tailwindcss",
+
+        // Code Quality
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+
+        // Testing
+        "vitest.explorer",
+        "ms-playwright.playwright",
+
+        // Git
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+
+        // Utilities
+        "christian-kohler.npm-intellisense",
+        "christian-kohler.path-intellisense",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+
+        // Storybook
+        "chromatic.storybook",
+
+        // Code Navigation
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+
+        // Themes (optional)
+        "pkief.material-icon-theme",
+        "ms-vscode.theme-tomorrowkit"
+      ]
+    }
+  },
+
+  // Environment variables
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "VITE_API_BASE_URL": "http://localhost:3000"
+  },
+
+  // Secrets to pass as environment variables
+  "secrets": {
+    "NPM_TOKEN": {
+      "description": "GitHub Personal Access Token for @igorguariroba packages",
+      "documentationUrl": "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token"
+    }
+  },
+
+  // Lifecycle scripts
+  "onCreateCommand": "echo '🚀 BFIN Frontend Dev Container created successfully!'",
+  "updateContentCommand": "npm install && npm audit fix --audit-level=moderate || true",
+  "postCreateCommand": ".devcontainer/setup.sh",
+  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+
+  // Container user
+  "remoteUser": "node",
+
+  // Mount the parent folder so we can access git history
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  // Container configuration
+  "shutdownAction": "stopContainer",
+  "updateRemoteUserUID": true,
+
+  // Memory and performance settings
+  "containerOptions": [
+    "--memory=4g",
+    "--cpus=2"
+  ],
+
+  // Additional mount points for better performance
+  "mounts": [
+    // Use a named volume for node_modules for better performance
+    "source=bfin-frontend-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    // Use a named volume for npm cache
+    "source=bfin-frontend-npm-cache,target=/home/node/.npm,type=volume",
+    // Mount git config from host
+    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached"
+  ],
+
+  // Wait for services to be ready
+  "waitFor": "postCreateCommand",
+
+  // Override the default command
+  "overrideCommand": false,
+
+  // Development settings
+  "remoteEnv": {
+    "PATH": "/usr/local/share/npm-global/bin:${containerEnv:PATH}",
+    "NPM_CONFIG_PREFIX": "/usr/local/share/npm-global"
+  }
+}

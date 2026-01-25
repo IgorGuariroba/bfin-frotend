@@ -1,0 +1,87 @@
+# Docker Compose para BFIN Frontend Dev Container
+# Este arquivo é opcional - use se precisar de serviços adicionais
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        VARIANT: 20-bullseye
+        NODE_VERSION: 20
+    volumes:
+      - ../..:/workspaces:cached
+
+    # Mount node_modules as volume for better performance
+      - bfin-frontend-node-modules:/workspaces/bfin-frotend/node_modules
+      - bfin-frontend-npm-cache:/home/node/.npm
+
+    # Overrides default command so things don't shut down after the process ends
+    command: sleep infinity
+
+    # Environment variables
+    environment:
+      - NODE_ENV=development
+      - VITE_API_BASE_URL=http://localhost:3000
+
+    # Expose ports
+    ports:
+      - "5173:5173"  # Vite
+      - "6006:6006"  # Storybook
+      - "3000:3000"  # API Backend (if local)
+
+    # Networks
+    networks:
+      - bfin-network
+
+  # Uncomment if you need a local database for development
+  # postgres:
+  #   image: postgres:15-alpine
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_DB: bfin_dev
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - bfin-network
+
+  # Uncomment if you need Redis for caching
+  # redis:
+  #   image: redis:7-alpine
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - bfin-network
+
+  # Uncomment if you want to run the backend locally too
+  # backend:
+  #   image: node:20-bullseye
+  #   working_dir: /app
+  #   command: npm run dev
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ../backend:/app:cached
+  #   environment:
+  #     - NODE_ENV=development
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/bfin_dev
+  #   networks:
+  #     - bfin-network
+  #   depends_on:
+  #     - postgres
+
+volumes:
+  bfin-frontend-node-modules:
+  bfin-frontend-npm-cache:
+  # postgres-data:
+
+networks:
+  bfin-network:
+    driver: bridge
