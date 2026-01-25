@@ -118,7 +118,8 @@
   // Environment variables
   "containerEnv": {
     "NODE_ENV": "development",
-    "VITE_API_BASE_URL": "http://localhost:3000"
+    "VITE_API_BASE_URL": "http://localhost:3000",
+    "GIT_CONFIG_GLOBAL": "/tmp/.gitconfig"
   },
 
   // Secrets to pass as environment variables
@@ -158,8 +159,8 @@
     "source=bfin-frontend-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
     // Use a named volume for npm cache
     "source=bfin-frontend-npm-cache,target=/home/node/.npm,type=volume",
-    // Mount git config from host
-    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached"
+    // Mount git config from host (cross-platform: HOME for Linux/Mac, USERPROFILE for Windows)
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/tmp/.gitconfig,type=bind,consistency=cached"
   ],
 
   // Wait for services to be ready
