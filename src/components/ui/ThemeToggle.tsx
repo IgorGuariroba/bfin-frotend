@@ -30,13 +30,24 @@ export function ThemeToggle({
       <IconButton
         aria-label={ariaLabel}
         onClick={toggleColorMode}
-        variant="ghost"
+        variant="outline"
         size={size}
-        bg="blackAlpha.300"
-        color="primary.fg"
-        _hover={{ bg: 'blackAlpha.500' }}
-        border="none"
-        _focus={{ boxShadow: 'none' }}
+        bg="secondary"
+        color="fg"
+        borderColor="border"
+        _hover={{ bg: 'accent' }}
+        _active={{ bg: 'secondary' }}
+        _focusVisible={{
+          outline: '2px solid var(--ring)',
+          outlineOffset: '2px',
+          boxShadow: 'var(--shadow-green-sm)',
+        }}
+        _disabled={{
+          bg: 'accent',
+          color: 'fg.muted',
+          borderColor: 'border.subtle',
+          cursor: 'not-allowed',
+        }}
         borderRadius="md"
       >
         <Icon as={isDark ? Sun : Moon} boxSize={size === 'sm' ? 4 : 5} />
@@ -51,9 +62,22 @@ export function ThemeToggle({
       onClick={toggleColorMode}
       size={size}
       borderRadius="full"
-      borderColor={{ base: 'gray.300', _dark: 'gray.600' }}
-      color={{ base: 'gray.700', _dark: 'gray.200' }}
-      _hover={{ bg: { base: 'gray.100', _dark: 'gray.700' } }}
+      bg="secondary"
+      color="fg"
+      borderColor="border"
+      _hover={{ bg: 'accent' }}
+      _active={{ bg: 'secondary' }}
+      _focusVisible={{
+        outline: '2px solid var(--ring)',
+        outlineOffset: '2px',
+        boxShadow: 'var(--shadow-green-sm)',
+      }}
+      _disabled={{
+        bg: 'accent',
+        color: 'fg.muted',
+        borderColor: 'border.subtle',
+        cursor: 'not-allowed',
+      }}
     >
       <Icon as={isDark ? Sun : Moon} boxSize={4} /> {showLabel && (isDark ? 'Modo Claro' : 'Modo Escuro')}
     </Button>
