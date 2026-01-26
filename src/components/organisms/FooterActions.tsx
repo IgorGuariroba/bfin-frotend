@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { customShadows } from '../../theme';
 
-export type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | null;
+export type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | 'transacoes' | null;
 
 interface FooterActionsProps {
   expandedForm: ExpandedFormType;

@@ -48,8 +48,13 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { iconColors, customShadows } from '../theme';
+import { AllTransactionsView } from './AllTransactionsPage';
 
-export function Dashboard() {
+interface DashboardProps {
+  initialExpandedForm?: ExpandedFormType;
+}
+
+export function Dashboard({ initialExpandedForm }: DashboardProps) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
@@ -57,7 +62,7 @@ export function Dashboard() {
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
-  const [expandedForm, setExpandedForm] = useState<ExpandedFormType>(null);
+  const [expandedForm, setExpandedForm] = useState<ExpandedFormType>(initialExpandedForm ?? null);
   const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
@@ -152,6 +157,7 @@ export function Dashboard() {
         case 'recarga-celular': return 'Recarga de Celular';
         case 'ajustar-limite': return 'Ajustar Limite';
         case 'extrato': return 'Extrato da Conta';
+        case 'transacoes': return 'Todas as Transações';
         case 'calendario': return 'Calendário de Contas';
         default: return '';
       }
@@ -160,7 +166,11 @@ export function Dashboard() {
     const getContent = () => {
       switch (expandedForm) {
         case 'extrato':
-          return <Extrato />;
+          return <Extrato onViewAll={() => setExpandedForm('transacoes')} />;
+        case 'transacoes':
+          return (
+            <AllTransactionsView onBack={() => setExpandedForm(null)} />
+          );
         case 'pagar':
           return (
             <VariableExpenseForm
@@ -187,6 +197,8 @@ export function Dashboard() {
             <BfinParceiroForm
               onSuccess={() => setExpandedForm(null)}
               onCancel={() => setExpandedForm(null)}
+              invitationsCount={_invitations.length}
+              onOpenInvitations={() => setInvitationsDialogOpen(true)}
             />
           );
         case 'transferir':
@@ -275,7 +287,9 @@ export function Dashboard() {
         }}
       >
         {expandedForm === 'extrato' ? (
-          <Extrato onBack={() => setExpandedForm(null)} />
+          <Extrato onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
+        ) : expandedForm === 'transacoes' ? (
+          <AllTransactionsView onBack={() => setExpandedForm(null)} />
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}

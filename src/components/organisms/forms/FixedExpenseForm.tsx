@@ -19,6 +19,11 @@ const fixedExpenseSchema = z.object({
   amount: z.number().positive('Valor deve ser positivo'),
   description: z.string().min(1, 'Descrição é obrigatória'),
   categoryId: z.string().min(1, 'Categoria é obrigatória'),
+  createdAt: z.string()
+    .min(1, 'Data e hora de criação é obrigatória')
+    .transform((val) => {
+      return new Date(val).toISOString();
+    }),
   dueDate: z.string()
     .min(1, 'Data de vencimento é obrigatória')
     .transform((val) => {
@@ -35,10 +40,18 @@ interface FixedExpenseFormProps {
   onCancel?: () => void;
 }
 
+const getLocalDateTimeValue = () => {
+  const now = new Date();
+  const offset = now.getTimezoneOffset();
+  const localTime = new Date(now.getTime() - offset * 60000);
+  return localTime.toISOString().slice(0, 16);
+};
+
 export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
 
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [amountInput, setAmountInput] = useState('');
 
   const {
     register,
@@ -51,6 +64,7 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
     defaultValues: {
       accountId: '',
       amount: 0,
+      createdAt: getLocalDateTimeValue(),
       isRecurring: false,
     },
   });
@@ -130,6 +144,25 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
     }).format(value);
   };
 
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
+  const normalizeDigits = (value: string) => value.replace(/\D/g, '');
+
+  const formatMoneyFromDigits = (digitsValue: string) => {
+    const numeric = Number.parseInt(digitsValue || '0', 10);
+    return formatNumber(numeric / 100);
+  };
+
+  const toAmountFromDigits = (digitsValue: string) => {
+    const numeric = Number.parseInt(digitsValue || '0', 10);
+    return numeric / 100;
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -138,10 +171,11 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
         <Box mb={6}>
           {isEditingAmount ? (
             <Input
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               autoFocus
-              defaultValue={amount}
+              value={amountInput}
+              placeholder="0,00"
               fontSize="4xl"
               fontWeight="bold"
               color="var(--primary-foreground)"
@@ -151,15 +185,24 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
               borderRadius="0"
               p={0}
               mb={4}
+              onChange={(e) => {
+                const nextDigits = normalizeDigits(e.target.value);
+                setValue('amount', toAmountFromDigits(nextDigits), { shouldValidate: true });
+                setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
+              }}
               onBlur={(e) => {
-                const value = parseFloat(e.target.value) || 0;
-                setValue('amount', value);
+                const nextDigits = normalizeDigits(e.target.value);
+                const nextAmount = toAmountFromDigits(nextDigits);
+                setValue('amount', nextAmount, { shouldValidate: true });
+                setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
                 setIsEditingAmount(false);
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  const value = parseFloat((e.target as HTMLInputElement).value) || 0;
-                  setValue('amount', value);
+                  const nextDigits = normalizeDigits((e.target as HTMLInputElement).value);
+                  const nextAmount = toAmountFromDigits(nextDigits);
+                  setValue('amount', nextAmount, { shouldValidate: true });
+                  setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
                   setIsEditingAmount(false);
                 }
               }}
@@ -176,7 +219,11 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
               color="var(--primary-foreground)"
               mb={4}
               cursor="pointer"
-              onClick={() => setIsEditingAmount(true)}
+              onClick={() => {
+                const digits = Math.round(Number(amount) * 100).toString();
+                setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
+                setIsEditingAmount(true);
+              }}
               _hover={{ opacity: 0.8 }}
             >
               {formatCurrency(Number(amount))}
@@ -367,6 +414,29 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
               </HStack>
               {errors.categoryId && (
                 <Field.ErrorText>{errors.categoryId.message}</Field.ErrorText>
+              )}
+            </Field.Root>
+
+            {/* Data e hora de criação */}
+            <Field.Root invalid={!!errors.createdAt}>
+              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                Data e hora de criação
+              </Field.Label>
+              <Box position="relative">
+                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                  <Calendar size={18} color="var(--muted-foreground)" />
+                </Box>
+                <Input
+                  type="datetime-local"
+                  {...register('createdAt')}
+                  pl={10}
+                  borderColor="var(--border)"
+                  borderRadius="full"
+                  _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                />
+              </Box>
+              {errors.createdAt && (
+                <Field.ErrorText>{errors.createdAt.message}</Field.ErrorText>
               )}
             </Field.Root>
 
