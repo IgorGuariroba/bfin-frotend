@@ -30,16 +30,57 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
 }) => {
   const formattedDate = format(date, "d 'de' MMMM, yyyy", { locale: ptBR })
 
+  const typeBadgeMap = {
+    income: { label: 'Receita', bg: 'var(--success)', color: 'var(--success-foreground)' },
+    fixed_expense: { label: 'Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+    variable_expense: { label: 'Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+  } as const
+
+  const statusBadgeMap = {
+    paid: { label: 'Pago', bg: 'var(--success)', color: 'var(--success-foreground)' },
+    pending: { label: 'Pendente', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+    overdue: { label: 'Vencido', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+  } as const
+
+  const secondaryButtonStyles = {
+    bg: 'var(--secondary)',
+    color: 'var(--foreground)',
+    border: '1px solid var(--border)',
+    _hover: { bg: 'var(--accent)' },
+    _active: { bg: 'var(--secondary)' },
+    _focusVisible: { boxShadow: '0 0 0 2px var(--ring)' },
+    _disabled: {
+      bg: 'var(--accent)',
+      color: 'var(--muted-foreground)',
+      borderColor: 'var(--border)',
+      boxShadow: 'none',
+      cursor: 'not-allowed',
+    },
+  }
+
   return (
     <Dialog.Root open={isOpen} onOpenChange={(details) => !details.open && onClose()}>
       <Dialog.Backdrop />
       <Dialog.Positioner>
-        <Dialog.Content>
+        <Dialog.Content
+          bg="var(--card)"
+          color="var(--foreground)"
+          borderRadius="xl"
+          border="1px solid var(--border)"
+          boxShadow="var(--shadow-lg)"
+        >
           <Dialog.Header>
             <HStack justifyContent="space-between" alignItems="center">
               <Dialog.Title>Eventos de {formattedDate}</Dialog.Title>
               <Dialog.CloseTrigger asChild>
-                <Button variant="ghost" size="md" onClick={onClose}>
+                <Button
+                  variant="ghost"
+                  size="md"
+                  onClick={onClose}
+                  color="var(--muted-foreground)"
+                  _hover={{ bg: 'var(--accent)', color: 'var(--foreground)' }}
+                  _focusVisible={{ boxShadow: '0 0 0 2px var(--ring)' }}
+                >
                   <X size={20} />
                 </Button>
               </Dialog.CloseTrigger>
@@ -48,7 +89,7 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
           <Dialog.Body>
             <VStack gap={3} align="stretch">
               {events.length === 0 ? (
-                <Text color="fg.muted" textAlign="center" py={4}>
+                <Text color="var(--muted-foreground)" textAlign="center" py={4}>
                   Nenhum evento para este dia.
                 </Text>
               ) : (
@@ -58,36 +99,33 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
                     p={3}
                     borderWidth="1px"
                     borderRadius="md"
-                    borderColor="border.muted"
-                    _hover={{ bg: 'bg.muted', cursor: onEventClick ? 'pointer' : 'default' }}
+                    borderColor="var(--border)"
+                    bg="var(--secondary)"
+                    _hover={{ bg: 'var(--accent)', cursor: onEventClick ? 'pointer' : 'default' }}
                     onClick={() => onEventClick?.(event)}
                   >
                     <HStack justifyContent="space-between" mb={1}>
                       <Badge
-                        colorPalette={
-                          event.type === 'income' ? 'green' :
-                          event.type === 'fixed_expense' ? 'red' : 'orange'
-                        }
                         variant="solid"
+                        bg={typeBadgeMap[event.type].bg}
+                        color={typeBadgeMap[event.type].color}
+                        borderRadius="full"
                       >
-                        {event.type === 'income' ? 'Receita' :
-                         event.type === 'fixed_expense' ? 'Fixa' : 'Variável'}
+                        {typeBadgeMap[event.type].label}
                       </Badge>
                       <Badge
-                        variant="outline"
-                        colorPalette={
-                          event.status === 'paid' ? 'green' :
-                          event.status === 'overdue' ? 'red' : 'yellow'
-                        }
+                        variant="solid"
+                        bg={statusBadgeMap[event.status].bg}
+                        color={statusBadgeMap[event.status].color}
+                        borderRadius="full"
                       >
-                        {event.status === 'paid' ? 'Pago' :
-                         event.status === 'overdue' ? 'Vencido' : 'Pendente'}
+                        {statusBadgeMap[event.status].label}
                       </Badge>
                     </HStack>
                     <HStack justifyContent="space-between" mt={2}>
                       <VStack align="start" gap={0}>
                         <Text fontWeight="medium">{event.description}</Text>
-                        <Text fontSize="xs" color="fg.muted">{event.category}</Text>
+                        <Text fontSize="xs" color="var(--muted-foreground)">{event.category}</Text>
                       </VStack>
                       <HStack>
                         <Text fontWeight="bold">
@@ -102,7 +140,7 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
             </VStack>
           </Dialog.Body>
           <Dialog.Footer>
-            <Button variant="outline" size="md" onClick={onClose}>Fechar</Button>
+            <Button size="md" onClick={onClose} {...secondaryButtonStyles}>Fechar</Button>
           </Dialog.Footer>
         </Dialog.Content>
       </Dialog.Positioner>

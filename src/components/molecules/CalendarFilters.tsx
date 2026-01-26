@@ -43,6 +43,35 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
   }
 
   const Container = compact ? HStack : VStack
+  const inputStyles = {
+    bg: 'var(--card)',
+    borderColor: 'var(--border)',
+    color: 'var(--foreground)',
+    borderWidth: '1px',
+    _hover: { boxShadow: 'var(--shadow-sm)' },
+    _focusVisible: {
+      borderColor: 'var(--ring)',
+      boxShadow: '0 0 0 2px var(--ring)',
+    },
+    _disabled: {
+      bg: 'var(--accent)',
+      color: 'var(--muted-foreground)',
+      borderColor: 'var(--border)',
+      cursor: 'not-allowed',
+    },
+  }
+
+  const typeBadgeMap = {
+    income: { label: 'Receita', bg: 'var(--success)', color: 'var(--success-foreground)' },
+    fixed_expense: { label: 'Despesa Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+    variable_expense: { label: 'Despesa Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+  } as const
+
+  const statusBadgeMap = {
+    pending: { label: 'Pendente', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+    paid: { label: 'Pago', bg: 'var(--success)', color: 'var(--success-foreground)' },
+    overdue: { label: 'Vencido', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+  } as const
 
   return (
     <Container gap={3} align="stretch" w="100%">
@@ -55,6 +84,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
             const value = e.target.value
             updateFilter('types', value ? [value as NonNullable<Filters['types']>[number]] : undefined)
           }}
+          {...inputStyles}
         >
           <option value="">Todos os tipos</option>
           <option value="income">Receita</option>
@@ -72,6 +102,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
             const value = e.target.value
             updateFilter('statuses', value ? [value as NonNullable<Filters['statuses']>[number]] : undefined)
           }}
+          {...inputStyles}
         >
           <option value="">Todos os status</option>
           <option value="pending">Pendente</option>
@@ -90,6 +121,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
               const value = e.target.value
               updateFilter('categories', value ? [value] : undefined)
             }}
+            {...inputStyles}
           >
             <option value="">Todas as categorias</option>
             {availableCategories.map(category => (
@@ -108,14 +140,14 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
             <WrapItem key={type}>
               <Badge
                 variant="solid"
-                colorPalette="orange"
+                bg={typeBadgeMap[type].bg}
+                color={typeBadgeMap[type].color}
                 display="flex"
                 alignItems="center"
                 gap={1}
+                borderRadius="full"
               >
-                {type === 'income' ? 'Receita' :
-                 type === 'fixed_expense' ? 'Despesa Fixa' :
-                 'Despesa Variável'}
+                {typeBadgeMap[type].label}
                 <Button
                   variant="ghost"
                   size="xs"
@@ -123,6 +155,8 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
                   minW={0}
                   h="14px"
                   onClick={() => updateFilter('types', undefined)}
+                  color="currentColor"
+                  _hover={{ bg: 'transparent', opacity: 0.8 }}
                 >
                   <X size={10} />
                 </Button>
@@ -134,14 +168,14 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
             <WrapItem key={status}>
               <Badge
                 variant="solid"
-                colorPalette="blue"
+                bg={statusBadgeMap[status].bg}
+                color={statusBadgeMap[status].color}
                 display="flex"
                 alignItems="center"
                 gap={1}
+                borderRadius="full"
               >
-                {status === 'pending' ? 'Pendente' :
-                 status === 'paid' ? 'Pago' :
-                 'Vencido'}
+                {statusBadgeMap[status].label}
                 <Button
                   variant="ghost"
                   size="xs"
@@ -149,6 +183,8 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
                   minW={0}
                   h="14px"
                   onClick={() => updateFilter('statuses', undefined)}
+                  color="currentColor"
+                  _hover={{ bg: 'transparent', opacity: 0.8 }}
                 >
                   <X size={10} />
                 </Button>
@@ -158,9 +194,14 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
 
           <WrapItem>
             <Button
-              variant="outline"
               size="sm"
               onClick={clearFilters}
+              bg="var(--secondary)"
+              color="var(--foreground)"
+              border="1px solid var(--border)"
+              _hover={{ bg: 'var(--accent)' }}
+              _active={{ bg: 'var(--secondary)' }}
+              _focusVisible={{ boxShadow: '0 0 0 2px var(--ring)' }}
             >
               <X size={14} style={{ marginRight: '4px' }} />
               Limpar

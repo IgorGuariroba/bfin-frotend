@@ -28,6 +28,37 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [showFullCalendar, setShowFullCalendar] = useState(false)
 
+  const secondaryButtonStyles = {
+    bg: 'var(--secondary)',
+    color: 'var(--foreground)',
+    border: '1px solid var(--border)',
+    _hover: { bg: 'var(--accent)' },
+    _active: { bg: 'var(--secondary)' },
+    _focusVisible: { boxShadow: '0 0 0 2px var(--ring)' },
+    _disabled: {
+      bg: 'var(--accent)',
+      color: 'var(--muted-foreground)',
+      borderColor: 'var(--border)',
+      boxShadow: 'none',
+      cursor: 'not-allowed',
+    },
+  }
+
+  const primaryButtonStyles = {
+    bg: 'var(--primary)',
+    color: 'var(--primary-foreground)',
+    boxShadow: 'var(--shadow-green-md)',
+    _hover: { bg: 'var(--primary-600)' },
+    _active: { bg: 'var(--primary-700)' },
+    _focusVisible: { boxShadow: '0 0 0 2px var(--ring)' },
+    _disabled: {
+      bg: 'var(--accent)',
+      color: 'var(--muted-foreground)',
+      boxShadow: 'none',
+      cursor: 'not-allowed',
+    },
+  }
+
   const handleViewFullCalendar = () => {
     if (onViewFullCalendar) {
       onViewFullCalendar()
@@ -68,9 +99,9 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
 
   const getStatusBadge = (status: CalendarEvent['status']) => {
     const statusMap = {
-      paid: { label: 'Pago', colorPalette: 'green' as const },
-      pending: { label: 'Pendente', colorPalette: 'yellow' as const },
-      overdue: { label: 'Vencido', colorPalette: 'red' as const },
+      paid: { label: 'Pago', bg: 'var(--success)', color: 'var(--success-foreground)' },
+      pending: { label: 'Pendente', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+      overdue: { label: 'Vencido', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
     }
 
     return statusMap[status]
@@ -89,17 +120,17 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
         bg="var(--card)"
         borderRadius="xl"
         p={{ base: 4, md: 6 }}
-        shadow="md"
+        boxShadow="var(--shadow-md)"
       >
         <VStack gap={4} align="stretch">
           <HStack justify="space-between">
-            <Text fontSize="lg" fontWeight="semibold">
+            <Text fontSize="lg" fontWeight="semibold" color="var(--foreground)">
               Calendário de Contas
             </Text>
             <Button
               size={{ base: 'sm', md: 'md' }}
-              variant="outline"
               onClick={() => setShowFullCalendar(false)}
+              {...secondaryButtonStyles}
             >
               Compacto
             </Button>
@@ -122,17 +153,17 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
         bg="var(--card)"
         borderRadius="xl"
         p={{ base: 4, md: 6 }}
-        shadow="md"
+        boxShadow="var(--shadow-md)"
       >
         <VStack gap={4} align="stretch">
           {/* Header */}
           <VStack align="stretch" gap={{ base: 3, md: 0 }}>
             <HStack justify="space-between" align="center" w="full">
               <HStack>
-              <CalendarIcon size={20} color="var(--muted-foreground)" />
-              <Text color="var(--muted-foreground)" fontWeight="medium">
-                Calendário
-              </Text>
+                <CalendarIcon size={20} color="var(--muted-foreground)" />
+                <Text color="var(--muted-foreground)" fontWeight="medium">
+                  Calendário
+                </Text>
               </HStack>
             </HStack>
             <HStack
@@ -142,18 +173,16 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
             >
               <Button
                 size={{ base: 'sm', md: 'md' }}
-                variant="outline"
                 onClick={() => setShowFullCalendar(true)}
+                {...secondaryButtonStyles}
               >
                 <Eye size={14} style={{ marginRight: '8px' }} />
                 Expandir
               </Button>
               <Button
                 size={{ base: 'sm', md: 'md' }}
-                bg="var(--primary)"
-                color="var(--primary-foreground)"
-                _hover={{ opacity: 0.9 }}
                 onClick={handleViewFullCalendar}
+                {...primaryButtonStyles}
               >
                 VER TUDO
                 <ChevronRight size={14} style={{ marginLeft: '8px' }} />
@@ -171,7 +200,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
           )}
 
           {error && (
-            <Text color="red.500" fontSize="sm" textAlign="center">
+            <Text color="var(--destructive)" fontSize="sm" textAlign="center">
               Erro ao carregar eventos
             </Text>
           )}
@@ -187,7 +216,9 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                 <Box
                   p={4}
                   textAlign="center"
-                  bg="var(--muted)"
+                  bg="var(--accent)"
+                  borderWidth="1px"
+                  borderColor="var(--border)"
                   borderRadius="md"
                 >
                   <Text fontSize="sm" color="var(--muted-foreground)">
@@ -206,26 +237,28 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                         key={event.id}
                         p={3}
                         bg="var(--card)"
-                        borderRadius="md"
+                        borderRadius="lg"
                         borderWidth="1px"
                         borderColor="var(--border)"
                         justify="space-between"
-                        _hover={{ bg: 'var(--muted)' }}
+                        _hover={{ bg: 'var(--accent)' }}
                       >
                         <VStack align="start" gap={0} flex="1">
                           <HStack>
                             <Text
                               fontSize="xs"
-                              color={isToday ? "orange.500" : "var(--muted-foreground)"}
-                              fontWeight={isToday ? "bold" : "normal"}
+                              color={isToday ? 'var(--warning)' : 'var(--muted-foreground)'}
+                              fontWeight={isToday ? 'bold' : 'normal'}
                             >
                               {format(eventDate, "d 'de' MMM", { locale: ptBR })}
                               {isToday && " (Hoje)"}
                             </Text>
                             <Badge
                               size="sm"
-                              colorPalette={statusInfo.colorPalette}
-                              variant="outline"
+                              variant="solid"
+                              bg={statusInfo.bg}
+                              color={statusInfo.color}
+                              borderRadius="full"
                             >
                               {statusInfo.label}
                             </Badge>
@@ -244,7 +277,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                         <Text
                           fontSize="sm"
                           fontWeight="bold"
-                          color={event.type === 'income' ? 'green.500' : 'red.500'}
+                          color={event.type === 'income' ? 'var(--success)' : 'var(--destructive)'}
                         >
                           {event.type === 'income' ? '+' : '-'} {formatCurrency(event.amount)}
                         </Text>
@@ -258,7 +291,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
               {upcomingEvents.length > 0 && (
                 <Box
                   p={3}
-                  bg="var(--muted)"
+                  bg="var(--secondary)"
                   borderRadius="md"
                   borderWidth="1px"
                   borderColor="var(--border)"

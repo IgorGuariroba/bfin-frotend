@@ -1,29 +1,14 @@
-import { ReactNode } from 'react';
 import { ThemeProvider } from 'next-themes';
+import type { ThemeProviderProps } from 'next-themes';
 
-interface ColorModeProviderProps {
-  children: ReactNode;
-  attribute?: string;
-  defaultTheme?: string;
-  enableSystem?: boolean;
-  disableTransitionOnChange?: boolean;
-}
-
-export function ColorModeProvider({
-  children,
-  attribute = 'class',
-  defaultTheme = 'light',
-  enableSystem = true,
-  disableTransitionOnChange = true,
-  ...props
-}: ColorModeProviderProps) {
+export function ColorModeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <ThemeProvider
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      attribute={attribute as any}
-      defaultTheme={defaultTheme}
-      enableSystem={enableSystem}
-      disableTransitionOnChange={disableTransitionOnChange}
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+      storageKey="chakra-ui-color-mode"
       {...props}
     >
       {children}
