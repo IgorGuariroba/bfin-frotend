@@ -3,7 +3,7 @@ import {
   Button,
   Icon,
 } from '@chakra-ui/react';
-import { useColorMode } from '../../hooks/useColorMode';
+import { useColorMode } from './useColorMode';
 import { Sun, Moon } from 'lucide-react';
 
 interface ThemeToggleProps {
