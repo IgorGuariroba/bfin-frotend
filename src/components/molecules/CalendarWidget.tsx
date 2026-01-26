@@ -88,7 +88,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
       <Box
         bg="var(--card)"
         borderRadius="xl"
-        p={6}
+        p={{ base: 4, md: 6 }}
         shadow="md"
       >
         <VStack gap={4} align="stretch">
@@ -97,7 +97,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
               Calendário de Contas
             </Text>
             <Button
-              size="md"
+              size={{ base: 'sm', md: 'md' }}
               variant="outline"
               onClick={() => setShowFullCalendar(false)}
             >
@@ -121,21 +121,27 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
       <Box
         bg="var(--card)"
         borderRadius="xl"
-        p={6}
+        p={{ base: 4, md: 6 }}
         shadow="md"
       >
         <VStack gap={4} align="stretch">
           {/* Header */}
-          <HStack justify="space-between" align="center">
-            <HStack>
+          <VStack align="stretch" gap={{ base: 3, md: 0 }}>
+            <HStack justify="space-between" align="center" w="full">
+              <HStack>
               <CalendarIcon size={20} color="var(--muted-foreground)" />
               <Text color="var(--muted-foreground)" fontWeight="medium">
                 Calendário
               </Text>
+              </HStack>
             </HStack>
-            <HStack>
+            <HStack
+              justify={{ base: 'flex-start', md: 'flex-end' }}
+              flexWrap="wrap"
+              gap={2}
+            >
               <Button
-                size="md"
+                size={{ base: 'sm', md: 'md' }}
                 variant="outline"
                 onClick={() => setShowFullCalendar(true)}
               >
@@ -143,7 +149,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                 Expandir
               </Button>
               <Button
-                size="md"
+                size={{ base: 'sm', md: 'md' }}
                 bg="var(--primary)"
                 color="var(--primary-foreground)"
                 _hover={{ opacity: 0.9 }}
@@ -153,7 +159,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                 <ChevronRight size={14} style={{ marginLeft: '8px' }} />
               </Button>
             </HStack>
-          </HStack>
+          </VStack>
 
           {/* Loading ou Error */}
           {isLoading && (

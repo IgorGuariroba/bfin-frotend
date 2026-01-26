@@ -42,6 +42,14 @@ Toda a documentação técnica e de negócio foi organizada na pasta `/docs`:
 
 ---
 
+## 🤖 Codex Skills
+
+Para manter a UI padronizada, use a skill do design system:
+
+- `bfin-design-system` em `/home/igorguariroba/.codex/skills/bfin-design-system/`
+
+---
+
 ## 🔧 Principais Scripts
 
 ```bash
