@@ -19,6 +19,11 @@ const fixedExpenseSchema = z.object({
   amount: z.number().positive('Valor deve ser positivo'),
   description: z.string().min(1, 'Descrição é obrigatória'),
   categoryId: z.string().min(1, 'Categoria é obrigatória'),
+  createdAt: z.string()
+    .min(1, 'Data e hora de criação é obrigatória')
+    .transform((val) => {
+      return new Date(val).toISOString();
+    }),
   dueDate: z.string()
     .min(1, 'Data de vencimento é obrigatória')
     .transform((val) => {
@@ -34,6 +39,13 @@ interface FixedExpenseFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
+
+const getLocalDateTimeValue = () => {
+  const now = new Date();
+  const offset = now.getTimezoneOffset();
+  const localTime = new Date(now.getTime() - offset * 60000);
+  return localTime.toISOString().slice(0, 16);
+};
 
 export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
@@ -51,6 +63,7 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
     defaultValues: {
       accountId: '',
       amount: 0,
+      createdAt: getLocalDateTimeValue(),
       isRecurring: false,
     },
   });
@@ -367,6 +380,29 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
               </HStack>
               {errors.categoryId && (
                 <Field.ErrorText>{errors.categoryId.message}</Field.ErrorText>
+              )}
+            </Field.Root>
+
+            {/* Data e hora de criação */}
+            <Field.Root invalid={!!errors.createdAt}>
+              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                Data e hora de criação
+              </Field.Label>
+              <Box position="relative">
+                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                  <Calendar size={18} color="var(--muted-foreground)" />
+                </Box>
+                <Input
+                  type="datetime-local"
+                  {...register('createdAt')}
+                  pl={10}
+                  borderColor="var(--border)"
+                  borderRadius="full"
+                  _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                />
+              </Box>
+              {errors.createdAt && (
+                <Field.ErrorText>{errors.createdAt.message}</Field.ErrorText>
               )}
             </Field.Root>
 

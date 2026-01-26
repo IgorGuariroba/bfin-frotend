@@ -76,6 +76,7 @@ export interface CreateFixedExpenseDTO {
   description: string;
   categoryId: string;
   dueDate: string;
+  createdAt: string;
   isRecurring?: boolean;
   recurrencePattern?: RecurrencePattern;
 }
@@ -85,6 +86,7 @@ export interface CreateVariableExpenseDTO {
   amount: number;
   description: string;
   categoryId: string;
+  createdAt: string;
 }
 
 export interface TransactionBreakdown {
