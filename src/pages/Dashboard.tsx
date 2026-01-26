@@ -279,7 +279,7 @@ export function Dashboard() {
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}
-            <Box bg="var(--primary)" px={6} py={6} pb={8}>
+            <Box bg="var(--primary)" px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }} pb={{ base: 6, md: 8 }}>
               <Flex align="center" gap={4} mb={6}>
                 <IconButton
                   aria-label="Voltar"
@@ -291,7 +291,7 @@ export function Dashboard() {
                 >
                   <ArrowLeft size={20} />
                 </IconButton>
-                <Heading size="lg" color="var(--primary-foreground)" flex="1">
+                <Heading size={{ base: 'md', md: 'lg' }} color="var(--primary-foreground)" flex="1">
                   {getTitle()}
                 </Heading>
               </Flex>
@@ -299,7 +299,7 @@ export function Dashboard() {
             </Box>
           </VStack>
         ) : (
-          <Box p={8} maxW="2xl" mx="auto" pb="140px">
+          <Box p={{ base: 4, md: 8 }} maxW={{ base: '100%', md: '2xl' }} mx="auto" pb={{ base: '180px', md: '140px' }}>
             <Flex align="center" gap={4} mb={6}>
               <IconButton
                 aria-label="Fechar"
@@ -315,7 +315,7 @@ export function Dashboard() {
             <Box
               bg="var(--card)"
               borderRadius="xl"
-              p={6}
+              p={{ base: 4, md: 6 }}
               shadow="md"
             >
               {getContent()}
@@ -349,13 +349,13 @@ export function Dashboard() {
       <Flex
         as="header"
         bg="var(--primary)"
-        px={6}
+        px={{ base: 4, md: 6 }}
         py={3}
         align="center"
         justify="space-between"
         boxShadow={customShadows.whiteGlow.sm}
       >
-        <HStack gap={4}>
+        <Flex align="center" gap={3} minW={0}>
           {/* Controles móveis - aparecem apenas no mobile */}
           <MobileHeaderControls
             sidebarState={sidebarState}
@@ -364,20 +364,31 @@ export function Dashboard() {
             showHomeButton={true}
           />
 
-          <Text
-            fontSize="3xl"
-            fontWeight="extrabold"
-            color="var(--primary-foreground)"
-            fontFamily="'Playfair Display SC', serif"
-          >
-            BFIN
-          </Text>
-          <Text color="var(--primary-foreground)" fontSize="sm">
+          <VStack align="flex-start" gap={0} minW={0}>
+            <Text
+              fontSize={{ base: '2xl', md: '3xl' }}
+              fontWeight="extrabold"
+              color="var(--primary-foreground)"
+              fontFamily="'Playfair Display SC', serif"
+              lineHeight="shorter"
+            >
+              BFIN
+            </Text>
+            <Text
+              color="var(--primary-foreground)"
+              fontSize="xs"
+              display={{ base: 'block', md: 'none' }}
+              lineClamp={1}
+            >
+              Olá, {user?.full_name?.split(' ')[0]}
+            </Text>
+          </VStack>
+          <Text color="var(--primary-foreground)" fontSize="sm" display={{ base: 'none', md: 'block' }}>
             - Olá, {user?.full_name?.split(' ')[0]}
           </Text>
-        </HStack>
+        </Flex>
 
-        <HStack gap={2}>
+        <HStack gap={{ base: 1, md: 2 }}>
           <ThemeToggle variant="icon" size="md" />
           <IconButton
             aria-label="Fechar"
@@ -417,9 +428,9 @@ export function Dashboard() {
           {!expandedForm && (
             <Grid
               templateColumns={{ base: '1fr', lg: '440px 1fr' }}
-              gap={6}
-              p={8}
-              pb="140px"
+              gap={{ base: 4, md: 6 }}
+              p={{ base: 4, md: 8 }}
+              pb={{ base: '180px', md: '140px' }}
               flex="1"
             >
             {/* Left Column - Cards */}
@@ -428,7 +439,7 @@ export function Dashboard() {
               <Box
                 bg="var(--card)"
                 borderRadius="xl"
-                p={6}
+                p={{ base: 4, md: 6 }}
                 shadow="md"
               >
                 <HStack mb={4}>
@@ -442,7 +453,7 @@ export function Dashboard() {
                   <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
                     Saldo disponível
                   </Text>
-                  <Text fontSize="3xl" fontWeight="bold" color="var(--muted-foreground)">
+                  <Text fontSize={{ base: '2xl', md: '3xl' }} fontWeight="bold" color="var(--foreground)">
                     {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
                   </Text>
                   <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
@@ -451,7 +462,7 @@ export function Dashboard() {
                 </Box>
 
                 <Button
-                  size="md"
+                  size={{ base: 'sm', md: 'md' }}
                   bg="var(--primary)"
                   color="var(--primary-foreground)"
                   _hover={{ opacity: 0.9 }}
