@@ -44,6 +44,22 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
     getDayEvents,
   } = calendar
 
+  const secondaryButtonStyles = {
+    bg: 'var(--secondary)',
+    color: 'var(--foreground)',
+    border: '1px solid var(--border)',
+    _hover: { bg: 'var(--accent)' },
+    _active: { bg: 'var(--secondary)' },
+    _focusVisible: { boxShadow: '0 0 0 2px var(--ring)' },
+    _disabled: {
+      bg: 'var(--accent)',
+      color: 'var(--muted-foreground)',
+      borderColor: 'var(--border)',
+      boxShadow: 'none',
+      cursor: 'not-allowed',
+    },
+  }
+
   const handleDayClick = (date: Date) => {
     setSelectedDate(date)
     const events = getDayEvents(date)
@@ -52,7 +68,14 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
 
   if (error) {
     return (
-      <Box p={4} borderWidth="1px" borderColor="red.500" borderRadius="md" color="red.500">
+      <Box
+        p={4}
+        borderWidth="1px"
+        borderColor="var(--destructive)"
+        borderRadius="md"
+        bg="var(--accent)"
+        color="var(--destructive)"
+      >
         <p>Erro ao carregar eventos. Tente novamente.</p>
       </Box>
     )
@@ -72,19 +95,26 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
       {/* Toggle de Filtros */}
       {showFilters && (
         <Collapsible.Root open={showFiltersPanel} onOpenChange={(e) => setShowFiltersPanel(e.open)}>
-           <Collapsible.Trigger asChild>
+          <Collapsible.Trigger asChild>
             <Button
-              variant="outline"
               size="md"
               onClick={() => setShowFiltersPanel(!showFiltersPanel)}
               alignSelf="flex-start"
+              {...secondaryButtonStyles}
             >
               <Filter size={16} style={{ marginRight: '8px' }} />
               Filtros
             </Button>
           </Collapsible.Trigger>
           <Collapsible.Content>
-             <Box p={4} bg="var(--muted)" borderRadius="md" mt={2}>
+             <Box
+               p={4}
+               bg="var(--secondary)"
+               borderRadius="md"
+               borderWidth="1px"
+               borderColor="var(--border)"
+               mt={2}
+             >
               <CalendarFilters
                 filters={filters}
                 onFiltersChange={setFilters}

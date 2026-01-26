@@ -8,11 +8,11 @@ import type { CalendarEventColor } from '@/types/calendar'
 
 // Mapeamento de cores para diferentes status de eventos
 export const eventColors = {
-  green: 'green.500',    // Pago
-  yellow: 'yellow.500',  // Vencendo
-  red: 'red.500',        // Vencido
-  blue: 'blue.500',      // Agendado
-  gray: 'gray.300',      // Sem eventos
+  green: 'var(--success)',       // Pago
+  yellow: 'var(--warning)',      // Vencendo
+  red: 'var(--destructive)',     // Vencido
+  blue: 'var(--info)',           // Agendado
+  gray: 'var(--muted-foreground)', // Sem eventos
 } as const
 
 // Estilos base para o calendário
@@ -20,10 +20,10 @@ export const calendarStyles = {
   calendar: {
     width: '100%',
     maxWidth: '400px',
-    borderRadius: 'md',
-    border: '1px solid',
-    borderColor: 'border',
-    bg: 'bg',
+    borderRadius: 'xl',
+    border: '1px solid var(--border)',
+    bg: 'var(--card)',
+    boxShadow: 'var(--shadow-sm)',
     p: 4,
   },
 
@@ -46,26 +46,21 @@ export const calendarStyles = {
     transition: 'all 0.2s',
 
     _hover: {
-      bg: 'gray.100',
-      _dark: { bg: 'gray.700' },
+      bg: 'var(--accent)',
     },
 
     _selected: {
-      bg: 'brand.500',
-      color: 'white',
+      bg: 'var(--primary)',
+      color: 'var(--primary-foreground)',
       _hover: {
-        bg: 'brand.600',
+        bg: 'var(--primary-600)',
       },
     },
 
     _today: {
-      bg: 'brand.50',
-      color: 'brand.900',
+      bg: 'var(--accent)',
+      color: 'var(--primary)',
       fontWeight: 'bold',
-      _dark: {
-        bg: 'brand.900',
-        color: 'brand.100',
-      },
     },
 
     _disabled: {
@@ -100,33 +95,19 @@ export const calendarStyles = {
 }
 
 // CSS variables para integração com React Day Picker
-export const getCalendarCSSVars = (size: 'sm' | 'md' | 'lg' = 'md', colorMode: 'light' | 'dark' = 'light') => {
+export const getCalendarCSSVars = (size: 'sm' | 'md' | 'lg' = 'md', _colorMode: 'light' | 'dark' = 'light') => {
   const cellSize = size === 'sm' ? '32px' : size === 'lg' ? '48px' : '40px'
-
-  if (colorMode === 'dark') {
-    return {
-      '--rdp-cell-size': cellSize,
-      '--rdp-accent-color': 'var(--brand-400)',
-      '--rdp-background-color': 'var(--bg)',
-      '--rdp-outline-color': 'var(--brand-600)',
-      '--rdp-outline-selected-color': 'var(--brand-300)',
-      '--rdp-selected-color': 'white',
-      '--rdp-disabled-opacity': '0.4',
-      '--rdp-text-color': 'var(--fg)',
-      '--rdp-text-color-disabled': 'var(--muted-fg)',
-    }
-  }
 
   return {
     '--rdp-cell-size': cellSize,
-    '--rdp-accent-color': 'var(--brand-500)',
-    '--rdp-background-color': 'var(--bg)',
-    '--rdp-outline-color': 'var(--brand-300)',
-    '--rdp-outline-selected-color': 'var(--brand-600)',
-    '--rdp-selected-color': 'white',
+    '--rdp-accent-color': 'var(--primary)',
+    '--rdp-background-color': 'var(--card)',
+    '--rdp-outline-color': 'var(--ring)',
+    '--rdp-outline-selected-color': 'var(--primary-600)',
+    '--rdp-selected-color': 'var(--primary-foreground)',
     '--rdp-disabled-opacity': '0.4',
-    '--rdp-text-color': 'var(--fg)',
-    '--rdp-text-color-disabled': 'var(--muted-fg)',
+    '--rdp-text-color': 'var(--foreground)',
+    '--rdp-text-color-disabled': 'var(--muted-foreground)',
   }
 }
 

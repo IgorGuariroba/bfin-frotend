@@ -25,7 +25,7 @@ export const CalendarPage: React.FC = () => {
           <Heading size="lg" mb={2}>
             Calendário de Contas BFIN
           </Heading>
-          <Text color="fg.muted">
+          <Text color="var(--muted-foreground)">
             Visualize suas receitas e despesas organizadas por data de vencimento.
           </Text>
         </Box>
@@ -34,7 +34,7 @@ export const CalendarPage: React.FC = () => {
           bg="var(--card)"
           borderRadius="xl"
           p={6}
-          shadow="md"
+          boxShadow="var(--shadow-md)"
         >
           <Calendar
             onDateSelect={handleDateSelect}

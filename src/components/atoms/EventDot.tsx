@@ -17,6 +17,13 @@ export const EventDot: React.FC<EventDotProps> = ({
   size = 'md'
 }) => {
   const colorValue = getEventColorValue(color)
+  const textColorMap = {
+    green: 'var(--success-foreground)',
+    yellow: 'var(--warning-foreground)',
+    red: 'var(--destructive-foreground)',
+    blue: 'var(--info-foreground)',
+    gray: 'var(--foreground)',
+  } as const
 
   const sizeProps = {
     sm: { w: '4px', h: '4px', fontSize: '6px' },
@@ -32,7 +39,7 @@ export const EventDot: React.FC<EventDotProps> = ({
         top="1px"
         right="1px"
         bg={colorValue}
-        color="white"
+        color={textColorMap[color]}
         borderRadius="full"
         minW="12px"
         h="12px"

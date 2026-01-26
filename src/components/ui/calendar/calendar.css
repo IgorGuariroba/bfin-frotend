@@ -57,18 +57,18 @@
 }
 
 .chakra-calendar .rdp-button:hover:not(.rdp-day_disabled) {
-  background-color: rgba(128, 128, 128, 0.1);
+  background-color: var(--accent);
 }
 
 .chakra-calendar .rdp-day_today .rdp-button {
   background-color: var(--rdp-accent-color);
-  color: white;
+  color: var(--rdp-selected-color);
   font-weight: 700;
 }
 
 .chakra-calendar .rdp-day_selected .rdp-button {
   background-color: var(--rdp-accent-color);
-  color: white;
+  color: var(--rdp-selected-color);
 }
 
 .chakra-calendar .rdp-day_selected .rdp-button:hover {
