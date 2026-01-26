@@ -1,4 +1,4 @@
-import { configureBfinApi } from '@igorguariroba/bfin-sdk';
+import { configureBfinApi, getAuthentication } from '@igorguariroba/bfin-sdk';
 
 /**
  * Obtém a URL base da API
@@ -33,8 +33,6 @@ export function initializeSdk() {
 
       if (refreshToken) {
         try {
-          // Importar dinamicamente para evitar dependência circular
-          const { getAuthentication } = await import('@igorguariroba/bfin-sdk');
           const authApi = getAuthentication();
 
           const response = await authApi.postApiV1AuthRefresh({
