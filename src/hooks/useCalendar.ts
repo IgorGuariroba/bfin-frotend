@@ -29,29 +29,12 @@ export function useCalendar(
       const startDateISO = startDate.toISOString()  // "2026-01-01T03:00:00.000Z"
       const endDateISO = endDate.toISOString()      // "2026-01-31T03:00:00.000Z"
 
-      // eslint-disable-next-line no-console
-      console.log('📅 [useCalendar] Correção aplicada - usando formato ISO date-time:', {
-        formato_antigo: {
-          startDate: format(startDate, 'yyyy-MM-dd'),
-          endDate: format(endDate, 'yyyy-MM-dd')
-        },
-        formato_correto: {
-          startDate: startDateISO,
-          endDate: endDateISO
-        },
-        filters,
-        currentDate: format(currentDate, 'yyyy-MM-dd')
-      })
-
       try {
         const response = await transactionService.list({
           startDate: startDateISO,
           endDate: endDateISO,
           ...filters
         })
-
-        // eslint-disable-next-line no-console
-        console.log('✅ [useCalendar] Resposta da API:', response)
 
         return transformTransactionsToEvents(response.transactions, currentDate)
       } catch (error) {

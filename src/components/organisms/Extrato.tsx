@@ -86,9 +86,10 @@ function TransactionItem({ title, date, amount, type, icon, isIncome }: Transact
 
 interface ExtratoProps {
   onBack?: () => void;
+  onViewAll?: () => void;
 }
 
-export function Extrato({ onBack }: ExtratoProps) {
+export function Extrato({ onBack, onViewAll }: ExtratoProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: transactionsData, isLoading: loadingTransactions } = useTransactions({ limit: 10 });
   const [showBalance, setShowBalance] = useState(true);
@@ -139,6 +140,8 @@ export function Extrato({ onBack }: ExtratoProps) {
       return dateString;
     }
   };
+
+  const viewAllColor = onViewAll ? 'var(--primary)' : 'green.500';
 
   return (
     <VStack gap={0} align="stretch" w="100%" minH="100vh" bg="gray.50">
@@ -220,11 +223,17 @@ export function Extrato({ onBack }: ExtratoProps) {
           <Text fontSize="xl" fontWeight="bold" color="gray.900">
             Extrato Recente
           </Text>
-          <ChakraLink asChild color="green.500" fontWeight="bold" fontSize="sm">
-            <RouterLink to="/transactions">
+          {onViewAll ? (
+            <ChakraLink color={viewAllColor} fontWeight="bold" fontSize="sm" onClick={onViewAll}>
               Ver tudo
-            </RouterLink>
-          </ChakraLink>
+            </ChakraLink>
+          ) : (
+            <ChakraLink asChild color={viewAllColor} fontWeight="bold" fontSize="sm">
+              <RouterLink to="/transactions">
+                Ver tudo
+              </RouterLink>
+            </ChakraLink>
+          )}
         </Flex>
 
         <VStack gap={3} align="stretch">

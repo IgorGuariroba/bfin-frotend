@@ -49,7 +49,7 @@ type Story = StoryObj<typeof FooterActions>;
 
 // Component wrapper para controlar estado
 function FooterActionsWrapper() {
-  type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | null;
+  type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | 'transacoes' | null;
   const [expandedForm, setExpandedForm] = useState<ExpandedFormType>(null);
 
   return (

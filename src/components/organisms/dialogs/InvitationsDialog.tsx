@@ -95,10 +95,18 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
     <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()}>
       <Dialog.Backdrop />
       <Dialog.Positioner>
-          <Dialog.Content maxW="5xl">
+          <Dialog.Content
+            maxW="5xl"
+            bg="var(--card)"
+            color="var(--foreground)"
+            borderWidth="1px"
+            borderColor="var(--border)"
+            borderRadius="xl"
+            boxShadow="var(--shadow-md)"
+          >
           <Dialog.Header>
             <Flex align="center" gap={2}>
-              <Icon as={Mail} />
+              <Icon as={Mail} color="var(--muted-foreground)" />
               <Dialog.Title>Meus Convites</Dialog.Title>
             </Flex>
           </Dialog.Header>
@@ -108,8 +116,8 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
           {isLoading ? (
             <Center py={8}>
               <Stack gap={2} align="center">
-                <Spinner size="lg" colorPalette="brand" />
-                <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Carregando convites...</Text>
+                <Spinner size="lg" color="var(--primary)" />
+                <Text color="var(--muted-foreground)">Carregando convites...</Text>
               </Stack>
             </Center>
           ) : (
@@ -118,20 +126,23 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                 <Box
                   key={invitation.id}
                   p={5}
-                  bg={{ base: 'card', _dark: 'card' }}
+                  bg="var(--card)"
                   borderWidth="1px"
-                  borderColor={{ base: 'border', _dark: 'border' }}
-                  borderRadius="lg"
-                  _hover={{ shadow: 'md' }}
+                  borderColor="var(--border)"
+                  borderRadius="xl"
+                  boxShadow="var(--shadow-card)"
+                  _hover={{
+                    boxShadow: 'var(--shadow-card-hover)',
+                  }}
                   transition="all 0.2s"
                 >
                   {/* Header */}
                   <Flex justify="space-between" align="flex-start" mb={4}>
                     <Box flex="1">
-                      <Text fontSize="lg" fontWeight="semibold" color={{ base: 'fg', _dark: 'fg' }} mb={1}>
+                      <Text fontSize="lg" fontWeight="semibold" color="var(--foreground)" mb={1}>
                         {invitation.account?.account_name || 'Conta'}
                       </Text>
-                      <Flex align="center" gap={2} fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
+                      <Flex align="center" gap={2} fontSize="sm" color="var(--muted-foreground)">
                         <Icon as={User} boxSize={4} />
                         <Text>Convidado por {invitation.inviter.full_name}</Text>
                       </Flex>
@@ -141,12 +152,18 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                   {/* Details */}
                   <Flex align="center" gap={4} mb={4} flexWrap="wrap">
                     <Flex align="center" gap={2} fontSize="sm">
-                      <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Permissão:</Text>
-                      <Badge colorPalette="gray" px={3} py={1}>
+                      <Text color="var(--muted-foreground)">Permissão:</Text>
+                      <Badge
+                        bg="var(--secondary)"
+                        color="var(--foreground)"
+                        borderRadius="full"
+                        px={3}
+                        py={1}
+                      >
                         {getRoleLabel(invitation.role)}
                       </Badge>
                     </Flex>
-                    <Flex align="center" gap={2} fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
+                    <Flex align="center" gap={2} fontSize="sm" color="var(--muted-foreground)">
                       <Icon as={Clock} boxSize={4} />
                       <Text>Expira em {formatDate(invitation.expires_at)}</Text>
                     </Flex>
@@ -157,7 +174,21 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                     <Button
                       onClick={() => handleAccept(invitation.token, invitation.account?.account_name || 'Conta')}
                       disabled={acceptInvitation.isPending || rejectInvitation.isPending}
-                      colorPalette="green"
+                      bg="var(--primary)"
+                      color="var(--primary-foreground)"
+                      boxShadow="var(--shadow-button-primary)"
+                      _hover={{ bg: 'var(--primary-600)' }}
+                      _active={{ bg: 'var(--primary-700)' }}
+                      _focusVisible={{
+                        outline: 'none',
+                        boxShadow: '0 0 0 2px var(--ring)',
+                      }}
+                      _disabled={{
+                        bg: 'var(--accent)',
+                        color: 'var(--gray-400)',
+                        boxShadow: 'none',
+                        cursor: 'not-allowed',
+                      }}
                     >
                       <Flex align="center" gap={2}>
                         <Check size={16} />
@@ -168,7 +199,22 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
                       onClick={() => handleReject(invitation.token, invitation.account?.account_name || 'Conta')}
                       disabled={acceptInvitation.isPending || rejectInvitation.isPending}
                       variant="outline"
-                      colorPalette="red"
+                      bg="var(--secondary)"
+                      color="var(--foreground)"
+                      borderColor="var(--border)"
+                      _hover={{ bg: 'var(--accent)' }}
+                      _active={{ bg: 'var(--secondary)' }}
+                      _focusVisible={{
+                        outline: 'none',
+                        boxShadow: '0 0 0 2px var(--ring)',
+                      }}
+                      _disabled={{
+                        bg: 'var(--accent)',
+                        color: 'var(--gray-400)',
+                        borderColor: 'var(--border)',
+                        boxShadow: 'none',
+                        cursor: 'not-allowed',
+                      }}
                     >
                       <Flex align="center" gap={2}>
                         <X size={16} />
@@ -182,8 +228,8 @@ export function InvitationsDialog({ isOpen, onClose }: InvitationsDialogProps) {
               {invitations.length === 0 && (
                 <Center py={12}>
                   <Stack gap={3} align="center">
-                    <Icon as={Mail} boxSize={12} color={{ base: 'muted.fg', _dark: 'muted.fg' }} opacity={0.5} />
-                    <Text color={{ base: 'muted.fg', _dark: 'muted.fg' }}>Você não tem convites pendentes</Text>
+                    <Icon as={Mail} boxSize={12} color="var(--muted-foreground)" opacity={0.5} />
+                    <Text color="var(--muted-foreground)">Você não tem convites pendentes</Text>
                   </Stack>
                 </Center>
               )}

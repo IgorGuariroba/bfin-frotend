@@ -79,9 +79,9 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
   };
 
   const getTransactionColor = (type: string, status: string) => {
-    if (status === 'locked') return 'blue.600';
-    if (type === 'income') return 'green.600';
-    return 'red.600';
+    if (status === 'locked') return 'var(--primary)';
+    if (type === 'income') return 'var(--success)';
+    return 'var(--destructive)';
   };
 
   const getTypeLabel = (type: string) => {
@@ -187,8 +187,8 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
     return (
       <Center py={8}>
         <Stack gap={2} align="center">
-          <Spinner size="lg" colorPalette="brand" />
-          <Text color="gray.600">Carregando transações...</Text>
+          <Spinner size="lg" color="var(--primary)" />
+          <Text color="var(--muted-foreground)">Carregando transações...</Text>
         </Stack>
       </Center>
     );
@@ -197,7 +197,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
   if (isError) {
     return (
       <Center py={8}>
-        <Text color="red.600">Erro ao carregar transações</Text>
+        <Text color="var(--destructive)">Erro ao carregar transações</Text>
       </Center>
     );
   }
@@ -206,8 +206,8 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
     return (
       <Center py={8}>
         <Stack gap={2} align="center">
-          <Text color="gray.600">Nenhuma transação encontrada</Text>
-          <Text fontSize="sm" color="gray.500">
+          <Text color="var(--muted-foreground)">Nenhuma transação encontrada</Text>
+          <Text fontSize="sm" color="var(--muted-foreground)">
             Comece criando uma receita ou despesa
           </Text>
         </Stack>
@@ -218,8 +218,8 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
   return (
     <Stack gap={3}>
       {/* Summary */}
-      <Box bg="muted" p={3} borderRadius="lg">
-        <Text fontSize="sm" color="gray.600">
+      <Box bg="var(--secondary)" p={3} borderRadius="lg">
+        <Text fontSize="sm" color="var(--muted-foreground)">
           Total: <strong>{data.pagination.total_items}</strong> transações
         </Text>
       </Box>
@@ -229,12 +229,12 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
         {data.transactions.map((transaction) => (
           <Box
             key={transaction.id}
-            bg="card"
+            bg="var(--card)"
             borderWidth="1px"
-            borderColor="gray.200"
+            borderColor="var(--border)"
             borderRadius="lg"
             p={4}
-            _hover={{ shadow: 'md' }}
+            _hover={{ bg: 'var(--accent)' }}
             transition="all 0.2s"
           >
             <Flex align="flex-start" justify="space-between">
@@ -248,7 +248,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                 />
                 <Box flex="1" minW="0">
                   <Flex align="center" gap={2} flexWrap="wrap">
-                    <Text fontWeight="medium" color="gray.900">
+                    <Text fontWeight="medium" color="var(--card-foreground)">
                       {transaction.description}
                     </Text>
                     <Badge colorPalette="gray" fontSize="xs">
@@ -257,14 +257,14 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                   </Flex>
 
                   <Stack gap={1} mt={1}>
-                    <Text fontSize="sm" color="gray.600">
+                    <Text fontSize="sm" color="var(--muted-foreground)">
                       {transaction.category?.name || 'Sem categoria'}
                     </Text>
-                    <Text fontSize="xs" color="gray.500">
+                    <Text fontSize="xs" color="var(--muted-foreground)">
                       {formatDate(transaction.due_date)}
                     </Text>
                     {transaction.account && (
-                      <Text fontSize="xs" color="gray.500">
+                      <Text fontSize="xs" color="var(--muted-foreground)">
                         Conta: {transaction.account.account_name}
                       </Text>
                     )}
@@ -339,7 +339,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
       {/* Pagination info */}
       {data.pagination.total_pages > 1 && (
         <Center pt={2}>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="var(--muted-foreground)">
             Página {data.pagination.current_page} de {data.pagination.total_pages}
           </Text>
         </Center>

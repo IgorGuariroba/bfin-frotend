@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
-import { Stack, HStack, VStack, Center, Text, Box, Input, Field, Menu, chakra } from '@chakra-ui/react';
+import { Stack, HStack, VStack, Center, Text, Box, Input, Field, Menu, chakra, Badge } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useAddAccountMember } from '../../../hooks/useAccountMembers';
@@ -22,9 +22,16 @@ type InviteFormData = z.infer<typeof inviteSchema>;
 interface BfinParceiroFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
+  invitationsCount?: number;
+  onOpenInvitations?: () => void;
 }
 
-export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps) {
+export function BfinParceiroForm({
+  onSuccess,
+  onCancel,
+  invitationsCount,
+  onOpenInvitations,
+}: BfinParceiroFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const addMember = useAddAccountMember();
 
@@ -46,6 +53,8 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
   const selectedAccountId = watch('accountId');
   const selectedRole = watch('role');
   const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
+  const pendingInvitations = invitationsCount ?? 0;
+  const hasInvitations = pendingInvitations > 0;
 
   useEffect(() => {
     if (accounts && accounts.length > 0 && !selectedAccountId) {
@@ -206,6 +215,78 @@ export function BfinParceiroForm({ onSuccess, onCancel }: BfinParceiroFormProps)
               </Field.ErrorText>
             )}
           </Field.Root>
+        </Box>
+
+        {/* Convites recebidos */}
+        <Box
+          bg="var(--card)"
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor="var(--border)"
+          p={4}
+          mb={6}
+          boxShadow="sm"
+        >
+          <HStack justify="space-between" align="center" gap={4} flexWrap="wrap">
+            <HStack gap={3}>
+              <Box
+                bg="var(--primary)"
+                color="var(--primary-foreground)"
+                borderRadius="full"
+                p={2}
+              >
+                <Mail size={16} />
+              </Box>
+              <VStack align="flex-start" gap={1}>
+                <Text fontSize="sm" color="var(--muted-foreground)">
+                  Convites recebidos
+                </Text>
+                <HStack gap={2}>
+                  <Text fontSize="md" fontWeight="semibold" color="var(--foreground)">
+                    {hasInvitations
+                      ? `Você tem ${pendingInvitations} convite${pendingInvitations === 1 ? '' : 's'} pendente${pendingInvitations === 1 ? '' : 's'}.`
+                      : 'Você não tem convites pendentes.'}
+                  </Text>
+                  {hasInvitations && (
+                    <Badge
+                      bg="var(--primary)"
+                      color="var(--primary-foreground)"
+                      borderRadius="full"
+                      px={2}
+                      py={1}
+                      fontSize="xs"
+                    >
+                      {pendingInvitations}
+                    </Badge>
+                  )}
+                </HStack>
+              </VStack>
+            </HStack>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onOpenInvitations}
+              disabled={!onOpenInvitations}
+              bg="var(--secondary)"
+              color="var(--foreground)"
+              borderColor="var(--border)"
+              _hover={{ bg: 'var(--accent)' }}
+              _active={{ bg: 'var(--secondary)' }}
+              _focusVisible={{
+                outline: 'none',
+                boxShadow: '0 0 0 2px var(--ring)',
+              }}
+              _disabled={{
+                bg: 'var(--accent)',
+                color: 'var(--gray-400)',
+                borderColor: 'var(--border)',
+                boxShadow: 'none',
+                cursor: 'not-allowed',
+              }}
+            >
+              Ver convites
+            </Button>
+          </HStack>
         </Box>
 
         {/* Card Branco */}
