@@ -44,6 +44,7 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
 
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [amountInput, setAmountInput] = useState('');
 
   const {
     register,
@@ -135,6 +136,25 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
     }).format(value);
   };
 
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
+  const normalizeDigits = (value: string) => value.replace(/\D/g, '');
+
+  const formatMoneyFromDigits = (digitsValue: string) => {
+    const numeric = Number.parseInt(digitsValue || '0', 10);
+    return formatNumber(numeric / 100);
+  };
+
+  const toAmountFromDigits = (digitsValue: string) => {
+    const numeric = Number.parseInt(digitsValue || '0', 10);
+    return numeric / 100;
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -143,10 +163,11 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
         <Box mb={6}>
           {isEditingAmount ? (
             <Input
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               autoFocus
-              defaultValue={amount}
+              value={amountInput}
+              placeholder="0,00"
               fontSize="4xl"
               fontWeight="bold"
               color="var(--primary-foreground)"
@@ -156,15 +177,24 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
               borderRadius="0"
               p={0}
               mb={4}
+              onChange={(e) => {
+                const nextDigits = normalizeDigits(e.target.value);
+                setValue('amount', toAmountFromDigits(nextDigits), { shouldValidate: true });
+                setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
+              }}
               onBlur={(e) => {
-                const value = parseFloat(e.target.value) || 0;
-                setValue('amount', value);
+                const nextDigits = normalizeDigits(e.target.value);
+                const nextAmount = toAmountFromDigits(nextDigits);
+                setValue('amount', nextAmount, { shouldValidate: true });
+                setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
                 setIsEditingAmount(false);
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  const value = parseFloat((e.target as HTMLInputElement).value) || 0;
-                  setValue('amount', value);
+                  const nextDigits = normalizeDigits((e.target as HTMLInputElement).value);
+                  const nextAmount = toAmountFromDigits(nextDigits);
+                  setValue('amount', nextAmount, { shouldValidate: true });
+                  setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
                   setIsEditingAmount(false);
                 }
               }}
@@ -181,7 +211,11 @@ export function VariableExpenseForm({ onSuccess, onCancel }: VariableExpenseForm
               color="var(--primary-foreground)"
               mb={4}
               cursor="pointer"
-              onClick={() => setIsEditingAmount(true)}
+              onClick={() => {
+                const digits = Math.round(Number(amount) * 100).toString();
+                setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
+                setIsEditingAmount(true);
+              }}
               _hover={{ opacity: 0.8 }}
             >
               {formatCurrency(Number(amount))}
