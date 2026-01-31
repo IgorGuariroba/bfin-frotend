@@ -1,0 +1,99 @@
+name: 🔄 Update BFIN SDK
+
+on:
+  schedule:
+    # Executa toda segunda-feira às 09:00 UTC
+    - cron: '0 9 * * MON'
+  workflow_dispatch: # Permite execução manual
+    inputs:
+      force_update:
+        description: 'Forçar atualização mesmo se já estiver na última versão'
+        required: false
+        default: 'false'
+
+jobs:
+  update-sdk:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔽 Checkout código
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: 🔑 Configurar NPM Token
+      run: |
+        echo "NPM_TOKEN=${{ secrets.NPM_TOKEN }}" > .env
+
+    - name: 📋 Configurar .npmrc
+      run: npm run setup:npmrc
+
+    - name: 📥 Instalar dependências
+      run: npm ci
+
+    - name: 🔍 Verificar e atualizar SDK
+      id: update
+      run: |
+        # Verificar versão atual
+        CURRENT=$(npm view @igorguariroba/bfin-sdk version --prefix .)
+        LATEST=$(npm view @igorguariroba/bfin-sdk version)
+
+        echo "current_version=$CURRENT" >> $GITHUB_OUTPUT
+        echo "latest_version=$LATEST" >> $GITHUB_OUTPUT
+
+        if [ "$CURRENT" != "$LATEST" ] || [ "${{ github.event.inputs.force_update }}" = "true" ]; then
+          echo "needs_update=true" >> $GITHUB_OUTPUT
+          npm run update:sdk
+        else
+          echo "needs_update=false" >> $GITHUB_OUTPUT
+          echo "✅ SDK já está na versão mais recente: $LATEST"
+        fi
+
+    - name: 🚀 Criar Pull Request
+      if: steps.update.outputs.needs_update == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: |
+          chore(sdk): atualizar @igorguariroba/bfin-sdk para v${{ steps.update.outputs.latest_version }}
+
+          - Versão anterior: ${{ steps.update.outputs.current_version }}
+          - Nova versão: ${{ steps.update.outputs.latest_version }}
+          - Atualização automática via GitHub Actions
+        title: 🔄 Atualizar BFIN SDK para v${{ steps.update.outputs.latest_version }}
+        body: |
+          ## 📦 Atualização Automática do SDK
+
+          Este PR atualiza o `@igorguariroba/bfin-sdk` automaticamente.
+
+          ### 📋 Resumo das alterações:
+          - **Versão anterior:** `${{ steps.update.outputs.current_version }}`
+          - **Nova versão:** `${{ steps.update.outputs.latest_version }}`
+
+          ### ✅ Validações executadas:
+          - [x] TypeScript check passou
+          - [x] ESLint passou
+          - [x] Instalação bem-sucedida
+
+          ### 🔍 Próximos passos:
+          1. Revisar as alterações
+          2. Executar testes: `npm test -- --run`
+          3. Testar a aplicação localmente
+          4. Fazer merge se tudo estiver funcionando
+
+          ---
+
+          > 🤖 Este PR foi criado automaticamente pelo workflow `update-sdk.yml`
+        branch: chore/update-sdk-v${{ steps.update.outputs.latest_version }}
+        labels: |
+          dependencies
+          bfin-sdk
+          automated
+        reviewers: IgorGuariroba
+        assignees: IgorGuariroba
