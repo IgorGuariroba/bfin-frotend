@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    allow:
+      - dependency-name: "@igorguariroba/bfin-sdk"
+        dependency-type: "direct"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    reviewers:
+      - "IgorGuariroba"
+    assignees:
+      - "IgorGuariroba"
+    labels:
+      - "dependencies"
+      - "bfin-sdk"
