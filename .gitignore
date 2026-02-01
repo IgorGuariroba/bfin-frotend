@@ -36,3 +36,4 @@ storybook-static
 # .npmrc com ${NPM_TOKEN} pode ser versionado
 .npmrc.local
 .npmrc
+.claude/settings.local.json
