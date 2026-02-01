@@ -820,3 +820,10 @@ npm audit              # ✅ Segurança
 
 **Última atualização**: Janeiro 2026
 **Versão**: 1.0.0
+
+## Active Technologies
+- TypeScript 5.3.3 + React 18.2.0 + Chakra UI v3.30.0, React Query 5.17.9, React Hook Form 7.49.3, Zod 3.22.4, @igorguariroba/bfin-sdk 0.12.0 (001-loan-simulations)
+- API via SDK privado (backend PostgreSQL) (001-loan-simulations)
+
+## Recent Changes
+- 001-loan-simulations: Added TypeScript 5.3.3 + React 18.2.0 + Chakra UI v3.30.0, React Query 5.17.9, React Hook Form 7.49.3, Zod 3.22.4, @igorguariroba/bfin-sdk 0.12.0

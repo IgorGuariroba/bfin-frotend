@@ -1,0 +1,556 @@
+openapi: 3.0.0
+info:
+  title: BFIN Loan Simulations API
+  description: API endpoints for loan simulations using emergency reserve as collateral
+  version: 1.0.0
+  contact:
+    name: Igor Guariroba
+    email: support@bfin.com
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.bfin.com
+    description: Production server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoanSimulation:
+      type: object
+      required:
+        - id
+        - createdAt
+        - amount
+        - termMonths
+        - interestRateMonthly
+        - amortizationType
+        - installmentAmount
+        - totalInterest
+        - totalCost
+        - reserveUsagePercent
+        - reserveRemainingAmount
+        - monthlyCashflowImpact
+        - status
+        - installmentPlan
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the simulation
+        createdAt:
+          type: string
+          format: date-time
+          description: When the simulation was created
+        amount:
+          type: number
+          format: decimal
+          minimum: 500
+          maximum: 100000
+          description: Loan amount in BRL
+        termMonths:
+          type: integer
+          minimum: 6
+          maximum: 60
+          description: Loan term in months
+        interestRateMonthly:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 10
+          description: Monthly interest rate percentage
+        amortizationType:
+          type: string
+          enum: [PRICE]
+          description: Amortization type (currently only PRICE supported)
+        installmentAmount:
+          type: number
+          format: decimal
+          description: Fixed monthly installment amount
+        totalInterest:
+          type: number
+          format: decimal
+          description: Total interest to be paid
+        totalCost:
+          type: number
+          format: decimal
+          description: Total amount to be paid (principal + interest)
+        reserveUsagePercent:
+          type: number
+          format: decimal
+          description: Percentage of emergency reserve being used
+        reserveRemainingAmount:
+          type: number
+          format: decimal
+          description: Emergency reserve amount remaining after loan
+        monthlyCashflowImpact:
+          type: number
+          format: decimal
+          description: Monthly cashflow impact
+        status:
+          type: string
+          enum: [PENDING, APPROVED, COMPLETED]
+          description: Current status of the simulation
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the simulation was approved
+        withdrawnAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the funds were withdrawn
+        installmentPlan:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstallmentPlan'
+
+    InstallmentPlan:
+      type: object
+      required:
+        - installmentNumber
+        - principalAmount
+        - interestAmount
+        - totalAmount
+        - dueDate
+        - remainingPrincipal
+        - accumulatedInterest
+        - accumulatedPrincipal
+      properties:
+        installmentNumber:
+          type: integer
+          minimum: 1
+          description: Installment sequence number
+        principalAmount:
+          type: number
+          format: decimal
+          description: Principal amount for this installment
+        interestAmount:
+          type: number
+          format: decimal
+          description: Interest amount for this installment
+        totalAmount:
+          type: number
+          format: decimal
+          description: Total installment amount
+        dueDate:
+          type: string
+          format: date-time
+          description: When this installment is due
+        remainingPrincipal:
+          type: number
+          format: decimal
+          description: Remaining principal after this installment
+        accumulatedInterest:
+          type: number
+          format: decimal
+          description: Total interest paid up to this installment
+        accumulatedPrincipal:
+          type: number
+          format: decimal
+          description: Total principal paid up to this installment
+
+    CreateLoanSimulationRequest:
+      type: object
+      required:
+        - amount
+        - termMonths
+        - interestRateMonthly
+      properties:
+        amount:
+          type: number
+          format: decimal
+          minimum: 500
+          maximum: 100000
+          description: Desired loan amount in BRL
+        termMonths:
+          type: integer
+          minimum: 6
+          maximum: 60
+          description: Desired loan term in months
+        interestRateMonthly:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 10
+          description: Monthly interest rate percentage
+
+    LoanSimulationListResponse:
+      type: object
+      required:
+        - simulations
+        - pagination
+      properties:
+        simulations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoanSimulation'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+
+    PaginationInfo:
+      type: object
+      required:
+        - total
+        - limit
+        - offset
+        - hasMore
+      properties:
+        total:
+          type: integer
+          description: Total number of simulations
+        limit:
+          type: integer
+          description: Number of items per page
+        offset:
+          type: integer
+          description: Number of items skipped
+        hasMore:
+          type: boolean
+          description: Whether there are more items available
+
+    EmergencyReserveStatus:
+      type: object
+      required:
+        - totalReserve
+        - availableReserve
+        - loanLimit
+        - currentLoansAmount
+        - remainingLoanCapacity
+        - lastUpdated
+        - accountId
+      properties:
+        totalReserve:
+          type: number
+          format: decimal
+          description: Total emergency reserve amount
+        availableReserve:
+          type: number
+          format: decimal
+          description: Available reserve for new loans
+        loanLimit:
+          type: number
+          format: decimal
+          description: Maximum loan amount (70% of total reserve)
+        currentLoansAmount:
+          type: number
+          format: decimal
+          description: Amount already borrowed
+        remainingLoanCapacity:
+          type: number
+          format: decimal
+          description: Remaining loan capacity
+        lastUpdated:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        accountId:
+          type: string
+          format: uuid
+          description: Associated account ID
+
+    ApiError:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/loan-simulations:
+    get:
+      summary: List loan simulations
+      description: Retrieve paginated list of user's loan simulations with optional filtering
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of results to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Number of results to skip
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, COMPLETED]
+          description: Filter by simulation status
+      responses:
+        '200':
+          description: List of loan simulations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanSimulationListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    post:
+      summary: Create loan simulation
+      description: Create a new loan simulation with automatic calculation of installments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLoanSimulationRequest'
+      responses:
+        '201':
+          description: Simulation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanSimulation'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                amountTooHigh:
+                  summary: Amount exceeds 70% reserve limit
+                  value:
+                    error: "VALIDATION_ERROR"
+                    message: "Loan amount exceeds 70% of emergency reserve limit"
+                    details:
+                      maxAmount: 50000
+                      requestedAmount: 75000
+                invalidRate:
+                  summary: Interest rate out of bounds
+                  value:
+                    error: "VALIDATION_ERROR"
+                    message: "Interest rate must be between 0.5% and 5% per month"
+                    details:
+                      minRate: 0.5
+                      maxRate: 5
+                      requestedRate: 8
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/loan-simulations/{simulationId}:
+    get:
+      summary: Get loan simulation details
+      description: Retrieve complete details of a specific loan simulation
+      parameters:
+        - name: simulationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Simulation ID
+      responses:
+        '200':
+          description: Simulation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanSimulation'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Simulation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/loan-simulations/{simulationId}/approve:
+    post:
+      summary: Approve loan simulation
+      description: Approve a pending simulation (must be within 30 days and within reserve limits)
+      parameters:
+        - name: simulationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Simulation ID
+      responses:
+        '200':
+          description: Simulation approved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanSimulation'
+        '400':
+          description: Cannot approve simulation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                expired:
+                  summary: Simulation expired
+                  value:
+                    error: "BUSINESS_RULE_VIOLATION"
+                    message: "Simulation has expired (more than 30 days old)"
+                    details:
+                      createdAt: "2025-12-01T10:00:00Z"
+                      expiresAt: "2025-12-31T10:00:00Z"
+                exceedsLimit:
+                  summary: Exceeds 70% limit
+                  value:
+                    error: "BUSINESS_RULE_VIOLATION"
+                    message: "Approval would exceed 70% of emergency reserve limit"
+                    details:
+                      currentUsage: 45000
+                      requestedAmount: 30000
+                      limit: 70000
+                invalidStatus:
+                  summary: Invalid status
+                  value:
+                    error: "BUSINESS_RULE_VIOLATION"
+                    message: "Only PENDING simulations can be approved"
+                    details:
+                      currentStatus: "APPROVED"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Simulation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/loan-simulations/{simulationId}/withdraw:
+    post:
+      summary: Withdraw loan funds
+      description: Execute withdrawal of approved loan from emergency reserve to available balance
+      parameters:
+        - name: simulationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Simulation ID
+      responses:
+        '200':
+          description: Funds withdrawn successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanSimulation'
+        '400':
+          description: Cannot withdraw funds
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                notApproved:
+                  summary: Simulation not approved
+                  value:
+                    error: "BUSINESS_RULE_VIOLATION"
+                    message: "Only APPROVED simulations can be withdrawn"
+                    details:
+                      currentStatus: "PENDING"
+                insufficientReserve:
+                  summary: Insufficient reserve
+                  value:
+                    error: "BUSINESS_RULE_VIOLATION"
+                    message: "Insufficient emergency reserve for withdrawal"
+                    details:
+                      availableReserve: 45000
+                      requestedAmount: 50000
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Simulation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/emergency-reserve:
+    get:
+      summary: Get emergency reserve status
+      description: Retrieve current emergency reserve status for loan limit calculations
+      parameters:
+        - name: accountId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Account ID
+      responses:
+        '200':
+          description: Emergency reserve status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyReserveStatus'
+        '400':
+          description: Invalid account ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'

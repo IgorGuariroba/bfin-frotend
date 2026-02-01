@@ -9,13 +9,19 @@ export default tseslint.config(
   // Ignores
   {
     ignores: [
+      'node_modules',
       'dist',
+      'build',
+      'coverage',
       'scripts/**/*.js',
       'eslint.config.js',
       '.storybook/**',
+      '*.min.js',
       '*.config.js',
       '*.config.ts',
       '*.d.ts',
+      'specs/**/*',
+      'docs/**/*',
     ],
   },
 
