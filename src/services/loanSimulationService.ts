@@ -250,7 +250,7 @@ export const loanSimulationService = {
       style: 'percent',
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
-    }).format(value / 100)
+    }).format(value)
   },
 
   /**

@@ -161,7 +161,7 @@ export function LoanSimulationDetailsDialog({
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {simulation.installmentPlan.map((item) => (
+                    {simulation.installmentPlan?.map((item) => (
                       <Table.Row key={item.installmentNumber}>
                         <Table.Cell>{item.installmentNumber}</Table.Cell>
                         <Table.Cell>{loanSimulationService.formatDate(item.dueDate)}</Table.Cell>

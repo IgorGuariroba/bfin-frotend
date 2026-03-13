@@ -543,5 +543,5 @@ export function exceedsReserveLimit(amount: number, emergencyReserve: EmergencyR
  */
 export function calculateReserveUsagePercent(amount: number, totalReserve: number): number {
   if (totalReserve === 0) return 0
-  return (amount / totalReserve) * 100
+  return amount / totalReserve
 }

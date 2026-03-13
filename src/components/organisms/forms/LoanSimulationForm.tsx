@@ -30,7 +30,12 @@ export function LoanSimulationForm({ onSuccess, onCancel, initialData }: LoanSim
 
   const onSubmit = async (data: CreateLoanSimulationFormData) => {
     try {
-      await createMutation.mutateAsync(data);
+      // Converter taxa de juros de porcentagem para decimal (ex: 2.5 -> 0.025)
+      const submitData = {
+        ...data,
+        interestRateMonthly: data.interestRateMonthly / 100,
+      };
+      await createMutation.mutateAsync(submitData);
       onSuccess?.();
     } catch {
       // Erro já tratado no hook useCreateLoanSimulation

@@ -71,13 +71,13 @@ export function DailyLimitForm({ onCancel }: DailyLimitDisplayProps) {
     }).format(new Date(date));
   };
 
-  // Usar dados reais do limitData ou valores de exemplo baseados na estrutura fornecida
-  const dailyLimit = limitData?.dailyLimit || 100.50;
-  const availableBalance = limitData?.availableBalance || 3015;
-  const daysConsidered = limitData?.daysConsidered || 30;
-  const spentToday = limitData?.spentToday || 45.25;
-  const remaining = limitData?.remaining || 55.25;
-  const percentageUsed = limitData?.percentageUsed || 45.02;
+  // Usar dados reais do limitData
+  const dailyLimit = limitData?.dailyLimit || 0;
+  const availableBalance = limitData?.availableBalance || 0;
+  const daysConsidered = limitData?.daysConsidered || 0;
+  const spentToday = limitData?.spentToday || 0;
+  const remaining = limitData?.remaining || 0;
+  const percentageUsed = limitData?.percentageUsed || 0;
   const exceeded = limitData?.exceeded || false;
   const calculatedAt = limitData?.calculatedAt || new Date().toISOString();
 
