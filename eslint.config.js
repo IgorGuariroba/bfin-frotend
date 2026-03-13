@@ -22,6 +22,7 @@ export default tseslint.config(
       '*.d.ts',
       'specs/**/*',
       'docs/**/*',
+      '.gemini/**/*',
     ],
   },
 
