@@ -17,6 +17,7 @@ const AddVariableExpensePage = lazy(() =>
   import('./pages/AddVariableExpensePage').then((m) => ({ default: m.AddVariableExpensePage }))
 );
 const CalendarPage = lazy(() => import('./pages/CalendarPage').then((m) => ({ default: m.CalendarPage })));
+const LoansPage = lazy(() => import('./pages/LoansPage').then((m) => ({ default: m.LoansPage })));
 
 // Loading component using Chakra UI
 function LoadingScreen() {
@@ -131,6 +132,14 @@ function AppRoutes() {
           element={
             <PrivateRoute>
               <CalendarPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/loans"
+          element={
+            <PrivateRoute>
+              <LoansPage />
             </PrivateRoute>
           }
         />

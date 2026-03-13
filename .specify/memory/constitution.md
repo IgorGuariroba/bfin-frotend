@@ -1,163 +1,50 @@
-<!--
-SYNC IMPACT REPORT - Constitution Update v1.0.0
-================================================================
-
-VERSION CHANGE: Initial → v1.0.0
-NEW PRINCIPLES:
-1. Atomic Design → I. Atomic Design
-2. TypeScript Strict → II. TypeScript Strict
-3. State Management → III. State Management
-4. Component-Driven → IV. Component-Driven
-5. Form-First → V. Form-First
-6. API-Driven → VI. API-Driven
-7. Zero Secrets → VII. Zero Secrets
-8. GitFlow Protegido → VIII. GitFlow Protegido
-9. Test-Driven → IX. Test-Driven
-10. Design System → X. Design System
-11. Accessibility → XI. Accessibility
-12. Developer Experience → XII. Developer Experience
-
-NEW SECTIONS:
-- Stack Obrigatório
-- Chakra UI v3 Critical Rules
-- Workflow & Quality
-
-TEMPLATES REQUIRING UPDATES:
-✅ plan-template.md - Constitution Check section aligns with 12 principles
-✅ spec-template.md - Requirements structure supports new constraints
-✅ tasks-template.md - Task categorization includes all principle-driven types
-⚠ Agent commands - Generic guidance needed (no CLAUDE-specific references)
-
-FOLLOW-UP TODOS: None - all placeholders filled with concrete values
-================================================================
--->
-
-# BFIN Frontend Constitution
+# [PROJECT_NAME] Constitution
+<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 
 ## Core Principles
 
-### I. Atomic Design
-Componentes devem seguir hierarquia rigorosa: Atoms → Molecules → Organisms → Templates → Pages. NUNCA importar nível superior em inferior. Cada nível deve ter responsabilidade clara: Atoms (elementos básicos), Molecules (combinações simples), Organisms (lógica complexa).
+### [PRINCIPLE_1_NAME]
+<!-- Example: I. Library-First -->
+[PRINCIPLE_1_DESCRIPTION]
+<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-**Rationale**: Garante escalabilidade da arquitetura de componentes e facilita manutenção através de dependências unidirecionais.
+### [PRINCIPLE_2_NAME]
+<!-- Example: II. CLI Interface -->
+[PRINCIPLE_2_DESCRIPTION]
+<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
 
-### II. TypeScript Strict
-Zero uso de `any`. Validação obrigatória via Zod. Tipos do SDK devem ser utilizados sempre que disponíveis. Preferir `interface` para props, `type` para unions/intersections.
+### [PRINCIPLE_3_NAME]
+<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+[PRINCIPLE_3_DESCRIPTION]
+<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
-**Rationale**: Type safety previne bugs em runtime e melhora developer experience através de intellisense e refactoring seguro.
+### [PRINCIPLE_4_NAME]
+<!-- Example: IV. Integration Testing -->
+[PRINCIPLE_4_DESCRIPTION]
+<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
 
-### III. State Management
-React Query obrigatório para server state. Context apenas para estado de autenticação global. Hooks customizados para encapsular lógica de negócio. QueryClient invalidation após mutations.
+### [PRINCIPLE_5_NAME]
+<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
+[PRINCIPLE_5_DESCRIPTION]
+<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-**Rationale**: Separação clara entre client state, server state e side effects, reduzindo complexidade e bugs de sincronização.
+## [SECTION_2_NAME]
+<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
-### IV. Component-Driven
-Storybook como fonte da verdade para componentes. Documentação automática obrigatória. Design tokens do Chakra UI v3 como única fonte de estilos. Cada componente deve ter story correspondente.
+[SECTION_2_CONTENT]
+<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
 
-**Rationale**: Desenvolvimento isolado de componentes garante qualidade e reutilização, facilitando design system consistente.
+## [SECTION_3_NAME]
+<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
 
-### V. Form-First
-React Hook Form + Zod obrigatório para TODOS os formulários. Validação client-side. Pattern Field.Root do Chakra UI v3. Nunca formulários sem schema de validação.
-
-**Rationale**: Experiência consistente de formulários com validação robusta e performance otimizada.
-
-### VI. API-Driven
-SDK privado (@igorguariroba/bfin-sdk) como única fonte de API calls. Auto-atualização via GitHub Actions. Interceptors para autenticação. Type safety end-to-end através do SDK.
-
-**Rationale**: Abstração consistente da API com tipos compartilhados entre frontend e backend, reduzindo divergências.
-
-### VII. Zero Secrets
-NUNCA commitar tokens, variáveis de ambiente ou credenciais. Setup automático do .npmrc. Security audit obrigatório no CI. Variáveis sensíveis apenas via environment.
-
-**Rationale**: Prevenção de vazamentos de credenciais e conformidade com práticas de segurança.
-
-### VIII. GitFlow Protegido
-Branch `main` protegida - NUNCA push direto. Features branches obrigatórias. CI/CD deve passar antes de merge. Deploy automático após CI verde na main.
-
-**Rationale**: Qualidade de código garantida através de code review e automated testing antes da produção.
-
-### IX. Test-Driven
-Vitest para testes unitários. Playwright para E2E. Coverage tracking obrigatório. Validação local antes de push: type-check + lint + test + build.
-
-**Rationale**: Qualidade e confiabilidade através de testes automatizados em múltiplas camadas.
-
-### X. Design System
-Chakra UI v3 único sistema de design. Pattern Root/Content/Item. Tema orange como paleta principal. Mobile-first responsive design.
-
-**Rationale**: Consistência visual e UX através de componentes padronizados e sistema de tokens.
-
-### XI. Accessibility
-HTML semântico obrigatório. ARIA compliance. Code splitting e lazy loading para performance. Suporte a screen readers.
-
-**Rationale**: Inclusão e conformidade com padrões web, garantindo acesso universal ao sistema.
-
-### XII. Developer Experience
-Vite para hot reload. TypeScript strict mode. ESLint zero warnings. Conventional commits. Documentação automática via Storybook.
-
-**Rationale**: Produtividade maximizada através de ferramentas otimizadas e feedback loops rápidos.
-
-## Stack Obrigatório
-
-**Core**: React 18 + TypeScript 5.3 | **UI**: Chakra UI v3 | **State**: React Query | **Forms**: React Hook Form + Zod | **API**: SDK Privado (@igorguariroba/bfin-sdk) | **Testing**: Vitest + Playwright | **Build**: Vite
-
-**Rationale**: Stack testado e otimizado para o domínio financeiro com type safety end-to-end.
-
-## Chakra UI v3 Critical Rules
-
-### Component Patterns OBRIGATÓRIOS
-```tsx
-// ✅ V3: Root/Content/Item pattern
-<Dialog.Root open={isOpen}>
-  <Dialog.Content>
-    <Dialog.Header>
-      <Dialog.Title>Título</Dialog.Title>
-    </Dialog.Header>
-  </Dialog.Content>
-</Dialog.Root>
-
-// ❌ V2: Props incorretas
-<Modal isOpen={isOpen}> // deve ser 'open'
-```
-
-### Props Renaming OBRIGATÓRIO
-- `isOpen` → `open`
-- `isDisabled` → `disabled`
-- `isInvalid` → `invalid`
-- `colorScheme` → `colorPalette`
-- `useToast()` → `toaster.create()`
-
-**Rationale**: Chakra UI v3 quebrou compatibilidade com v2. Uso incorreto causa runtime errors e inconsistência visual.
-
-## Workflow & Quality
-
-### Nomenclatura OBRIGATÓRIA
-- Componentes: `PascalCase.tsx`
-- Hooks: `useCustomHook.ts`
-- Services/Types: `camelCase.ts`
-
-### Validações Locais OBRIGATÓRIAS
-```bash
-npm run type-check && npm run lint && npm test -- --run && npm run build
-```
-
-### Git Workflow OBRIGATÓRIO
-```bash
-git checkout main && git pull origin main
-git checkout -b feature/nome
-# desenvolver
-# validações locais
-git push origin feature/nome
-# abrir PR - NUNCA push direto main
-```
-
-**Rationale**: Qualidade garantida através de validações automatizadas e code review obrigatório.
+[SECTION_3_CONTENT]
+<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
 ## Governance
+<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-Esta constituição supersede todas as outras práticas de desenvolvimento. Amendments requerem documentação completa, aprovação via PR e plano de migração.
+[GOVERNANCE_RULES]
+<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-Todos os PRs devem verificar compliance com estes princípios. Complexidade adicional deve ser explicitamente justificada com alternativas mais simples documentadas como rejeitadas.
-
-Violações devem ser documentadas na seção "Complexity Tracking" do plan.md com justificativa técnica clara.
-
-**Version**: 1.0.0 | **Ratified**: 2026-01-31 | **Last Amended**: 2026-01-31
+**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

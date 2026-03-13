@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+build
 *.local
 
 # Editor directories and files
@@ -37,3 +38,4 @@ storybook-static
 .npmrc.local
 .npmrc
 .claude/settings.local.json
+.codex/

@@ -49,6 +49,7 @@ import {
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { iconColors, customShadows } from '../theme';
 import { AllTransactionsView } from './AllTransactionsPage';
+import { LoanSimulationsView } from '../components/organisms/LoanSimulationsView';
 
 interface DashboardProps {
   initialExpandedForm?: ExpandedFormType;
@@ -211,11 +212,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'emprestimos':
           return (
-            <Box>
-              <Text color="var(--muted-foreground)">
-                Funcionalidade de empréstimos em desenvolvimento.
-              </Text>
-            </Box>
+            <LoanSimulationsView onBack={() => setExpandedForm(null)} />
           );
         case 'recarga-celular':
           return (
@@ -290,6 +287,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <Extrato onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
         ) : expandedForm === 'transacoes' ? (
           <AllTransactionsView onBack={() => setExpandedForm(null)} />
+        ) : expandedForm === 'emprestimos' ? (
+          <LoanSimulationsView onBack={() => setExpandedForm(null)} />
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}

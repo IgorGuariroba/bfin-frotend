@@ -5,38 +5,42 @@ import { system } from '../src/theme/theme';
 import { ColorModeProvider } from '../src/components/ui/color-mode';
 import '../src/index.css';
 
-const preview: Preview = {
-  parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
-    a11y: {
-      test: 'todo'
-    },
-    backgrounds: {
-      default: 'light',
-      values: [
-        {
-          name: 'light',
-          value: 'var(--background)',
-        },
-        {
-          name: 'dark',
-          value: 'var(--background)',
-        },
-      ],
+export const parameters = {
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/i,
     },
   },
-  decorators: [
-    (Story) => (
-      <ChakraProvider value={system}>
-        <Story />
-      </ChakraProvider>
-    ),
-  ],
+  a11y: {
+    test: 'todo'
+  },
+  backgrounds: {
+    default: 'light',
+    values: [
+      {
+        name: 'light',
+        value: 'var(--background)',
+      },
+      {
+        name: 'dark',
+        value: 'var(--background)',
+      },
+    ],
+  },
+};
+
+export const decorators = [
+  (Story) => (
+    <ChakraProvider value={system}>
+      <Story />
+    </ChakraProvider>
+  ),
+];
+
+const preview: Preview = {
+  parameters,
+  decorators,
 };
 
 export default preview;
