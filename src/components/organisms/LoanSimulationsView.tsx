@@ -30,12 +30,15 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
   const [selectedSimulation, setSelectedSimulation] = useState<LoanSimulation | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  // Buscar conta padrão (primeira conta)
-  const { data: accountsData } = useAccounts();
-  const accountId = accountsData?.[0]?.id;
+  // Buscar conta padrão (ou a primeira se não houver padrão)
+  const { data: accountsData, isLoading: isLoadingAccounts } = useAccounts();
+  const accountId = accountsData?.find(a => a.is_default)?.id || accountsData?.[0]?.id;
 
   // Buscar status da reserva
   const { data: reserveStatus, isLoading: isLoadingReserve } = useEmergencyReserve(accountId);
+
+  // Considerar carregando se as contas ou a reserva estiverem carregando
+  const isInitialLoading = isLoadingAccounts || (accountId && isLoadingReserve);
 
   const handleSelectSimulation = (simulation: LoanSimulation) => {
     setSelectedSimulation(simulation);
@@ -77,7 +80,7 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
                 <Icon as={ShieldCheck} boxSize={4} />
                 <Text fontWeight="bold" fontSize="xs" textTransform="uppercase">Reserva Total</Text>
               </HStack>
-              {isLoadingReserve ? (
+              {isInitialLoading ? (
                 <Spinner size="xs" />
               ) : (
                 <Text fontSize="xl" fontWeight="bold">
@@ -93,7 +96,7 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
                 <Icon as={TrendingUp} boxSize={4} />
                 <Text fontWeight="bold" fontSize="xs" textTransform="uppercase">Limite (70%)</Text>
               </HStack>
-              {isLoadingReserve ? (
+              {isInitialLoading ? (
                 <Spinner size="xs" />
               ) : (
                 <Text fontSize="xl" fontWeight="bold">
@@ -109,7 +112,7 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
                 <Icon as={Wallet} boxSize={4} />
                 <Text fontWeight="bold" fontSize="xs" textTransform="uppercase">Disponível</Text>
               </HStack>
-              {isLoadingReserve ? (
+              {isInitialLoading ? (
                 <Spinner size="xs" />
               ) : (
                 <Text fontSize="xl" fontWeight="bold">
@@ -130,18 +133,20 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
       {/* Dialog de Nova Simulação */}
       <Dialog.Root open={isFormOpen} onOpenChange={(e) => setIsFormOpen(e.open)}>
         <Dialog.Backdrop />
-        <Dialog.Content>
-          <Dialog.Header>
-            <Dialog.Title>Nova Simulação de Empréstimo</Dialog.Title>
-            <Dialog.CloseTrigger />
-          </Dialog.Header>
-          <Dialog.Body pb={6}>
-            <LoanSimulationForm 
-              onSuccess={() => setIsFormOpen(false)} 
-              onCancel={() => setIsFormOpen(false)} 
-            />
-          </Dialog.Body>
-        </Dialog.Content>
+        <Dialog.Positioner>
+          <Dialog.Content bg="var(--card)" borderRadius="2xl" maxW="lg">
+            <Dialog.Header>
+              <Dialog.Title>Nova Simulação de Empréstimo</Dialog.Title>
+              <Dialog.CloseTrigger />
+            </Dialog.Header>
+            <Dialog.Body pb={6}>
+              <LoanSimulationForm
+                onSuccess={() => setIsFormOpen(false)}
+                onCancel={() => setIsFormOpen(false)}
+              />
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog.Positioner>
       </Dialog.Root>
 
       {/* Dialog de Detalhes */}
