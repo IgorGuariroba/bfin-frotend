@@ -37,6 +37,7 @@ const expenseSchema = z.object({
   isRecurring: z.boolean().optional(),
   recurrencePattern: z.enum(['monthly', 'weekly', 'yearly']).optional(),
   indefinite: z.boolean().optional(),
+  recurrenceCount: z.number().min(1).max(60).optional(),
 });
 
 type ExpenseFormData = z.infer<typeof expenseSchema>;
@@ -124,6 +125,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         isRecurring: data.isRecurring,
         recurrencePattern: data.isRecurring ? (data.recurrencePattern || 'monthly') : undefined,
         indefinite: data.indefinite,
+        recurrenceCount: data.recurrenceCount,
       };
 
       await createExpense.mutateAsync(payload);
@@ -541,18 +543,62 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                         </NativeSelect.Root>
                       </Field.Root>
 
-                      <HStack justify="space-between">
-                        <Text fontSize="sm" color="var(--muted-foreground)">
-                          Sem data fim (indeterminado)
-                        </Text>
-                        <Checkbox.Root
-                          checked={watch('indefinite')}
-                          onCheckedChange={(e) => setValue('indefinite', !!e.checked)}
-                        >
-                          <Checkbox.HiddenInput />
-                          <Checkbox.Control />
-                        </Checkbox.Root>
-                      </HStack>
+                      <Field.Root>
+                        <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                          Tipo de Duração
+                        </Field.Label>
+                        <HStack gap={2}>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={!watch('indefinite') && !watch('recurrenceCount') ? 'solid' : 'outline'}
+                            colorPalette={!watch('indefinite') && !watch('recurrenceCount') ? 'brand' : 'gray'}
+                            onClick={() => {
+                              setValue('indefinite', undefined);
+                              setValue('recurrenceCount', undefined);
+                            }}
+                            flex={1}
+                          >
+                            Até cancelar
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={watch('indefinite') ? 'solid' : 'outline'}
+                            colorPalette={watch('indefinite') ? 'brand' : 'gray'}
+                            onClick={() => {
+                              setValue('indefinite', true);
+                              setValue('recurrenceCount', undefined);
+                            }}
+                            flex={1}
+                          >
+                            Sem data fim
+                          </Button>
+                        </HStack>
+                      </Field.Root>
+
+                      {!watch('indefinite') && !watch('recurrenceCount') && (
+                        <Field.Root>
+                          <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                            Repetir por quantas vezes?
+                          </Field.Label>
+                          <HStack gap={2}>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="60"
+                              placeholder="Ex: 5"
+                              {...register('recurrenceCount', { valueAsNumber: true })}
+                              borderColor="var(--border)"
+                              borderRadius="full"
+                              _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                            />
+                            <Text fontSize="sm" color="var(--muted-foreground)" whiteSpace="nowrap">
+                              vezes
+                            </Text>
+                          </HStack>
+                        </Field.Root>
+                      )}
                     </VStack>
                   )}
                 </VStack>
