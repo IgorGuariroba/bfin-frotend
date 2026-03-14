@@ -36,6 +36,7 @@ const expenseSchema = z.object({
   dueDate: z.string().optional(),
   isRecurring: z.boolean().optional(),
   recurrencePattern: z.enum(['monthly', 'weekly', 'yearly']).optional(),
+  recurrenceInterval: z.number().min(1).max(12).optional().nullable(),
   indefinite: z.boolean().optional(),
   recurrenceCount: z.number().min(1).max(60).optional().nullable(),
 });
@@ -124,6 +125,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         dueDate: data.type === 'fixed' ? data.dueDate : undefined,
         isRecurring: data.isRecurring,
         recurrencePattern: data.isRecurring ? (data.recurrencePattern || 'monthly') : undefined,
+        recurrenceInterval: data.recurrenceInterval ?? undefined,
         indefinite: data.indefinite,
         recurrenceCount: data.recurrenceCount ?? undefined,
       };
@@ -509,25 +511,43 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                   {isRecurring && (
                     <VStack gap={3} align="stretch" pl={8}>
                       {/* Intervalo de Recorrência */}
-                      <Field.Root>
-                        <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                          Repetir a cada
-                        </Field.Label>
-                        <NativeSelect.Root>
-                          <NativeSelect.Field
-                            {...register('recurrencePattern')}
-                            defaultValue="monthly"
-                            borderColor="var(--border)"
-                            borderRadius="full"
-                            _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                          >
-                            <option value="monthly">Mês</option>
-                            <option value="weekly">Semana</option>
-                            <option value="yearly">Ano</option>
-                          </NativeSelect.Field>
-                          <NativeSelect.Indicator />
-                        </NativeSelect.Root>
-                      </Field.Root>
+                      <HStack gap={3}>
+                        <Field.Root flex={1}>
+                          <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                            Repetir a cada
+                          </Field.Label>
+                          <HStack gap={2}>
+                            <Input
+                              type="number"
+                              min="1"
+                              max="12"
+                              defaultValue="1"
+                              placeholder="1"
+                              {...register('recurrenceInterval', { valueAsNumber: true })}
+                              borderColor="var(--border)"
+                              borderRadius="full"
+                              _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                            />
+                            <NativeSelect.Root flex={1}>
+                              <NativeSelect.Field
+                                {...register('recurrencePattern')}
+                                defaultValue="monthly"
+                                borderColor="var(--border)"
+                                borderRadius="full"
+                                _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                              >
+                                <option value="monthly">Mês(es)</option>
+                                <option value="weekly">Semana(s)</option>
+                                <option value="yearly">Ano(s)</option>
+                              </NativeSelect.Field>
+                              <NativeSelect.Indicator />
+                            </NativeSelect.Root>
+                          </HStack>
+                          <Text fontSize="xs" color="var(--muted-foreground)" mt={1}>
+                            Ex: 3 meses = trimestral
+                          </Text>
+                        </Field.Root>
+                      </HStack>
 
                       {/* Checkbox Sem Data Fim */}
                       <HStack justify="space-between" p={3} bg="var(--card)" borderRadius="lg">

@@ -73,6 +73,7 @@ export interface CreateExpenseDTO {
   dueDate?: string; // Obrigatório para type='fixed', não usado para type='variable'
   isRecurring?: boolean; // Para despesas recorrentes
   recurrencePattern?: RecurrencePattern; // monthly, weekly, yearly
+  recurrenceInterval?: number; // Repetir a cada X unidades (ex: 3 = trimestral)
   indefinite?: boolean; // true = sem data fim
   recurrenceCount?: number; // Quantidade de recorrências (ex: 5 meses)
   recurrenceEndDate?: string; // Data fim da recorrência (alternativa ao recurrenceCount)
