@@ -34,6 +34,7 @@ const expenseSchema = z.object({
   categoryId: z.string().min(1, 'Categoria é obrigatória'),
   type: z.enum(['fixed', 'variable']),
   dueDate: z.string().optional(),
+  dueTime: z.string().optional(),
   isRecurring: z.boolean().optional(),
   recurrencePattern: z.enum(['monthly', 'weekly', 'yearly']).optional(),
   recurrenceInterval: z.number().min(1).max(12).optional().nullable(),
@@ -116,8 +117,13 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
 
   const onSubmit = async (data: ExpenseFormData) => {
     try {
-      // Converte a data para ISO 8601 datetime completo
-      const dueDateIso = data.dueDate ? new Date(data.dueDate + 'T00:00:00.000Z').toISOString() : undefined;
+      // Converte data e hora para ISO 8601 datetime completo
+      let dueDateIso: string | undefined;
+      if (data.dueDate && data.type === 'fixed') {
+        const time = data.dueTime || '00:00';
+        // Combina data e hora no formato ISO 8601
+        dueDateIso = new Date(`${data.dueDate}T${time}:00.000Z`).toISOString();
+      }
       
       const payload: CreateExpenseDTO = {
         accountId: data.accountId,
@@ -125,7 +131,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         description: data.description,
         categoryId: data.categoryId,
         type: data.type,
-        dueDate: data.type === 'fixed' ? dueDateIso : undefined,
+        dueDate: dueDateIso,
         isRecurring: data.isRecurring,
         recurrencePattern: data.isRecurring ? (data.recurrencePattern || 'monthly') : undefined,
         recurrenceInterval: data.recurrenceInterval ?? undefined,
@@ -466,26 +472,42 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                 )}
               </Field.Root>
 
-              {/* Campo Data de Vencimento (apenas para despesa fixa) */}
+              {/* Campo Data e Hora de Vencimento (apenas para despesa fixa) */}
               {isFixed && (
                 <Field.Root invalid={!!errors.dueDate}>
                   <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                    Data de Vencimento
+                    Data e Hora de Vencimento
                   </Field.Label>
-                  <Box position="relative">
-                    <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
-                      <Calendar size={18} color="var(--muted-foreground)" />
+                  <HStack gap={3}>
+                    <Box position="relative" flex={1}>
+                      <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                        <Calendar size={18} color="var(--muted-foreground)" />
+                      </Box>
+                      <Input
+                        type="date"
+                        {...register('dueDate', { required: isFixed ? 'Data de vencimento é obrigatória' : false })}
+                        defaultValue={getTodayDate()}
+                        pl={10}
+                        borderColor="var(--border)"
+                        borderRadius="full"
+                        _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                      />
                     </Box>
-                    <Input
-                      type="date"
-                      {...register('dueDate', { required: isFixed ? 'Data de vencimento é obrigatória' : false })}
-                      defaultValue={getTodayDate()}
-                      pl={10}
-                      borderColor="var(--border)"
-                      borderRadius="full"
-                      _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                    />
-                  </Box>
+                    <Box position="relative" w="120px">
+                      <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                        <Clock size={18} color="var(--muted-foreground)" />
+                      </Box>
+                      <Input
+                        type="time"
+                        {...register('dueTime')}
+                        defaultValue="00:00"
+                        pl={10}
+                        borderColor="var(--border)"
+                        borderRadius="full"
+                        _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                      />
+                    </Box>
+                  </HStack>
                   {errors.dueDate && (
                     <Field.ErrorText>{errors.dueDate.message}</Field.ErrorText>
                   )}
