@@ -71,10 +71,29 @@ export const loanSimulationService = {
    */
   async getById(id: string): Promise<LoanSimulation> {
     try {
-      return await customInstance({
+      const response = await customInstance<LoanSimulation>({
         url: `/api/v1/loan-simulations/${id}`,
         method: 'GET',
       })
+      
+      // Mapeia os campos do installmentPlan da API para o formato do frontend
+      if (response?.installmentPlan) {
+        response.installmentPlan = response.installmentPlan.map((item) => {
+          const apiItem = item as unknown as Record<string, unknown>
+          return {
+            installmentNumber: item.installmentNumber,
+            principalAmount: apiItem.principalComponent as number ?? item.principalAmount,
+            interestAmount: apiItem.interestComponent as number ?? item.interestAmount,
+            totalAmount: apiItem.totalPayment as number ?? item.totalAmount,
+            dueDate: (apiItem.dueDate as string) ?? '',
+            remainingPrincipal: apiItem.remainingBalance as number ?? item.remainingPrincipal,
+            accumulatedInterest: apiItem.accumulatedInterest as number ?? 0,
+            accumulatedPrincipal: apiItem.accumulatedPrincipal as number ?? 0,
+          }
+        })
+      }
+      
+      return response
     } catch (error) {
       throw this.handleError(error, 'Erro ao carregar simulação')
     }
@@ -206,7 +225,9 @@ export const loanSimulationService = {
    * Calcula dias restantes para aprovação
    */
   getDaysUntilExpiration(simulation: LoanSimulation): number {
+    if (!simulation?.createdAt) return 0
     const createdDate = new Date(simulation.createdAt)
+    if (isNaN(createdDate.getTime())) return 0
     const expirationDate = new Date(createdDate.getTime() + (30 * 24 * 60 * 60 * 1000))
     const now = new Date()
 
@@ -219,7 +240,10 @@ export const loanSimulationService = {
   /**
    * Formata valores monetários
    */
-  formatCurrency(value: number): string {
+  formatCurrency(value: number | undefined | null): string {
+    if (value == null || isNaN(Number(value))) {
+      return 'R$ 0,00'
+    }
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
@@ -229,35 +253,46 @@ export const loanSimulationService = {
   /**
    * Formata porcentagens
    */
-  formatPercentage(value: number, decimals: number = 2): string {
+  formatPercentage(value: number | undefined | null, decimals: number = 2): string {
+    if (value == null || isNaN(Number(value))) {
+      return '0%'
+    }
+    // Se o valor já vem como porcentagem (ex: 75 para 75%), converte para decimal
+    const decimalValue = value > 1 ? value / 100 : value
     return new Intl.NumberFormat('pt-BR', {
       style: 'percent',
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
-    }).format(value)
+    }).format(decimalValue)
   },
 
   /**
    * Formata datas
    */
-  formatDate(dateString: string): string {
+  formatDate(dateString: string | undefined | null): string {
+    if (!dateString) return '-'
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return '-'
     return new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-    }).format(new Date(dateString))
+    }).format(date)
   },
 
   /**
    * Formata data e hora
    */
-  formatDateTime(dateString: string): string {
+  formatDateTime(dateString: string | undefined | null): string {
+    if (!dateString) return '-'
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return '-'
     return new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    }).format(new Date(dateString))
+    }).format(date)
   },
 }
