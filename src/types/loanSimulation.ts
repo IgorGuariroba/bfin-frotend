@@ -59,14 +59,7 @@ export interface InstallmentPlan {
   principalAmount: number // valor do principal
   interestAmount: number // valor dos juros
   totalAmount: number // valor total da parcela
-
-  // Controle temporal
-  dueDate: string // ISO date, data de vencimento
-
-  // Saldos acumulados
   remainingPrincipal: number // principal restante
-  accumulatedInterest: number // juros acumulados
-  accumulatedPrincipal: number // principal pago acumulado
 }
 
 // ============================================================================
@@ -400,10 +393,7 @@ export const installmentPlanSchema = z.object({
   principalAmount: z.number().min(0, 'Valor do principal deve ser não-negativo'),
   interestAmount: z.number().min(0, 'Valor dos juros deve ser não-negativo'),
   totalAmount: z.number().min(0, 'Valor total deve ser não-negativo'),
-  dueDate: z.string().datetime('Data de vencimento inválida'),
   remainingPrincipal: z.number().min(0, 'Principal restante deve ser não-negativo'),
-  accumulatedInterest: z.number().min(0, 'Juros acumulados devem ser não-negativos'),
-  accumulatedPrincipal: z.number().min(0, 'Principal acumulado deve ser não-negativo'),
 })
 
 /**
