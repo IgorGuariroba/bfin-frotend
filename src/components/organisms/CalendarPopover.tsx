@@ -107,19 +107,19 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
                     <HStack justifyContent="space-between" mb={1}>
                       <Badge
                         variant="solid"
-                        bg={typeBadgeMap[event.type].bg}
-                        color={typeBadgeMap[event.type].color}
+                        bg={typeBadgeMap[event.type]?.bg || 'var(--muted)'}
+                        color={typeBadgeMap[event.type]?.color || 'var(--muted-foreground)'}
                         borderRadius="full"
                       >
-                        {typeBadgeMap[event.type].label}
+                        {typeBadgeMap[event.type]?.label || event.type}
                       </Badge>
                       <Badge
                         variant="solid"
-                        bg={statusBadgeMap[event.status].bg}
-                        color={statusBadgeMap[event.status].color}
+                        bg={statusBadgeMap[event.status]?.bg || 'var(--muted)'}
+                        color={statusBadgeMap[event.status]?.color || 'var(--muted-foreground)'}
                         borderRadius="full"
                       >
-                        {statusBadgeMap[event.status].label}
+                        {statusBadgeMap[event.status]?.label || event.status}
                       </Badge>
                     </HStack>
                     <HStack justifyContent="space-between" mt={2}>
