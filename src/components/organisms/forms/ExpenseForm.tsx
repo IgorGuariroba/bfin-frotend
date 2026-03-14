@@ -55,6 +55,13 @@ const getTodayDate = () => {
   return today.toISOString().split('T')[0];
 };
 
+const getCurrentTime = () => {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
 export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: ExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
 
@@ -500,7 +507,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                       <Input
                         type="time"
                         {...register('dueTime')}
-                        defaultValue="00:00"
+                        defaultValue={getCurrentTime()}
                         pl={10}
                         borderColor="var(--border)"
                         borderRadius="full"
