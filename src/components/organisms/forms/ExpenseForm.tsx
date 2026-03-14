@@ -116,13 +116,16 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
 
   const onSubmit = async (data: ExpenseFormData) => {
     try {
+      // Converte a data para ISO 8601 datetime completo
+      const dueDateIso = data.dueDate ? new Date(data.dueDate + 'T00:00:00.000Z').toISOString() : undefined;
+      
       const payload: CreateExpenseDTO = {
         accountId: data.accountId,
         amount: Number(data.amount),
         description: data.description,
         categoryId: data.categoryId,
         type: data.type,
-        dueDate: data.type === 'fixed' ? data.dueDate : undefined,
+        dueDate: data.type === 'fixed' ? dueDateIso : undefined,
         isRecurring: data.isRecurring,
         recurrencePattern: data.isRecurring ? (data.recurrencePattern || 'monthly') : undefined,
         recurrenceInterval: data.recurrenceInterval ?? undefined,
