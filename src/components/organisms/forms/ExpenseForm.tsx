@@ -37,7 +37,7 @@ const expenseSchema = z.object({
   isRecurring: z.boolean().optional(),
   recurrencePattern: z.enum(['monthly', 'weekly', 'yearly']).optional(),
   indefinite: z.boolean().optional(),
-  recurrenceCount: z.number().min(1).max(60).optional(),
+  recurrenceCount: z.number().min(1).max(60).optional().nullable(),
 });
 
 type ExpenseFormData = z.infer<typeof expenseSchema>;
@@ -125,7 +125,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         isRecurring: data.isRecurring,
         recurrencePattern: data.isRecurring ? (data.recurrencePattern || 'monthly') : undefined,
         indefinite: data.indefinite,
-        recurrenceCount: data.recurrenceCount,
+        recurrenceCount: data.recurrenceCount ?? undefined,
       };
 
       await createExpense.mutateAsync(payload);
@@ -494,7 +494,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                     <HStack gap={2}>
                       <Clock size={18} color="var(--muted-foreground)" />
                       <Text fontSize="sm" fontWeight="medium" color="var(--muted-foreground)">
-                        Despesa Recorrente
+                        É recorrente?
                       </Text>
                     </HStack>
                     <Checkbox.Root
@@ -508,9 +508,10 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
 
                   {isRecurring && (
                     <VStack gap={3} align="stretch" pl={8}>
+                      {/* Intervalo de Recorrência */}
                       <Field.Root>
                         <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                          Padrão de Recorrência
+                          Repetir a cada
                         </Field.Label>
                         <NativeSelect.Root>
                           <NativeSelect.Field
@@ -520,49 +521,33 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                             borderRadius="full"
                             _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
                           >
-                            <option value="monthly">Mensal</option>
-                            <option value="weekly">Semanal</option>
-                            <option value="yearly">Anual</option>
+                            <option value="monthly">Mês</option>
+                            <option value="weekly">Semana</option>
+                            <option value="yearly">Ano</option>
                           </NativeSelect.Field>
                           <NativeSelect.Indicator />
                         </NativeSelect.Root>
                       </Field.Root>
 
-                      <Field.Root>
-                        <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                          Tipo de Duração
-                        </Field.Label>
+                      {/* Checkbox Sem Data Fim */}
+                      <HStack justify="space-between" p={3} bg="var(--card)" borderRadius="lg">
                         <HStack gap={2}>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={!watch('indefinite') && !watch('recurrenceCount') ? 'solid' : 'outline'}
-                            colorPalette={!watch('indefinite') && !watch('recurrenceCount') ? 'brand' : 'gray'}
-                            onClick={() => {
-                              setValue('indefinite', undefined);
-                              setValue('recurrenceCount', undefined);
-                            }}
-                            flex={1}
-                          >
-                            Até cancelar
-                          </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={watch('indefinite') ? 'solid' : 'outline'}
-                            colorPalette={watch('indefinite') ? 'brand' : 'gray'}
-                            onClick={() => {
-                              setValue('indefinite', true);
-                              setValue('recurrenceCount', undefined);
-                            }}
-                            flex={1}
-                          >
-                            Sem data fim
-                          </Button>
+                          <Clock size={16} color="var(--muted-foreground)" />
+                          <Text fontSize="sm" color="var(--muted-foreground)">
+                            Sem data fim (indeterminado)
+                          </Text>
                         </HStack>
-                      </Field.Root>
+                        <Checkbox.Root
+                          checked={watch('indefinite')}
+                          onCheckedChange={(e) => setValue('indefinite', !!e.checked)}
+                        >
+                          <Checkbox.HiddenInput />
+                          <Checkbox.Control />
+                        </Checkbox.Root>
+                      </HStack>
 
-                      {!watch('indefinite') && !watch('recurrenceCount') && (
+                      {/* Quantidade de Vezes (apenas se não for indeterminado) */}
+                      {!watch('indefinite') && (
                         <Field.Root>
                           <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
                             Repetir por quantas vezes?
@@ -582,6 +567,9 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                               vezes
                             </Text>
                           </HStack>
+                          <Text fontSize="xs" color="var(--muted-foreground)" mt={1}>
+                            Deixe em branco para repetir até cancelar manualmente
+                          </Text>
                         </Field.Root>
                       )}
                     </VStack>
