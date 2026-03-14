@@ -87,8 +87,8 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
   const getTypeLabel = (type: string) => {
     const typeMap: Record<string, string> = {
       income: 'Receita',
-      fixed_expense: 'Despesa Fixa',
-      variable_expense: 'Despesa Variável',
+      fixed: 'Despesa Fixa',
+      variable: 'Despesa Variável',
     };
     return typeMap[type] || type;
   };
@@ -261,7 +261,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                       {transaction.category?.name || 'Sem categoria'}
                     </Text>
                     <Text fontSize="xs" color="var(--muted-foreground)">
-                      {formatDate(transaction.due_date)}
+                      {transaction.due_date ? formatDate(transaction.due_date) : '-'}
                     </Text>
                     {transaction.account && (
                       <Text fontSize="xs" color="var(--muted-foreground)">
@@ -289,7 +289,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                 </Text>
 
                 {/* Mark as Paid Button - Only for locked fixed expenses */}
-                {transaction.type === 'fixed_expense' && transaction.status === 'locked' && (
+                {transaction.type === 'fixed' && transaction.status === 'locked' && (
                   <Button
                     onClick={() => handleMarkAsPaid(transaction.id)}
                     size="sm"
@@ -388,7 +388,7 @@ export function TransactionList({ accountId, maxH = '96' }: TransactionListProps
                     ))}
                   </FormSelect>
 
-                  {editingTransaction?.type !== 'variable_expense' && (
+                  {editingTransaction?.type !== 'variable' && (
                     <FormField
                       label="Data de Vencimento"
                       type="date"

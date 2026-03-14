@@ -18,9 +18,8 @@ import {
   AccountsDialog,
   InvitationsDialog,
   BfinParceiroDialog,
-  VariableExpenseForm,
+  ExpenseForm,
   IncomeForm,
-  FixedExpenseForm,
   BfinParceiroForm,
   Extrato,
   CreateAccountForm,
@@ -174,7 +173,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'pagar':
           return (
-            <VariableExpenseForm
+            <ExpenseForm
+              defaultType="variable"
               onSuccess={() => setExpandedForm(null)}
               onCancel={() => setExpandedForm(null)}
             />
@@ -188,7 +188,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'agendar-pagamento':
           return (
-            <FixedExpenseForm
+            <ExpenseForm
+              defaultType="fixed"
               onSuccess={() => setExpandedForm(null)}
               onCancel={() => setExpandedForm(null)}
             />

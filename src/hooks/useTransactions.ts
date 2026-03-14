@@ -3,6 +3,7 @@ import { transactionService } from '../services/transactionService';
 import { useCacheInvalidation } from './useCacheInvalidation';
 import type {
   CreateIncomeDTO,
+  CreateExpenseDTO,
   CreateFixedExpenseDTO,
   CreateVariableExpenseDTO,
   ListTransactionsParams,
@@ -35,22 +36,59 @@ export function useCreateIncome() {
   });
 }
 
-export function useCreateFixedExpense() {
+/**
+ * Hook unificado para criar despesas (fixas ou variáveis)
+ */
+export function useCreateExpense() {
   const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
-    mutationFn: (data: CreateFixedExpenseDTO) => transactionService.createFixedExpense(data),
+    mutationFn: (data: CreateExpenseDTO) => transactionService.createExpense(data),
     onSuccess: () => {
       invalidateTransactionRelatedQueries();
     },
   });
 }
 
+/**
+ * @deprecated Use useCreateExpense com type='fixed'
+ */
+export function useCreateFixedExpense() {
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
+
+  return useMutation({
+    mutationFn: (data: CreateFixedExpenseDTO) => 
+      transactionService.createExpense({
+        accountId: data.accountId,
+        amount: data.amount,
+        description: data.description,
+        categoryId: data.categoryId,
+        type: 'fixed',
+        dueDate: data.dueDate,
+        isRecurring: data.isRecurring,
+        recurrencePattern: data.recurrencePattern,
+      }),
+    onSuccess: () => {
+      invalidateTransactionRelatedQueries();
+    },
+  });
+}
+
+/**
+ * @deprecated Use useCreateExpense com type='variable'
+ */
 export function useCreateVariableExpense() {
   const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return useMutation({
-    mutationFn: (data: CreateVariableExpenseDTO) => transactionService.createVariableExpense(data),
+    mutationFn: (data: CreateVariableExpenseDTO) => 
+      transactionService.createExpense({
+        accountId: data.accountId,
+        amount: data.amount,
+        description: data.description,
+        categoryId: data.categoryId,
+        type: 'variable',
+      }),
     onSuccess: () => {
       invalidateTransactionRelatedQueries();
     },
@@ -111,9 +149,9 @@ export function useDeleteTransaction() {
 
 export function useUpcomingFixedExpenses() {
   return useQuery({
-    queryKey: ['transactions', { type: 'fixed_expense', status: 'locked' }],
+    queryKey: ['transactions', { type: 'fixed', status: 'locked' }],
     queryFn: () => transactionService.list({
-      type: 'fixed_expense',
+      type: 'fixed',
       status: 'locked',
       limit: 10
     }),

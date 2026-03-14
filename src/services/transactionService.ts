@@ -1,8 +1,7 @@
 import { customInstance } from '@igorguariroba/bfin-sdk';
 import type {
   CreateIncomeDTO,
-  CreateFixedExpenseDTO,
-  CreateVariableExpenseDTO,
+  CreateExpenseDTO,
   CreateTransactionResponse,
   ListTransactionsParams,
   TransactionListResponse,
@@ -22,22 +21,12 @@ export const transactionService = {
   },
 
   /**
-   * Create fixed expense transaction
+   * Create expense transaction (fixed or variable)
+   * Nova rota unificada: POST /api/v1/transactions/expense
    */
-  async createFixedExpense(data: CreateFixedExpenseDTO): Promise<CreateTransactionResponse> {
+  async createExpense(data: CreateExpenseDTO): Promise<CreateTransactionResponse> {
     return customInstance({
-      url: '/api/v1/transactions/fixed-expense',
-      method: 'POST',
-      data,
-    });
-  },
-
-  /**
-   * Create variable expense transaction
-   */
-  async createVariableExpense(data: CreateVariableExpenseDTO): Promise<CreateTransactionResponse> {
-    return customInstance({
-      url: '/api/v1/transactions/variable-expense',
+      url: '/api/v1/transactions/expense',
       method: 'POST',
       data,
     });
@@ -84,7 +73,7 @@ export const transactionService = {
   },
 
   /**
-   * Mark fixed expense as paid
+   * Mark transaction as paid
    */
   async markAsPaid(id: string): Promise<{ transaction: Transaction; message: string }> {
     return customInstance({

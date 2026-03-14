@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Container, Box, Heading, IconButton, VStack } from '@chakra-ui/react';
 import { ArrowLeft } from 'lucide-react';
-import { FixedExpenseForm } from '../components/organisms/forms';
+import { ExpenseForm } from '../components/organisms/forms';
 
 export function AddFixedExpensePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type') as 'fixed' | 'variable' | null;
 
   return (
     <Container maxW="2xl" py={8}>
@@ -18,7 +20,9 @@ export function AddFixedExpensePage() {
           >
             <ArrowLeft />
           </IconButton>
-          <Heading size="lg">Nova Despesa Fixa</Heading>
+          <Heading size="lg">
+            {type === 'fixed' ? 'Nova Despesa Fixa' : 'Nova Despesa Variável'}
+          </Heading>
         </Box>
 
         <Box
@@ -27,7 +31,8 @@ export function AddFixedExpensePage() {
           p={6}
           shadow="sm"
         >
-          <FixedExpenseForm
+          <ExpenseForm
+            defaultType={type || 'variable'}
             onSuccess={() => navigate('/dashboard')}
             onCancel={() => navigate('/dashboard')}
           />

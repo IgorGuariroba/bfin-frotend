@@ -32,8 +32,8 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
 
   const typeBadgeMap = {
     income: { label: 'Receita', bg: 'var(--success)', color: 'var(--success-foreground)' },
-    fixed_expense: { label: 'Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
-    variable_expense: { label: 'Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+    fixed: { label: 'Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+    variable: { label: 'Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
   } as const
 
   const statusBadgeMap = {

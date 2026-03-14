@@ -145,25 +145,28 @@ function transformTransactionsToEvents(
   transactions: Transaction[],
   _currentDate: Date
 ): CalendarEvent[] {
-  return transactions.map(transaction => ({
-    id: transaction.id,
-    date: format(new Date(transaction.due_date), 'yyyy-MM-dd'),
-    transaction,
-    type: transaction.type,
-    amount: Number(transaction.amount) || 0,
-    description: transaction.description,
-    category: transaction.category?.name || 'Sem categoria',
-    status: getTransactionStatus(transaction),
-    isRecurring: transaction.is_recurring || false,
-    daysUntilDue: getDaysUntilDue(transaction.due_date),
-    displayColor: getEventColor(transaction),
-  }))
+  return transactions
+    .filter((t): t is Transaction & { due_date: string } => !!t.due_date)
+    .map(transaction => ({
+      id: transaction.id,
+      date: format(new Date(transaction.due_date), 'yyyy-MM-dd'),
+      transaction: transaction as CalendarEvent['transaction'],
+      type: transaction.type as CalendarEvent['type'],
+      amount: Number(transaction.amount) || 0,
+      description: transaction.description,
+      category: transaction.category?.name || 'Sem categoria',
+      status: getTransactionStatus(transaction),
+      isRecurring: transaction.is_recurring || false,
+      daysUntilDue: getDaysUntilDue(transaction.due_date),
+      displayColor: getEventColor(transaction),
+    }))
 }
 
 function getTransactionStatus(transaction: Transaction): 'pending' | 'paid' | 'overdue' {
   if (transaction.status === 'executed' || transaction.executed_date) return 'paid'
   if (transaction.status === 'cancelled') return 'pending' // ou tratar como 'paid' para não alertar?
-  
+
+  if (!transaction.due_date) return 'pending'
   if (new Date(transaction.due_date) < new Date()) return 'overdue'
   return 'pending'
 }
@@ -177,6 +180,7 @@ function getDaysUntilDue(dueDate: string): number {
 
 function getEventColor(transaction: Transaction): CalendarEventColor {
   const status = getTransactionStatus(transaction)
+  if (!transaction.due_date) return 'blue'
   const daysUntil = getDaysUntilDue(transaction.due_date)
 
   if (status === 'paid') return 'green'
