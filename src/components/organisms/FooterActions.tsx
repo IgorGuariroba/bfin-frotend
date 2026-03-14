@@ -5,13 +5,12 @@ import {
   Send,
   Download,
   DollarSign,
-  Calendar,
   Smartphone,
   Sliders,
 } from 'lucide-react';
 import { customShadows } from '../../theme';
 
-export type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'agendar-pagamento' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | 'transacoes' | null;
+export type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'recarga-celular' | 'ajustar-limite' | 'extrato' | 'calendario' | 'transacoes' | null;
 
 interface FooterActionsProps {
   expandedForm: ExpandedFormType;
@@ -44,11 +43,6 @@ export function FooterActions({ expandedForm, onFormSelect }: FooterActionsProps
       key: 'emprestimos' as const,
       icon: DollarSign,
       label: 'Empréstimos',
-    },
-    {
-      key: 'agendar-pagamento' as const,
-      icon: Calendar,
-      label: 'Agendar pagamento',
     },
     {
       key: 'recarga-celular' as const,

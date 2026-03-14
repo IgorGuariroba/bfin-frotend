@@ -1,4 +1,4 @@
-export type TransactionType = 'income' | 'fixed_expense' | 'variable_expense';
+export type TransactionType = 'income' | 'fixed' | 'variable';
 export type TransactionStatus = 'pending' | 'executed' | 'cancelled' | 'locked';
 export type RecurrencePattern = 'monthly' | 'weekly' | 'yearly';
 
@@ -45,7 +45,7 @@ export interface Transaction {
   type: TransactionType;
   amount: number;
   description: string;
-  due_date: string;
+  due_date?: string;
   executed_date?: string;
   status: TransactionStatus;
   is_recurring: boolean;
@@ -60,6 +60,28 @@ export interface Transaction {
   account?: Account;
 }
 
+/**
+ * DTO para criar despesa (fixa ou variável)
+ * Nova estrutura unificada para POST /api/v1/transactions/expense
+ */
+export interface CreateExpenseDTO {
+  accountId: string;
+  amount: number;
+  description: string;
+  categoryId: string;
+  type: 'fixed' | 'variable';
+  dueDate?: string; // Obrigatório para type='fixed', não usado para type='variable'
+  isRecurring?: boolean; // Para despesas recorrentes
+  recurrencePattern?: RecurrencePattern; // monthly, weekly, yearly
+  recurrenceInterval?: number; // Repetir a cada X unidades (ex: 3 = trimestral)
+  indefinite?: boolean; // true = sem data fim
+  recurrenceCount?: number; // Quantidade de recorrências (ex: 5 meses)
+  recurrenceEndDate?: string; // Data fim da recorrência (alternativa ao recurrenceCount)
+}
+
+/**
+ * DTO para criar receita
+ */
 export interface CreateIncomeDTO {
   accountId: string;
   amount: number;
@@ -70,6 +92,9 @@ export interface CreateIncomeDTO {
   recurrencePattern?: RecurrencePattern;
 }
 
+/**
+ * @deprecated Use CreateExpenseDTO com type='fixed'
+ */
 export interface CreateFixedExpenseDTO {
   accountId: string;
   amount: number;
@@ -81,6 +106,9 @@ export interface CreateFixedExpenseDTO {
   recurrencePattern?: RecurrencePattern;
 }
 
+/**
+ * @deprecated Use CreateExpenseDTO com type='variable'
+ */
 export interface CreateVariableExpenseDTO {
   accountId: string;
   amount: number;
@@ -88,6 +116,11 @@ export interface CreateVariableExpenseDTO {
   categoryId: string;
   createdAt: string;
 }
+
+/**
+ * DTO unificado para criar transação (receita ou despesa)
+ */
+export type CreateTransactionDTO = CreateIncomeDTO | CreateExpenseDTO;
 
 export interface TransactionBreakdown {
   total_received: number;

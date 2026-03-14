@@ -18,9 +18,8 @@ import {
   AccountsDialog,
   InvitationsDialog,
   BfinParceiroDialog,
-  VariableExpenseForm,
+  ExpenseForm,
   IncomeForm,
-  FixedExpenseForm,
   BfinParceiroForm,
   Extrato,
   CreateAccountForm,
@@ -154,7 +153,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         case 'transferir': return 'Transferir';
         case 'depositar': return 'Depositar';
         case 'emprestimos': return 'Empréstimos';
-        case 'agendar-pagamento': return 'Agendar Pagamento';
         case 'recarga-celular': return 'Recarga de Celular';
         case 'ajustar-limite': return 'Ajustar Limite';
         case 'extrato': return 'Extrato da Conta';
@@ -174,7 +172,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'pagar':
           return (
-            <VariableExpenseForm
+            <ExpenseForm
+              defaultType="variable"
               onSuccess={() => setExpandedForm(null)}
               onCancel={() => setExpandedForm(null)}
             />
@@ -182,13 +181,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         case 'depositar':
           return (
             <IncomeForm
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
-        case 'agendar-pagamento':
-          return (
-            <FixedExpenseForm
               onSuccess={() => setExpandedForm(null)}
               onCancel={() => setExpandedForm(null)}
             />
@@ -241,7 +233,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'agendar-pagamento' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
 
     return (
       <Box

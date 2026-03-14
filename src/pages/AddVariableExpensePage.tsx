@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Container, Box, Heading, IconButton, VStack } from '@chakra-ui/react';
 import { ArrowLeft } from 'lucide-react';
-import { VariableExpenseForm } from '../components/organisms/forms';
 
 export function AddVariableExpensePage() {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ export function AddVariableExpensePage() {
           >
             <ArrowLeft />
           </IconButton>
-          <Heading size="lg">Nova Despesa Variável</Heading>
+          <Heading size="lg">Nova Despesa</Heading>
         </Box>
 
         <Box
@@ -27,10 +26,9 @@ export function AddVariableExpensePage() {
           p={6}
           shadow="sm"
         >
-          <VariableExpenseForm
-            onSuccess={() => navigate('/dashboard')}
-            onCancel={() => navigate('/dashboard')}
-          />
+          <Box textAlign="center" color="gray.500">
+            Esta página foi removida. Use a página de Nova Despesa Fixa com type=variable.
+          </Box>
         </Box>
       </VStack>
     </Container>

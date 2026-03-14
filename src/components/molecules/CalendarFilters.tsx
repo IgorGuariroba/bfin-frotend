@@ -63,8 +63,8 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
 
   const typeBadgeMap = {
     income: { label: 'Receita', bg: 'var(--success)', color: 'var(--success-foreground)' },
-    fixed_expense: { label: 'Despesa Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
-    variable_expense: { label: 'Despesa Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+    fixed: { label: 'Despesa Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+    variable: { label: 'Despesa Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
   } as const
 
   const statusBadgeMap = {
@@ -88,8 +88,8 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
         >
           <option value="">Todos os tipos</option>
           <option value="income">Receita</option>
-          <option value="fixed_expense">Despesa Fixa</option>
-          <option value="variable_expense">Despesa Variável</option>
+          <option value="fixed">Despesa Fixa</option>
+          <option value="variable">Despesa Variável</option>
         </NativeSelect.Field>
       </NativeSelect.Root>
 

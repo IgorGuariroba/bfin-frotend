@@ -141,6 +141,6 @@ export const getEventStatistics = (events: CalendarEvent[]) => {
     overdue,
     totalAmount,
     hasIncome: events.some(e => e.type === 'income'),
-    hasExpenses: events.some(e => e.type === 'fixed_expense' || e.type === 'variable_expense'),
+    hasExpenses: events.some(e => e.type === 'fixed' || e.type === 'variable'),
   }
 }

@@ -120,8 +120,8 @@ export function Extrato({ onBack, onViewAll }: ExtratoProps) {
 
   const getTypeLabel = (transaction: Transaction) => {
     if (transaction.type === 'income') return 'Transferência';
-    if (transaction.type === 'fixed_expense') return 'Boleto';
-    if (transaction.type === 'variable_expense') return 'Débito';
+    if (transaction.type === 'fixed') return 'Boleto';
+    if (transaction.type === 'variable') return 'Débito';
     return 'Outros';
   };
 
@@ -245,7 +245,7 @@ export function Extrato({ onBack, onViewAll }: ExtratoProps) {
             <TransactionItem
               key={transaction.id}
               title={transaction.description}
-              date={formatDateLabel(transaction.due_date)}
+              date={transaction.due_date ? formatDateLabel(transaction.due_date) : '-'}
               amount={Number(transaction.amount)}
               type={getTypeLabel(transaction)}
               icon={getTransactionIcon(transaction.description, transaction.type)}

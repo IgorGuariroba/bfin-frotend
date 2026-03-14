@@ -1,17 +1,37 @@
 import { useState, useCallback, useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { startOfMonth, endOfMonth, format, addMonths } from 'date-fns'
 import type { CalendarEvent, CalendarFilters, UseCalendarReturn, CalendarEventColor } from '@/types/calendar'
 import { transactionService } from '@/services/transactionService'
 import type { Transaction } from '@/types/transaction'
+import { toast } from '@/lib/toast'
 
 export function useCalendar(
   initialDate = new Date(),
   initialFilters: CalendarFilters = {}
 ): UseCalendarReturn {
+  const queryClient = useQueryClient();
   const [currentDate, setCurrentDate] = useState(initialDate)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [filters, setFilters] = useState<CalendarFilters>(initialFilters)
+
+  // Mutation para marcar transação como paga
+  const markAsPaidMutation = useMutation({
+    mutationFn: (transactionId: string) => 
+      transactionService.markAsPaid(transactionId),
+    onSuccess: () => {
+      toast.success('Despesa paga com sucesso!')
+      queryClient.invalidateQueries({ queryKey: ['calendar-events'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Erro ao marcar como pago')
+    },
+  });
+
+  const handleMarkAsPaid = useCallback((transactionId: string) => {
+    markAsPaidMutation.mutate(transactionId);
+  }, [markAsPaidMutation]);
 
   // Query para eventos do mês atual
   const { data: events = [], isLoading, error, refetch } = useQuery({
@@ -132,6 +152,7 @@ export function useCalendar(
     goToPrevMonth,
     goToToday,
     refetch,
+    markAsPaid: handleMarkAsPaid,
 
     // Utilities
     getDayEvents,
@@ -145,25 +166,28 @@ function transformTransactionsToEvents(
   transactions: Transaction[],
   _currentDate: Date
 ): CalendarEvent[] {
-  return transactions.map(transaction => ({
-    id: transaction.id,
-    date: format(new Date(transaction.due_date), 'yyyy-MM-dd'),
-    transaction,
-    type: transaction.type,
-    amount: Number(transaction.amount) || 0,
-    description: transaction.description,
-    category: transaction.category?.name || 'Sem categoria',
-    status: getTransactionStatus(transaction),
-    isRecurring: transaction.is_recurring || false,
-    daysUntilDue: getDaysUntilDue(transaction.due_date),
-    displayColor: getEventColor(transaction),
-  }))
+  return transactions
+    .filter((t): t is Transaction & { due_date: string } => !!t.due_date)
+    .map(transaction => ({
+      id: transaction.id,
+      date: format(new Date(transaction.due_date), 'yyyy-MM-dd'),
+      transaction: transaction as CalendarEvent['transaction'],
+      type: transaction.type as CalendarEvent['type'],
+      amount: Number(transaction.amount) || 0,
+      description: transaction.description,
+      category: transaction.category?.name || 'Sem categoria',
+      status: getTransactionStatus(transaction),
+      isRecurring: transaction.is_recurring || false,
+      daysUntilDue: getDaysUntilDue(transaction.due_date),
+      displayColor: getEventColor(transaction),
+    }))
 }
 
 function getTransactionStatus(transaction: Transaction): 'pending' | 'paid' | 'overdue' {
   if (transaction.status === 'executed' || transaction.executed_date) return 'paid'
   if (transaction.status === 'cancelled') return 'pending' // ou tratar como 'paid' para não alertar?
-  
+
+  if (!transaction.due_date) return 'pending'
   if (new Date(transaction.due_date) < new Date()) return 'overdue'
   return 'pending'
 }
@@ -177,6 +201,7 @@ function getDaysUntilDue(dueDate: string): number {
 
 function getEventColor(transaction: Transaction): CalendarEventColor {
   const status = getTransactionStatus(transaction)
+  if (!transaction.due_date) return 'blue'
   const daysUntil = getDaysUntilDue(transaction.due_date)
 
   if (status === 'paid') return 'green'

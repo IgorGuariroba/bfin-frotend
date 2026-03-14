@@ -42,6 +42,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
     goToPrevMonth,
     goToToday,
     getDayEvents,
+    markAsPaid,
   } = calendar
 
   const secondaryButtonStyles = {
@@ -173,6 +174,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
           isOpen={Boolean(selectedDate)}
           onClose={() => setSelectedDate(null)}
           onEventClick={onEventClick}
+          onMarkAsPaid={markAsPaid}
         />
       )}
     </VStack>

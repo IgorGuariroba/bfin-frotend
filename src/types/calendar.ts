@@ -6,7 +6,7 @@ export interface CalendarEvent {
   id: string
   date: string // ISO format: '2026-01-15'
   transaction: Transaction
-  type: 'income' | 'fixed_expense' | 'variable_expense'
+  type: 'income' | 'fixed' | 'variable'
   amount: number
   description: string
   category: string
@@ -24,7 +24,7 @@ export type CalendarEventColor =
   | 'gray'     // Sem status
 
 export interface CalendarFilters {
-  types?: Array<'income' | 'fixed_expense' | 'variable_expense'>
+  types?: Array<'income' | 'fixed' | 'variable'>
   categories?: string[]
   statuses?: Array<'pending' | 'paid' | 'overdue'>
   accountId?: string
@@ -59,6 +59,7 @@ export interface UseCalendarReturn {
   goToPrevMonth: () => void
   goToToday: () => void
   refetch: () => void
+  markAsPaid: (transactionId: string) => void
 
   // Utilities
   getDayEvents: (date: Date) => CalendarEvent[]

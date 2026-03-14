@@ -19,6 +19,7 @@ interface CalendarPopoverProps {
   isOpen: boolean
   onClose: () => void
   onEventClick?: (event: CalendarEvent) => void
+  onMarkAsPaid?: (transactionId: string) => void
 }
 
 export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
@@ -26,14 +27,15 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
   events,
   isOpen,
   onClose,
-  onEventClick
+  onEventClick,
+  onMarkAsPaid
 }) => {
   const formattedDate = format(date, "d 'de' MMMM, yyyy", { locale: ptBR })
 
   const typeBadgeMap = {
     income: { label: 'Receita', bg: 'var(--success)', color: 'var(--success-foreground)' },
-    fixed_expense: { label: 'Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
-    variable_expense: { label: 'Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+    fixed: { label: 'Fixa', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+    variable: { label: 'Variável', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
   } as const
 
   const statusBadgeMap = {
@@ -107,19 +109,19 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
                     <HStack justifyContent="space-between" mb={1}>
                       <Badge
                         variant="solid"
-                        bg={typeBadgeMap[event.type].bg}
-                        color={typeBadgeMap[event.type].color}
+                        bg={typeBadgeMap[event.type]?.bg || 'var(--muted)'}
+                        color={typeBadgeMap[event.type]?.color || 'var(--muted-foreground)'}
                         borderRadius="full"
                       >
-                        {typeBadgeMap[event.type].label}
+                        {typeBadgeMap[event.type]?.label || event.type}
                       </Badge>
                       <Badge
                         variant="solid"
-                        bg={statusBadgeMap[event.status].bg}
-                        color={statusBadgeMap[event.status].color}
+                        bg={statusBadgeMap[event.status]?.bg || 'var(--muted)'}
+                        color={statusBadgeMap[event.status]?.color || 'var(--muted-foreground)'}
                         borderRadius="full"
                       >
-                        {statusBadgeMap[event.status].label}
+                        {statusBadgeMap[event.status]?.label || event.status}
                       </Badge>
                     </HStack>
                     <HStack justifyContent="space-between" mt={2}>
@@ -134,6 +136,24 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
                         {onEventClick && <ChevronRight size={16} />}
                       </HStack>
                     </HStack>
+                    
+                    {/* Botão Pagar - aparece apenas para despesas pendentes/vencidas */}
+                    {(event.status === 'pending' || event.status === 'overdue') && (
+                      <Button
+                        size="sm"
+                        colorPalette="green"
+                        mt={2}
+                        w="full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (event.transaction.id) {
+                            onMarkAsPaid?.(event.transaction.id);
+                          }
+                        }}
+                      >
+                        Pagar
+                      </Button>
+                    )}
                   </Box>
                 ))
               )}
