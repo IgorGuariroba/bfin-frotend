@@ -19,6 +19,7 @@ interface CalendarPopoverProps {
   isOpen: boolean
   onClose: () => void
   onEventClick?: (event: CalendarEvent) => void
+  onMarkAsPaid?: (transactionId: string) => void
 }
 
 export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
@@ -26,7 +27,8 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
   events,
   isOpen,
   onClose,
-  onEventClick
+  onEventClick,
+  onMarkAsPaid
 }) => {
   const formattedDate = format(date, "d 'de' MMMM, yyyy", { locale: ptBR })
 
@@ -134,6 +136,24 @@ export const CalendarPopover: React.FC<CalendarPopoverProps> = ({
                         {onEventClick && <ChevronRight size={16} />}
                       </HStack>
                     </HStack>
+                    
+                    {/* Botão Pagar - aparece apenas para despesas pendentes/vencidas */}
+                    {(event.status === 'pending' || event.status === 'overdue') && (
+                      <Button
+                        size="sm"
+                        colorPalette="green"
+                        mt={2}
+                        w="full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (event.transaction.id) {
+                            onMarkAsPaid?.(event.transaction.id);
+                          }
+                        }}
+                      >
+                        Pagar
+                      </Button>
+                    )}
                   </Box>
                 ))
               )}

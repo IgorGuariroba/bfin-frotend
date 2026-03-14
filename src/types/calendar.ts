@@ -59,6 +59,7 @@ export interface UseCalendarReturn {
   goToPrevMonth: () => void
   goToToday: () => void
   refetch: () => void
+  markAsPaid: (transactionId: string) => void
 
   // Utilities
   getDayEvents: (date: Date) => CalendarEvent[]

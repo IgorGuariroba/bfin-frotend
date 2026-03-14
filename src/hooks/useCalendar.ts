@@ -1,17 +1,37 @@
 import { useState, useCallback, useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { startOfMonth, endOfMonth, format, addMonths } from 'date-fns'
 import type { CalendarEvent, CalendarFilters, UseCalendarReturn, CalendarEventColor } from '@/types/calendar'
 import { transactionService } from '@/services/transactionService'
 import type { Transaction } from '@/types/transaction'
+import { toast } from '@/lib/toast'
 
 export function useCalendar(
   initialDate = new Date(),
   initialFilters: CalendarFilters = {}
 ): UseCalendarReturn {
+  const queryClient = useQueryClient();
   const [currentDate, setCurrentDate] = useState(initialDate)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [filters, setFilters] = useState<CalendarFilters>(initialFilters)
+
+  // Mutation para marcar transação como paga
+  const markAsPaidMutation = useMutation({
+    mutationFn: (transactionId: string) => 
+      transactionService.markAsPaid(transactionId),
+    onSuccess: () => {
+      toast.success('Despesa paga com sucesso!')
+      queryClient.invalidateQueries({ queryKey: ['calendar-events'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Erro ao marcar como pago')
+    },
+  });
+
+  const handleMarkAsPaid = useCallback((transactionId: string) => {
+    markAsPaidMutation.mutate(transactionId);
+  }, [markAsPaidMutation]);
 
   // Query para eventos do mês atual
   const { data: events = [], isLoading, error, refetch } = useQuery({
@@ -132,6 +152,7 @@ export function useCalendar(
     goToPrevMonth,
     goToToday,
     refetch,
+    markAsPaid: handleMarkAsPaid,
 
     // Utilities
     getDayEvents,
