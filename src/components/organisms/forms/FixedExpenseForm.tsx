@@ -553,7 +553,7 @@ export function FixedExpenseForm({ onSuccess, onCancel }: FixedExpenseFormProps)
               _hover={{ opacity: 0.9 }}
               mt={4}
             >
-              Agendar Pagamento
+              Criar Despesa Fixa
             </Button>
 
             {/* Link Cancelar */}
