@@ -85,10 +85,7 @@ export const loanSimulationService = {
             principalAmount: apiItem.principalComponent as number ?? item.principalAmount,
             interestAmount: apiItem.interestComponent as number ?? item.interestAmount,
             totalAmount: apiItem.totalPayment as number ?? item.totalAmount,
-            dueDate: (apiItem.dueDate as string) ?? '',
             remainingPrincipal: apiItem.remainingBalance as number ?? item.remainingPrincipal,
-            accumulatedInterest: apiItem.accumulatedInterest as number ?? 0,
-            accumulatedPrincipal: apiItem.accumulatedPrincipal as number ?? 0,
           }
         })
       }

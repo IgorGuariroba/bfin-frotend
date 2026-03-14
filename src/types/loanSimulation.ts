@@ -60,13 +60,13 @@ export interface InstallmentPlan {
   interestAmount: number // valor dos juros
   totalAmount: number // valor total da parcela
 
-  // Controle temporal
-  dueDate: string // ISO date, data de vencimento
+  // Controle temporal (opcional - nem todas as APIs retornam)
+  dueDate?: string // ISO date, data de vencimento
 
-  // Saldos acumulados
-  remainingPrincipal: number // principal restante
-  accumulatedInterest: number // juros acumulados
-  accumulatedPrincipal: number // principal pago acumulado
+  // Saldos acumulados (opcionais - nem todas as APIs retornam)
+  remainingPrincipal?: number // principal restante
+  accumulatedInterest?: number // juros acumulados
+  accumulatedPrincipal?: number // principal pago acumulado
 }
 
 // ============================================================================
