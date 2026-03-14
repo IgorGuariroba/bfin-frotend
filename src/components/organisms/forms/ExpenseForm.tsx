@@ -192,42 +192,6 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack gap={0} align="stretch" minH="100vh" pb={8}>
-          {/* Seletor de Tipo de Despesa */}
-          <Box mb={4} p={4} bg="var(--card)" borderRadius="xl">
-            <HStack justify="space-between" wrap="wrap" gap={2}>
-              <HStack gap={2}>
-                <Clock size={20} color="var(--primary-foreground)" />
-                <Text fontWeight="bold" color="var(--primary-foreground)">Tipo de Despesa</Text>
-              </HStack>
-              <HStack gap={2}>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={expenseType === 'variable' ? 'solid' : 'outline'}
-                  colorPalette={expenseType === 'variable' ? 'brand' : 'gray'}
-                  onClick={() => {
-                    setExpenseType('variable');
-                    setValue('type', 'variable');
-                  }}
-                >
-                  Variável
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={expenseType === 'fixed' ? 'solid' : 'outline'}
-                  colorPalette={expenseType === 'fixed' ? 'brand' : 'gray'}
-                  onClick={() => {
-                    setExpenseType('fixed');
-                    setValue('type', 'fixed');
-                  }}
-                >
-                  Fixa
-                </Button>
-              </HStack>
-            </HStack>
-          </Box>
-
           {/* Valor em destaque no header */}
           <Box mb={6}>
             {isEditingAmount ? (
@@ -425,6 +389,27 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                   <Field.ErrorText>{errors.description.message}</Field.ErrorText>
                 )}
               </Field.Root>
+
+              {/* Checkbox Despesa Fixa */}
+              <HStack justify="space-between" p={3} bg="gray.50" _dark={{ bg: 'gray.800' }} borderRadius="lg">
+                <HStack gap={2}>
+                  <Clock size={18} color="var(--muted-foreground)" />
+                  <Text fontSize="sm" fontWeight="medium" color="var(--muted-foreground)">
+                    É despesa fixa?
+                  </Text>
+                </HStack>
+                <Checkbox.Root
+                  checked={isFixed}
+                  onCheckedChange={(e) => {
+                    const newType = e.checked ? 'fixed' : 'variable';
+                    setExpenseType(newType);
+                    setValue('type', newType);
+                  }}
+                >
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                </Checkbox.Root>
+              </HStack>
 
               {/* Campo Categoria com ícone */}
               <Field.Root invalid={!!errors.categoryId}>
