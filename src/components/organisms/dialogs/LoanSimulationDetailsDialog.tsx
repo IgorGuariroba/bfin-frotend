@@ -82,8 +82,9 @@ export function LoanSimulationDetailsDialog({
   return (
     <Dialog.Root open={open} onOpenChange={(e) => onOpenChange(e.open)} size="xl">
       <Dialog.Backdrop />
-      <Dialog.Content>
-        <Dialog.Header>
+      <Dialog.Positioner>
+        <Dialog.Content bg="var(--card)" borderRadius="2xl" maxW="2xl">
+          <Dialog.Header>
           <HStack justify="space-between">
             <VStack align="start" gap={0}>
               <Dialog.Title>Detalhes da Simulação</Dialog.Title>
@@ -210,7 +211,8 @@ export function LoanSimulationDetailsDialog({
             Fechar
           </Button>
         </Dialog.Footer>
-      </Dialog.Content>
+        </Dialog.Content>
+      </Dialog.Positioner>
     </Dialog.Root>
   );
 }

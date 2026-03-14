@@ -1,13 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { loanSimulationService } from '../services/loanSimulationService';
-import type { 
-  LoanSimulationStatus, 
+import type {
+  LoanSimulationStatus,
   CreateLoanSimulationRequest
 } from '../types/loanSimulation';
 import { toast } from '../lib/toast';
 
 export const LOAN_SIMULATIONS_QUERY_KEY = ['loan-simulations'];
-export const EMERGENCY_RESERVE_QUERY_KEY = ['emergency-reserve'];
 
 export function useLoanSimulations(filters?: { status?: LoanSimulationStatus; limit?: number; offset?: number }) {
   return useQuery({
@@ -24,17 +23,6 @@ export function useLoanSimulation(id: string | undefined) {
       return loanSimulationService.getById(id);
     },
     enabled: !!id,
-  });
-}
-
-export function useEmergencyReserve(accountId: string | undefined) {
-  return useQuery({
-    queryKey: [...EMERGENCY_RESERVE_QUERY_KEY, accountId],
-    queryFn: () => {
-      if (!accountId) throw new Error('ID da conta não fornecido');
-      return loanSimulationService.getEmergencyReserveStatus(accountId);
-    },
-    enabled: !!accountId,
   });
 }
 
@@ -76,7 +64,6 @@ export function useWithdrawLoanSimulation() {
     mutationFn: (id: string) => loanSimulationService.withdraw(id),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: LOAN_SIMULATIONS_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: EMERGENCY_RESERVE_QUERY_KEY });
       queryClient.setQueryData([...LOAN_SIMULATIONS_QUERY_KEY, data.id], data);
       toast.success('Empréstimo sacado com sucesso!');
     },

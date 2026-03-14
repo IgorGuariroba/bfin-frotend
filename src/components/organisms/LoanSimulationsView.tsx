@@ -1,24 +1,18 @@
 import { useState } from 'react';
-import { 
-  Box, 
-  Heading, 
-  VStack, 
-  HStack, 
-  Text, 
-  Icon, 
-  SimpleGrid,
+import {
+  Box,
+  Heading,
+  VStack,
+  HStack,
+  Text,
   Dialog,
-  Spinner,
   IconButton
 } from '@chakra-ui/react';
-import { Plus, ShieldCheck, TrendingUp, Wallet, ArrowLeft } from 'lucide-react';
+import { Plus, ArrowLeft } from 'lucide-react';
 import { Button } from '../atoms/Button';
 import { LoanSimulationList } from './lists/LoanSimulationList';
 import { LoanSimulationForm } from './forms/LoanSimulationForm';
 import { LoanSimulationDetailsDialog } from './dialogs/LoanSimulationDetailsDialog';
-import { useEmergencyReserve } from '../../hooks/useLoanSimulations';
-import { useAccounts } from '../../hooks/useAccounts';
-import { loanSimulationService } from '../../services/loanSimulationService';
 import type { LoanSimulation } from '../../types/loanSimulation';
 
 interface LoanSimulationsViewProps {
@@ -29,13 +23,6 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedSimulation, setSelectedSimulation] = useState<LoanSimulation | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
-  // Buscar conta padrão (primeira conta)
-  const { data: accountsData } = useAccounts();
-  const accountId = accountsData?.[0]?.id;
-
-  // Buscar status da reserva
-  const { data: reserveStatus, isLoading: isLoadingReserve } = useEmergencyReserve(accountId);
 
   const handleSelectSimulation = (simulation: LoanSimulation) => {
     setSelectedSimulation(simulation);
@@ -69,57 +56,6 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
           </Button>
         </HStack>
 
-        {/* Status da Reserva */}
-        <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
-          <Box p={5} bg="card" borderRadius="xl" shadow="sm" borderWidth="1px" borderColor="border.subtle">
-            <VStack align="start" gap={1}>
-              <HStack color="brand.500">
-                <Icon as={ShieldCheck} boxSize={4} />
-                <Text fontWeight="bold" fontSize="xs" textTransform="uppercase">Reserva Total</Text>
-              </HStack>
-              {isLoadingReserve ? (
-                <Spinner size="xs" />
-              ) : (
-                <Text fontSize="xl" fontWeight="bold">
-                  {loanSimulationService.formatCurrency(reserveStatus?.totalReserve || 0)}
-                </Text>
-              )}
-            </VStack>
-          </Box>
-
-          <Box p={5} bg="card" borderRadius="xl" shadow="sm" borderWidth="1px" borderColor="border.subtle">
-            <VStack align="start" gap={1}>
-              <HStack color="blue.500">
-                <Icon as={TrendingUp} boxSize={4} />
-                <Text fontWeight="bold" fontSize="xs" textTransform="uppercase">Limite (70%)</Text>
-              </HStack>
-              {isLoadingReserve ? (
-                <Spinner size="xs" />
-              ) : (
-                <Text fontSize="xl" fontWeight="bold">
-                  {loanSimulationService.formatCurrency(reserveStatus?.loanLimit || 0)}
-                </Text>
-              )}
-            </VStack>
-          </Box>
-
-          <Box p={5} bg="card" borderRadius="xl" shadow="sm" borderWidth="1px" borderColor="border.subtle">
-            <VStack align="start" gap={1}>
-              <HStack color="green.500">
-                <Icon as={Wallet} boxSize={4} />
-                <Text fontWeight="bold" fontSize="xs" textTransform="uppercase">Disponível</Text>
-              </HStack>
-              {isLoadingReserve ? (
-                <Spinner size="xs" />
-              ) : (
-                <Text fontSize="xl" fontWeight="bold">
-                  {loanSimulationService.formatCurrency(reserveStatus?.remainingLoanCapacity || 0)}
-                </Text>
-              )}
-            </VStack>
-          </Box>
-        </SimpleGrid>
-
         {/* Listagem */}
         <Box>
           <Heading size="md" mb={4}>Minhas Simulações</Heading>
@@ -130,18 +66,20 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
       {/* Dialog de Nova Simulação */}
       <Dialog.Root open={isFormOpen} onOpenChange={(e) => setIsFormOpen(e.open)}>
         <Dialog.Backdrop />
-        <Dialog.Content>
-          <Dialog.Header>
-            <Dialog.Title>Nova Simulação de Empréstimo</Dialog.Title>
-            <Dialog.CloseTrigger />
-          </Dialog.Header>
-          <Dialog.Body pb={6}>
-            <LoanSimulationForm 
-              onSuccess={() => setIsFormOpen(false)} 
-              onCancel={() => setIsFormOpen(false)} 
-            />
-          </Dialog.Body>
-        </Dialog.Content>
+        <Dialog.Positioner>
+          <Dialog.Content bg="var(--card)" borderRadius="2xl" maxW="lg">
+            <Dialog.Header>
+              <Dialog.Title>Nova Simulação de Empréstimo</Dialog.Title>
+              <Dialog.CloseTrigger />
+            </Dialog.Header>
+            <Dialog.Body pb={6}>
+              <LoanSimulationForm
+                onSuccess={() => setIsFormOpen(false)}
+                onCancel={() => setIsFormOpen(false)}
+              />
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog.Positioner>
       </Dialog.Root>
 
       {/* Dialog de Detalhes */}

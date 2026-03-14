@@ -69,24 +69,6 @@ export interface InstallmentPlan {
   accumulatedPrincipal: number // principal pago acumulado
 }
 
-/**
- * Estado atual da reserva de emergência para validações de limite
- */
-export interface EmergencyReserveStatus {
-  // Saldos atuais
-  totalReserve: number // total da reserva
-  availableReserve: number // disponível para empréstimo
-
-  // Limites calculados
-  loanLimit: number // 70% da reserva total
-  currentLoansAmount: number // valor já emprestado
-  remainingLoanCapacity: number // capacidade restante
-
-  // Metadata
-  lastUpdated: string // ISO date
-  accountId: string // UUID, conta associada
-}
-
 // ============================================================================
 // API Request/Response Types
 // ============================================================================
@@ -157,15 +139,6 @@ export interface LoanSimulationDetailsState {
   isWithdrawing: boolean
 }
 
-/**
- * Estado da reserva de emergência na UI
- */
-export interface EmergencyReserveState {
-  status: EmergencyReserveStatus | null
-  isLoading: boolean
-  error: string | null
-}
-
 // ============================================================================
 // Component Props Types
 // ============================================================================
@@ -181,7 +154,6 @@ export interface LoanSimulationCardProps {
 export interface LoanSimulationFormProps {
   onSubmit: (data: CreateLoanSimulationFormData) => void
   isLoading?: boolean
-  emergencyReserve?: EmergencyReserveStatus
   initialValues?: Partial<CreateLoanSimulationFormData>
 }
 
@@ -228,16 +200,6 @@ export interface UseLoanSimulationDetailsReturn {
   withdraw: () => Promise<void>
   isWithdrawing: boolean
   refetch: () => void
-}
-
-export interface UseEmergencyReserveReturn {
-  status: EmergencyReserveStatus | null
-  isLoading: boolean
-  error: string | null
-  refetch: () => void
-  hasCapacity: (amount: number) => boolean
-  getMaxLoanAmount: () => number
-  getUsagePercentage: () => number
 }
 
 // ============================================================================
@@ -348,7 +310,6 @@ export interface LoanSimulationTestData {
   validSimulation: CreateLoanSimulationRequest
   invalidSimulation: Partial<CreateLoanSimulationRequest>
   mockSimulation: LoanSimulation
-  mockEmergencyReserve: EmergencyReserveStatus
 }
 
 export interface LoanSimulationTestScenario {
@@ -432,19 +393,6 @@ export const paginationSchema = z.object({
 })
 
 /**
- * Schema para validação de dados de emergência da reserva
- */
-export const emergencyReserveStatusSchema = z.object({
-  totalReserve: z.number().min(0, 'Reserva total deve ser não-negativa'),
-  availableReserve: z.number().min(0, 'Reserva disponível deve ser não-negativa'),
-  loanLimit: z.number().min(0, 'Limite de empréstimo deve ser não-negativo'),
-  currentLoansAmount: z.number().min(0, 'Valor atual dos empréstimos deve ser não-negativo'),
-  remainingLoanCapacity: z.number().min(0, 'Capacidade restante deve ser não-negativa'),
-  lastUpdated: z.string().datetime('Data de atualização inválida'),
-  accountId: z.string().uuid('ID da conta deve ser um UUID válido'),
-})
-
-/**
  * Schema de validação para parcela do cronograma
  */
 export const installmentPlanSchema = z.object({
@@ -487,7 +435,6 @@ export const loanSimulationSchema = z.object({
 export type CreateLoanSimulationFormData = z.infer<typeof createLoanSimulationSchema>
 export type LoanSimulationFiltersData = z.infer<typeof loanSimulationFiltersSchema>
 export type PaginationData = z.infer<typeof paginationSchema>
-export type EmergencyReserveStatusData = z.infer<typeof emergencyReserveStatusSchema>
 export type InstallmentPlanData = z.infer<typeof installmentPlanSchema>
 export type LoanSimulationData = z.infer<typeof loanSimulationSchema>
 
@@ -529,13 +476,6 @@ export function getDaysUntilExpiration(simulation: LoanSimulation): number {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
   return Math.max(0, diffDays)
-}
-
-/**
- * Verifica se o valor do empréstimo excede o limite da reserva
- */
-export function exceedsReserveLimit(amount: number, emergencyReserve: EmergencyReserveStatus): boolean {
-  return amount > emergencyReserve.remainingLoanCapacity
 }
 
 /**

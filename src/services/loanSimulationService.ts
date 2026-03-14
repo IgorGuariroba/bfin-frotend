@@ -8,7 +8,6 @@ import type {
   LoanSimulation,
   CreateLoanSimulationRequest,
   LoanSimulationListResponse,
-  EmergencyReserveStatus,
   LoanSimulationStatus,
   ApiError
 } from '../types/loanSimulation'
@@ -106,21 +105,6 @@ export const loanSimulationService = {
       })
     } catch (error) {
       throw this.handleError(error, 'Erro ao sacar empréstimo')
-    }
-  },
-
-  /**
-   * Obter status da reserva de emergência
-   */
-  async getEmergencyReserveStatus(accountId: string): Promise<EmergencyReserveStatus> {
-    try {
-      return await customInstance({
-        url: '/api/v1/emergency-reserve',
-        method: 'GET',
-        params: { accountId },
-      })
-    } catch (error) {
-      throw this.handleError(error, 'Erro ao carregar status da reserva')
     }
   },
 
