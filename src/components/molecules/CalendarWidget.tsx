@@ -73,6 +73,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
     isLoading,
     error,
     getDayEvents,
+    markAsPaid,
   } = calendar
 
   // Obter eventos dos próximos 7 dias
@@ -231,57 +232,78 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                     const eventDate = new Date(event.date)
                     const isToday = format(eventDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
                     const statusInfo = getStatusBadge(event.status)
+                    const canPay = event.status === 'pending' || event.status === 'overdue'
 
                     return (
-                      <HStack
+                      <Box
                         key={event.id}
                         p={3}
                         bg="var(--card)"
                         borderRadius="lg"
                         borderWidth="1px"
                         borderColor="var(--border)"
-                        justify="space-between"
                         _hover={{ bg: 'var(--accent)' }}
                       >
-                        <VStack align="start" gap={0} flex="1">
-                          <HStack>
-                            <Text
-                              fontSize="xs"
-                              color={isToday ? 'var(--warning)' : 'var(--muted-foreground)'}
-                              fontWeight={isToday ? 'bold' : 'normal'}
-                            >
-                              {format(eventDate, "d 'de' MMM", { locale: ptBR })}
-                              {isToday && " (Hoje)"}
-                            </Text>
-                            <Badge
-                              size="sm"
-                              variant="solid"
-                              bg={statusInfo.bg}
-                              color={statusInfo.color}
-                              borderRadius="full"
-                            >
-                              {statusInfo.label}
-                            </Badge>
-                          </HStack>
-                          <Text
-                            fontSize="sm"
-                            fontWeight="medium"
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
-                          >
-                            {event.description}
-                          </Text>
-                        </VStack>
+                        <VStack gap={2} align="stretch">
+                          <HStack justify="space-between">
+                            <VStack align="start" gap={0} flex="1">
+                              <HStack>
+                                <Text
+                                  fontSize="xs"
+                                  color={isToday ? 'var(--warning)' : 'var(--muted-foreground)'}
+                                  fontWeight={isToday ? 'bold' : 'normal'}
+                                >
+                                  {format(eventDate, "d 'de' MMM", { locale: ptBR })}
+                                  {isToday && " (Hoje)"}
+                                </Text>
+                                <Badge
+                                  size="sm"
+                                  variant="solid"
+                                  bg={statusInfo.bg}
+                                  color={statusInfo.color}
+                                  borderRadius="full"
+                                >
+                                  {statusInfo.label}
+                                </Badge>
+                              </HStack>
+                              <Text
+                                fontSize="sm"
+                                fontWeight="medium"
+                                overflow="hidden"
+                                textOverflow="ellipsis"
+                                whiteSpace="nowrap"
+                              >
+                                {event.description}
+                              </Text>
+                            </VStack>
 
-                        <Text
-                          fontSize="sm"
-                          fontWeight="bold"
-                          color={event.type === 'income' ? 'var(--success)' : 'var(--destructive)'}
-                        >
-                          {event.type === 'income' ? '+' : '-'} {formatCurrency(event.amount)}
-                        </Text>
-                      </HStack>
+                            <Text
+                              fontSize="sm"
+                              fontWeight="bold"
+                              color={event.type === 'income' ? 'var(--success)' : 'var(--destructive)'}
+                            >
+                              {event.type === 'income' ? '+' : '-'} {formatCurrency(event.amount)}
+                            </Text>
+                          </HStack>
+                          
+                          {/* Botão Pagar - aparece apenas para despesas pendentes/vencidas */}
+                          {canPay && (
+                            <Button
+                              size="sm"
+                              colorPalette="green"
+                              w="full"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (event.transaction.id) {
+                                  markAsPaid(event.transaction.id);
+                                }
+                              }}
+                            >
+                              Pagar
+                            </Button>
+                          )}
+                        </VStack>
+                      </Box>
                     )
                   })}
                 </VStack>
