@@ -29,7 +29,7 @@ import {
   SidebarState,
   Calendar,
   ExpandedFormType,
-  TransferView
+  TransferForm
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
 import { MobileHeaderControls, CalendarWidget } from '../components/molecules';
@@ -196,7 +196,10 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'transferir':
           return (
-            <TransferView onBack={() => setExpandedForm(null)} />
+            <TransferForm
+              onSuccess={() => setExpandedForm(null)}
+              onCancel={() => setExpandedForm(null)}
+            />
           );
         case 'emprestimos':
           return (
@@ -221,7 +224,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
 
     return (
       <Box
