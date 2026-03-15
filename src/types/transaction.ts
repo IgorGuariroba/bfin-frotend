@@ -161,3 +161,36 @@ export interface TransactionListResponse {
     items_per_page: number;
   };
 }
+
+/**
+ * DTO para criar transferência
+ * POST /api/v1/transactions/transfer
+ */
+export interface CreateTransferDTO {
+  sourceAccountId: string;
+  destinationAccountId: string;
+  amount: number;
+  description?: string;
+}
+
+/**
+ * Resposta da transferência
+ */
+export interface TransferResponse {
+  transfer: {
+    id: string;
+    amount: number;
+    description: string;
+    sourceAccount: {
+      id: string;
+      account_name: string;
+    };
+    destinationAccount: {
+      id: string;
+      account_name: string;
+    };
+    createdAt: string;
+  };
+  debitTransaction: Transaction;
+  creditTransaction: Transaction;
+}

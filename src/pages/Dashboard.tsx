@@ -28,7 +28,8 @@ import {
   Sidebar,
   SidebarState,
   Calendar,
-  ExpandedFormType
+  ExpandedFormType,
+  TransferView
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
 import { MobileHeaderControls, CalendarWidget } from '../components/molecules';
@@ -195,11 +196,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'transferir':
           return (
-            <Box>
-              <Text color="var(--muted-foreground)">
-                Funcionalidade de transferência em desenvolvimento.
-              </Text>
-            </Box>
+            <TransferView onBack={() => setExpandedForm(null)} />
           );
         case 'emprestimos':
           return (

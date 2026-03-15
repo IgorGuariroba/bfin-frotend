@@ -10,6 +10,7 @@ export * from './SidebarCollapsed';
 export * from './SidebarExpanded';
 export { Calendar } from './Calendar';
 export { CalendarPopover } from './CalendarPopover';
+export { TransferView } from './TransferView';
 
 // Export types
 export type { SidebarState } from '../../types/sidebar';
