@@ -9,13 +9,86 @@ import {
   Skeleton,
 } from '@chakra-ui/react'
 import { Calendar as CalendarIcon, ChevronRight, Eye } from 'lucide-react'
-import { format, addDays } from 'date-fns'
+import { format, addDays, startOfDay, endOfDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useNavigate } from 'react-router-dom'
 import { Calendar } from '@/components/organisms/Calendar'
 import { CalendarPopover } from '@/components/organisms/CalendarPopover'
 import { useCalendar } from '@/hooks/useCalendar'
+import { useQuery } from '@tanstack/react-query'
+import { transactionService } from '@/services/transactionService'
 import type { CalendarEvent } from '@/types/calendar'
+import type { Transaction } from '@/types/transaction'
+
+interface CalendarWidgetProps {
+  onViewFullCalendar?: () => void
+}
+
+// Hook para buscar eventos dos próximos 7 dias
+function useUpcomingEvents() {
+  const today = startOfDay(new Date())
+  const next7Days = endOfDay(addDays(new Date(), 7))
+
+  return useQuery({
+    queryKey: ['upcoming-events', format(today, 'yyyy-MM-dd')],
+    queryFn: async () => {
+      const response = await transactionService.list({
+        startDate: today.toISOString(),
+        endDate: next7Days.toISOString(),
+      })
+
+      return transformTransactionsToEvents(response.transactions)
+    },
+    staleTime: 1000 * 60 * 2, // 2 minutos - atualiza frequentemente
+    refetchInterval: 1000 * 60 * 5, // Atualiza a cada 5 minutos
+  })
+}
+
+// Transformar transações em eventos
+function transformTransactionsToEvents(transactions: Transaction[]): CalendarEvent[] {
+  return transactions
+    .filter((t): t is Transaction & { due_date: string } => !!t.due_date)
+    .map(transaction => ({
+      id: transaction.id,
+      date: format(new Date(transaction.due_date), 'yyyy-MM-dd'),
+      transaction: transaction as CalendarEvent['transaction'],
+      type: transaction.type as CalendarEvent['type'],
+      amount: Number(transaction.amount) || 0,
+      description: transaction.description,
+      category: transaction.category?.name || 'Sem categoria',
+      status: getTransactionStatus(transaction),
+      isRecurring: transaction.is_recurring || false,
+      daysUntilDue: getDaysUntilDue(transaction.due_date),
+      displayColor: getEventColor(transaction),
+    }))
+}
+
+function getTransactionStatus(transaction: Transaction): 'pending' | 'paid' | 'overdue' {
+  if (transaction.status === 'executed' || transaction.executed_date) return 'paid'
+  if (transaction.status === 'cancelled') return 'pending'
+
+  if (!transaction.due_date) return 'pending'
+  if (new Date(transaction.due_date) < new Date()) return 'overdue'
+  return 'pending'
+}
+
+function getDaysUntilDue(dueDate: string): number {
+  const due = new Date(dueDate)
+  const today = new Date()
+  const diffTime = due.getTime() - today.getTime()
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+}
+
+function getEventColor(transaction: Transaction): CalendarEvent['displayColor'] {
+  const status = getTransactionStatus(transaction)
+  if (!transaction.due_date) return 'blue'
+  const daysUntil = getDaysUntilDue(transaction.due_date)
+
+  if (status === 'paid') return 'green'
+  if (status === 'overdue') return 'red'
+  if (status === 'pending' && daysUntil <= 3) return 'yellow'
+  return 'blue'
+}
 
 interface CalendarWidgetProps {
   onViewFullCalendar?: () => void
@@ -27,6 +100,42 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
   const navigate = useNavigate()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [showFullCalendar, setShowFullCalendar] = useState(false)
+
+  // Hook do calendário para o mês atual (usado no expand mode)
+  const calendar = useCalendar(new Date(), {})
+
+  // Hook específico para próximos eventos - ATUALIZA AUTOMATICAMENTE
+  const {
+    data: upcomingEvents = [],
+    isLoading: loadingUpcoming,
+    error: upcomingError,
+  } = useUpcomingEvents()
+
+  const {
+    getDayEvents,
+    markAsPaid,
+  } = calendar
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date)
+  }
+
+  const getStatusBadge = (status: CalendarEvent['status']) => {
+    const statusMap = {
+      paid: { label: 'Pago', bg: 'var(--success)', color: 'var(--success-foreground)' },
+      pending: { label: 'Pendente', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
+      overdue: { label: 'Vencido', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
+    }
+
+    return statusMap[status]
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value)
+  }
 
   const secondaryButtonStyles = {
     bg: 'var(--secondary)',
@@ -65,54 +174,6 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
     } else {
       navigate('/calendar')
     }
-  }
-
-  const calendar = useCalendar(new Date(), {})
-
-  const {
-    isLoading,
-    error,
-    getDayEvents,
-    markAsPaid,
-  } = calendar
-
-  // Obter eventos dos próximos 7 dias
-  const getUpcomingEvents = () => {
-    const startDate = new Date()
-    const endDate = addDays(new Date(), 7)
-    const upcomingEvents: CalendarEvent[] = []
-
-    for (let date = startDate; date <= endDate; date = addDays(date, 1)) {
-      const dayEvents = getDayEvents(date)
-      upcomingEvents.push(...dayEvents.map(event => ({ ...event, date: format(date, 'yyyy-MM-dd') })))
-    }
-
-    return upcomingEvents
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 5) // Mostrar apenas os 5 próximos
-  }
-
-  const upcomingEvents = getUpcomingEvents()
-
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date)
-  }
-
-  const getStatusBadge = (status: CalendarEvent['status']) => {
-    const statusMap = {
-      paid: { label: 'Pago', bg: 'var(--success)', color: 'var(--success-foreground)' },
-      pending: { label: 'Pendente', bg: 'var(--warning)', color: 'var(--warning-foreground)' },
-      overdue: { label: 'Vencido', bg: 'var(--destructive)', color: 'var(--destructive-foreground)' },
-    }
-
-    return statusMap[status]
-  }
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value)
   }
 
   if (showFullCalendar) {
@@ -192,7 +253,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
           </VStack>
 
           {/* Loading ou Error */}
-          {isLoading && (
+          {loadingUpcoming && (
             <VStack gap={2}>
               <Skeleton height="20px" borderRadius="md" />
               <Skeleton height="20px" borderRadius="md" />
@@ -200,14 +261,14 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
             </VStack>
           )}
 
-          {error && (
+          {upcomingError && (
             <Text color="var(--destructive)" fontSize="sm" textAlign="center">
               Erro ao carregar eventos
             </Text>
           )}
 
           {/* Próximos Eventos */}
-          {!isLoading && !error && (
+          {!loadingUpcoming && !upcomingError && (
             <VStack gap={3} align="stretch">
               <Text fontSize="sm" fontWeight="medium" color="var(--muted-foreground)">
                 Próximos vencimentos

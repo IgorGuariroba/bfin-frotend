@@ -7,12 +7,14 @@ export function useCategories(accountId?: string) {
 }
 
 export function useCreateCategory() {
-  const { invalidateCategoryRelatedQueries } = useCacheInvalidation();
+  const { invalidateCategoryRelatedQueries, invalidateTransactionRelatedQueries } = useCacheInvalidation();
 
   return usePostApiV1Categories({
     mutation: {
       onSuccess: () => {
+        // Invalida categorias e transações relacionadas
         invalidateCategoryRelatedQueries();
+        invalidateTransactionRelatedQueries();
       }
     }
   });

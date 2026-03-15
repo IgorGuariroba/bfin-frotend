@@ -17,7 +17,7 @@ export function useCalendar(
 
   // Mutation para marcar transação como paga
   const markAsPaidMutation = useMutation({
-    mutationFn: (transactionId: string) => 
+    mutationFn: (transactionId: string) =>
       transactionService.markAsPaid(transactionId),
     onSuccess: () => {
       toast.success('Despesa paga com sucesso!')

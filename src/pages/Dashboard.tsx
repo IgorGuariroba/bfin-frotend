@@ -153,7 +153,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         case 'transferir': return 'Transferir';
         case 'depositar': return 'Depositar';
         case 'emprestimos': return 'Empréstimos';
-        case 'recarga-celular': return 'Recarga de Celular';
         case 'ajustar-limite': return 'Ajustar Limite';
         case 'extrato': return 'Extrato da Conta';
         case 'transacoes': return 'Todas as Transações';
@@ -205,14 +204,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         case 'emprestimos':
           return (
             <LoanSimulationsView onBack={() => setExpandedForm(null)} />
-          );
-        case 'recarga-celular':
-          return (
-            <Box>
-              <Text color="var(--muted-foreground)">
-                Funcionalidade de recarga de celular em desenvolvimento.
-              </Text>
-            </Box>
           );
         case 'ajustar-limite':
           return (
