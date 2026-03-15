@@ -90,10 +90,6 @@ function getEventColor(transaction: Transaction): CalendarEvent['displayColor'] 
   return 'blue'
 }
 
-interface CalendarWidgetProps {
-  onViewFullCalendar?: () => void
-}
-
 export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
   onViewFullCalendar
 }) => {
