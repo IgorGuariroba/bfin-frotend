@@ -59,12 +59,19 @@ ChakraCalendar.displayName = 'ChakraCalendar'
 
 // CSS personalizado para React Day Picker integrado com Chakra UI
 export const calendarCSS = `
+.chakra-calendar {
+  display: flex;
+  justify-content: center;
+}
+
 .chakra-calendar .rdp {
   --rdp-cell-size: var(--rdp-cell-size, 40px);
   --rdp-accent-color: var(--rdp-accent-color);
   --rdp-background-color: var(--rdp-background-color);
   --rdp-outline-color: var(--rdp-outline-color);
   margin: 0;
+  width: 100%;
+  max-width: min(100%, 500px);
 }
 
 .chakra-calendar .rdp-months {
@@ -78,12 +85,16 @@ export const calendarCSS = `
 .chakra-calendar .rdp-table {
   width: 100%;
   max-width: none;
+  min-width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .chakra-calendar .rdp-head_row,
 .chakra-calendar .rdp-row {
   height: auto;
+  min-height: var(--rdp-cell-size);
+  width: 100%;
 }
 
 .chakra-calendar .rdp-head_cell {
@@ -93,15 +104,21 @@ export const calendarCSS = `
   font-weight: 600;
   color: var(--rdp-text-color-disabled, #666);
   text-transform: uppercase;
+  width: 14.28%; /* 100% / 7 dias */
+  min-height: 2.5rem;
 }
 
 .chakra-calendar .rdp-cell {
   padding: 0;
+  width: 14.28%; /* 100% / 7 dias */
+  height: auto;
+  min-height: var(--rdp-cell-size);
 }
 
 .chakra-calendar .rdp-button {
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
+  width: 100%;
+  height: 100%;
+  min-height: var(--rdp-cell-size);
   border: none;
   background: none;
   cursor: pointer;
@@ -114,6 +131,7 @@ export const calendarCSS = `
   color: var(--rdp-text-color);
   transition: all 0.2s;
   position: relative;
+  margin: 2px;
 }
 
 .chakra-calendar .rdp-button:hover:not(.rdp-day_disabled) {
@@ -155,5 +173,26 @@ export const calendarCSS = `
 
 .chakra-calendar .rdp-caption {
   display: none; /* Será controlada pelo CalendarHeader */
+}
+
+/* Responsividade */
+@media (min-width: 768px) {
+  .chakra-calendar .rdp {
+    max-width: 500px;
+  }
+
+  .chakra-calendar .rdp-cell {
+    width: calc(100% / 7);
+  }
+
+  .chakra-calendar .rdp-head_cell {
+    width: calc(100% / 7);
+  }
+}
+
+@media (min-width: 1024px) {
+  .chakra-calendar .rdp {
+    max-width: 600px;
+  }
 }
 `
