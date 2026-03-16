@@ -29,7 +29,8 @@ import {
   SidebarState,
   Calendar,
   ExpandedFormType,
-  TransferForm
+  TransferForm,
+  LoanForm
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
 import { MobileHeaderControls, CalendarWidget } from '../components/molecules';
@@ -49,7 +50,6 @@ import {
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { iconColors, customShadows } from '../theme';
 import { AllTransactionsView } from './AllTransactionsPage';
-import { LoanSimulationsView } from '../components/organisms/LoanSimulationsView';
 
 interface DashboardProps {
   initialExpandedForm?: ExpandedFormType;
@@ -203,7 +203,10 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'emprestimos':
           return (
-            <LoanSimulationsView onBack={() => setExpandedForm(null)} />
+            <LoanForm
+              onSuccess={() => setExpandedForm(null)}
+              onCancel={() => setExpandedForm(null)}
+            />
           );
         case 'ajustar-limite':
           return (
@@ -224,7 +227,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
 
     return (
       <Box
@@ -270,8 +273,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <Extrato onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
         ) : expandedForm === 'transacoes' ? (
           <AllTransactionsView onBack={() => setExpandedForm(null)} />
-        ) : expandedForm === 'emprestimos' ? (
-          <LoanSimulationsView onBack={() => setExpandedForm(null)} />
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}
