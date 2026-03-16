@@ -74,7 +74,7 @@ export const accountMemberService = {
   // Aceita um convite
   async acceptInvitation(token: string): Promise<AccountMember> {
     return customInstance<AccountMember>({
-      url: `/invitations/${token}/accept`,
+      url: `/api/v1/invitations/${token}/accept`,
       method: 'POST',
     });
   },
@@ -82,7 +82,7 @@ export const accountMemberService = {
   // Rejeita um convite
   async rejectInvitation(token: string): Promise<{ message: string }> {
     return customInstance<{ message: string }>({
-      url: `/invitations/${token}/reject`,
+      url: `/api/v1/invitations/${token}/reject`,
       method: 'POST',
     });
   },
