@@ -6,18 +6,6 @@ import { useAuth } from './contexts/AuthContext';
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })));
 const Register = lazy(() => import('./pages/Register').then((m) => ({ default: m.Register })));
 const Dashboard = lazy(() => import('./pages/Dashboard').then((m) => ({ default: m.Dashboard })));
-const DailyLimitPage = lazy(() =>
-  import('./pages/DailyLimitPage').then((m) => ({ default: m.DailyLimitPage }))
-);
-const AddIncomePage = lazy(() => import('./pages/AddIncomePage').then((m) => ({ default: m.AddIncomePage })));
-const AddFixedExpensePage = lazy(() =>
-  import('./pages/AddFixedExpensePage').then((m) => ({ default: m.AddFixedExpensePage }))
-);
-const AddVariableExpensePage = lazy(() =>
-  import('./pages/AddVariableExpensePage').then((m) => ({ default: m.AddVariableExpensePage }))
-);
-const CalendarPage = lazy(() => import('./pages/CalendarPage').then((m) => ({ default: m.CalendarPage })));
-const LoansPage = lazy(() => import('./pages/LoansPage').then((m) => ({ default: m.LoansPage })));
 
 // Loading component using Chakra UI
 function LoadingScreen() {
@@ -88,58 +76,10 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/daily-limit"
-          element={
-            <PrivateRoute>
-              <DailyLimitPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
           path="/transactions"
           element={
             <PrivateRoute>
               <Dashboard initialExpandedForm="transacoes" />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/add-income"
-          element={
-            <PrivateRoute>
-              <AddIncomePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/add-fixed-expense"
-          element={
-            <PrivateRoute>
-              <AddFixedExpensePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/add-variable-expense"
-          element={
-            <PrivateRoute>
-              <AddVariableExpensePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <PrivateRoute>
-              <CalendarPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/loans"
-          element={
-            <PrivateRoute>
-              <LoansPage />
             </PrivateRoute>
           }
         />
