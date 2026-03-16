@@ -6,3 +6,6 @@ export { FixedExpenseForm } from './FixedExpenseForm';
 export { VariableExpenseForm } from './VariableExpenseForm';
 export { BfinParceiroForm } from './BfinParceiroForm';
 export { DailyLimitForm } from './DailyLimitForm';
+export { TransferForm } from './TransferForm';
+export { LoanForm } from './LoanForm';
+export { CalendarForm } from './CalendarForm';

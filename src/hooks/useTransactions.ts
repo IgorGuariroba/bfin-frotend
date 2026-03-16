@@ -7,6 +7,7 @@ import type {
   CreateFixedExpenseDTO,
   CreateVariableExpenseDTO,
   ListTransactionsParams,
+  CreateTransferDTO,
 } from '../types/transaction';
 
 export function useTransactions(params?: ListTransactionsParams) {
@@ -155,5 +156,19 @@ export function useUpcomingFixedExpenses() {
       status: 'locked',
       limit: 10
     }),
+  });
+}
+
+/**
+ * Hook para criar transferência entre contas
+ */
+export function useCreateTransfer() {
+  const { invalidateTransactionRelatedQueries } = useCacheInvalidation();
+
+  return useMutation({
+    mutationFn: (data: CreateTransferDTO) => transactionService.transfer(data),
+    onSuccess: () => {
+      invalidateTransactionRelatedQueries();
+    },
   });
 }

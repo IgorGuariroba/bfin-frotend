@@ -6,6 +6,8 @@ import type {
   ListTransactionsParams,
   TransactionListResponse,
   Transaction,
+  CreateTransferDTO,
+  TransferResponse,
 } from '../types/transaction';
 
 export const transactionService = {
@@ -99,6 +101,18 @@ export const transactionService = {
     return customInstance({
       url: `/api/v1/transactions/${id}`,
       method: 'DELETE',
+    });
+  },
+
+  /**
+   * Create transfer between accounts
+   * POST /api/v1/transactions/transfer
+   */
+  async transfer(data: CreateTransferDTO): Promise<TransferResponse> {
+    return customInstance({
+      url: '/api/v1/transactions/transfer',
+      method: 'POST',
+      data,
     });
   },
 };

@@ -63,11 +63,11 @@ const getCurrentTime = () => {
 };
 
 export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: ExpenseFormProps) {
-  const { data: accounts, isLoading: loadingAccounts } = useAccounts();
+  const { data: accounts, isLoading: loadingAccounts, refetchAccounts } = useAccounts();
 
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
-  const [amountInput, setAmountInput] = useState('');
   const [expenseType, setExpenseType] = useState<'fixed' | 'variable'>(defaultType);
+  const [isEditingAmount, setIsEditingAmount] = useState(false);
 
   const {
     register,
@@ -89,7 +89,6 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
   const amount = watch('amount') || 0;
   const selectedAccountId = watch('accountId');
   const isRecurring = watch('isRecurring');
-  const [isEditingAmount, setIsEditingAmount] = useState(false);
 
   // Busca categorias apenas quando uma conta estiver selecionada
   const { data: allCategories, isLoading: loadingCategories } = useCategories(selectedAccountId);
@@ -131,7 +130,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         // Combina data e hora no formato ISO 8601
         dueDateIso = new Date(`${data.dueDate}T${time}:00.000Z`).toISOString();
       }
-      
+
       const payload: CreateExpenseDTO = {
         accountId: data.accountId,
         amount: Number(data.amount),
@@ -147,6 +146,9 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
       };
 
       await createExpense.mutateAsync(payload);
+
+      // Forçar atualização dos dados de accounts para refletir o novo saldo
+      await refetchAccounts();
 
       toast.success(data.type === 'fixed' ? 'Despesa fixa criada com sucesso!' : 'Despesa variável criada com sucesso!');
 
@@ -217,7 +219,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                 type="text"
                 inputMode="decimal"
                 autoFocus
-                value={amountInput}
+                value={amount ? formatMoneyFromDigits(Math.round(amount * 100).toString()) : ''}
                 placeholder="0,00"
                 fontSize="4xl"
                 fontWeight="bold"
@@ -231,21 +233,13 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                 onChange={(e) => {
                   const nextDigits = normalizeDigits(e.target.value);
                   setValue('amount', toAmountFromDigits(nextDigits), { shouldValidate: true });
-                  setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
                 }}
-                onBlur={(e) => {
-                  const nextDigits = normalizeDigits(e.target.value);
-                  const nextAmount = toAmountFromDigits(nextDigits);
-                  setValue('amount', nextAmount, { shouldValidate: true });
-                  setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
+                onBlur={() => {
                   setIsEditingAmount(false);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    const nextDigits = normalizeDigits((e.target as HTMLInputElement).value);
-                    const nextAmount = toAmountFromDigits(nextDigits);
-                    setValue('amount', nextAmount, { shouldValidate: true });
-                    setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
+                    e.preventDefault();
                     setIsEditingAmount(false);
                   }
                 }}
@@ -262,11 +256,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                 color="var(--primary-foreground)"
                 mb={4}
                 cursor="pointer"
-                onClick={() => {
-                  const digits = Math.round(Number(amount) * 100).toString();
-                  setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
-                  setIsEditingAmount(true);
-                }}
+                onClick={() => setIsEditingAmount(true)}
                 _hover={{ opacity: 0.8 }}
               >
                 {formatCurrency(Number(amount))}

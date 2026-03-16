@@ -12,12 +12,21 @@ export function useCacheInvalidation() {
    * Invalida todas as queries relacionadas a transações financeiras
    * Deve ser chamado após criar, editar ou deletar transações
    */
-  const invalidateTransactionRelatedQueries = () => {
-    // Queries de transações
-    queryClient.invalidateQueries({ queryKey: ['transactions'] });
+  const invalidateTransactionRelatedQueries = async () => {
+    // Queries de transações (todas as variações de params)
+    await queryClient.invalidateQueries({ 
+      queryKey: ['transactions'],
+      exact: false, // Invalida todas as queries que começam com ['transactions']
+    });
+
+    // Query específica de upcoming-events do CalendarWidget
+    await queryClient.invalidateQueries({ 
+      queryKey: ['upcoming-events'],
+      exact: false,
+    });
 
     // Invalidação robusta para accounts do SDK
-    queryClient.invalidateQueries({
+    await queryClient.invalidateQueries({
       predicate: (query) => {
         const key = query.queryKey;
         if (!Array.isArray(key)) return false;
@@ -39,27 +48,33 @@ export function useCacheInvalidation() {
     });
 
     // Queries tradicionais de accounts (compatibilidade)
-    queryClient.invalidateQueries({ queryKey: ['accounts'] });
+    await queryClient.invalidateQueries({ queryKey: ['accounts'] });
 
     // Queries de limites diários
-    queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-    queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-    queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
+    await queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
+    await queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
+    await queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
 
     // Queries de histórico de gastos
-    queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+    await queryClient.invalidateQueries({ queryKey: ['spending-history'] });
 
     // Queries de categorias (podem ter saldos afetados)
-    queryClient.invalidateQueries({ queryKey: ['categories'] });
+    await queryClient.invalidateQueries({ queryKey: ['categories'] });
+
+    // Queries de eventos do calendário
+    await queryClient.invalidateQueries({ 
+      queryKey: ['calendar-events'],
+      exact: false,
+    });
   };
 
   /**
    * Invalida queries relacionadas a contas bancárias
    * Deve ser chamado após criar, editar ou deletar contas
    */
-  const invalidateAccountRelatedQueries = () => {
+  const invalidateAccountRelatedQueries = async () => {
     // Accounts do SDK
-    queryClient.invalidateQueries({
+    await queryClient.invalidateQueries({
       predicate: (query) => {
         const key = query.queryKey;
         return (
@@ -70,30 +85,30 @@ export function useCacheInvalidation() {
     });
 
     // Queries tradicionais
-    queryClient.invalidateQueries({ queryKey: ['accounts'] });
-    queryClient.invalidateQueries({ queryKey: ['account-members'] });
-    queryClient.invalidateQueries({ queryKey: ['my-invitations'] });
+    await queryClient.invalidateQueries({ queryKey: ['accounts'] });
+    await queryClient.invalidateQueries({ queryKey: ['account-members'] });
+    await queryClient.invalidateQueries({ queryKey: ['my-invitations'] });
   };
 
   /**
    * Invalida queries relacionadas a categorias
    * Deve ser chamado após criar, editar ou deletar categorias
    */
-  const invalidateCategoryRelatedQueries = () => {
-    queryClient.invalidateQueries({ queryKey: ['categories'] });
+  const invalidateCategoryRelatedQueries = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['categories'] });
     // Transações também podem ser afetadas por mudanças em categorias
-    queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    await queryClient.invalidateQueries({ queryKey: ['transactions'] });
   };
 
   /**
    * Invalida queries relacionadas a limites diários
    * Deve ser chamado após alterar configurações de limite
    */
-  const invalidateDailyLimitRelatedQueries = () => {
-    queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
-    queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
-    queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
-    queryClient.invalidateQueries({ queryKey: ['spending-history'] });
+  const invalidateDailyLimitRelatedQueries = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['daily-limit'] });
+    await queryClient.invalidateQueries({ queryKey: ['daily-limit-status'] });
+    await queryClient.invalidateQueries({ queryKey: ['total-daily-limit'] });
+    await queryClient.invalidateQueries({ queryKey: ['spending-history'] });
   };
 
   /**
