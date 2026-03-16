@@ -18,6 +18,45 @@ Permitir que usuários gerenciem suas finanças pessoais através de:
 
 ---
 
+## 🏛️ REGRA ARQUITETURAL FUNDAMENTAL
+
+### **NAVEGAÇÃO DASHBOARD-FIRST**
+
+⚠️ **REGRA CRÍTICA**: Exceto Login e Register, **TODA funcionalidade deve ser implementada como FORM no Dashboard**.
+
+#### **✅ Páginas Permitidas (apenas 3):**
+- `Login.tsx` - Autenticação
+- `Register.tsx` - Cadastro
+- `Dashboard.tsx` - Aplicação principal
+
+#### **❌ NUNCA Criar:**
+- ❌ Pages dedicadas para funcionalidades (AddIncomePage, CalendarPage, etc.)
+- ❌ Rotas adicionais no App.tsx além de `/login`, `/register`, `/dashboard`, `/transactions`
+- ❌ Navegação externa ao Dashboard
+
+#### **✅ SEMPRE Implementar:**
+- ✅ **Forms** dentro da pasta `organisms/forms/`
+- ✅ **Estados expandidos** no Dashboard (via `expandedForm`)
+- ✅ **Funcionalidades acessíveis** via FooterActions ou Sidebar
+- ✅ **SPA fluida** com animações de expansão
+
+#### **Estrutura Obrigatória:**
+```tsx
+// Dashboard renderiza forms baseado no estado
+case 'nova-funcionalidade':
+  return <NovaFuncionalidadeForm />
+```
+
+#### **Justificativa:**
+- **UX Consistente**: Interface unificada com navegação fluida
+- **Performance**: SPA sem recarregamentos de página
+- **Manutenibilidade**: Lógica centralizada, sem duplicação
+- **Mobile-First**: Experiência otimizada para mobile
+
+**Esta regra é INVIOLÁVEL e deve ser respeitada por todos os desenvolvedores.**
+
+---
+
 ## 🛠 Stack Tecnológico
 
 ### Core
@@ -92,6 +131,31 @@ frontend/
 ---
 
 ## 🎯 Regras Críticas de Desenvolvimento
+
+### 0. NAVEGAÇÃO DASHBOARD-FIRST (REGRA ABSOLUTA!)
+
+⚠️ **REGRA INVIOLÁVEL**: Exceto Login e Register, **TODA funcionalidade DEVE ser implementada como FORM no Dashboard**.
+
+#### **Proibições Absolutas:**
+- ❌ **NUNCA criar páginas dedicadas** (AddIncomePage, CalendarPage, etc.)
+- ❌ **NUNCA adicionar rotas** além de `/login`, `/register`, `/dashboard`, `/transactions`
+- ❌ **NUNCA implementar navegação** externa ao Dashboard
+- ❌ **NUNCA usar `navigate()` para páginas funcionais** - apenas para autenticação
+
+#### **Implementação Obrigatória:**
+- ✅ **SEMPRE criar Forms** em `src/components/organisms/forms/`
+- ✅ **SEMPRE usar `expandedForm`** no Dashboard
+- ✅ **SEMPRE acessível via FooterActions** ou Sidebar
+- ✅ **SEMPRE seguir o padrão SPA** com animações
+
+#### **Padrão Obrigatório:**
+```tsx
+// Dashboard.tsx - renderExpandedContent()
+case 'nova-funcionalidade':
+  return <NovaFuncionalidadeForm onCancel={() => setExpandedForm(null)} />
+```
+
+**Esta regra tem prioridade sobre TODAS as outras e não pode ser quebrada sob nenhuma circunstância.**
 
 ### 1. Chakra UI v3 (MUITO IMPORTANTE!)
 
@@ -634,6 +698,9 @@ localStorage.clear()
 ---
 
 ## ⚠️ Avisos Importantes
+
+### Arquitetura (REGRA ABSOLUTA)
+0. **🚨 REGRA INVIOLÁVEL: DASHBOARD-FIRST** - Exceto Login/Register, TODA funcionalidade via Dashboard. NUNCA criar pages dedicadas!
 
 ### Código e Arquitetura
 1. **SEMPRE use Chakra UI v3 syntax** - Verifique as regras no `.cursorrules`
