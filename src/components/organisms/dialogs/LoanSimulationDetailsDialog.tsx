@@ -11,8 +11,6 @@ import {
   GridItem,
   Spinner,
   Center,
-
-
 } from '@chakra-ui/react';
 import { Check, ArrowDownToLine, Trash2 } from 'lucide-react';
 import { Button } from '../../atoms/Button';
@@ -26,7 +24,6 @@ import {
   useApproveLoanSimulation,
   useWithdrawLoanSimulation,
   useDeleteLoanSimulation,
-  useLoanSimulation
 } from '../../../hooks/useLoanSimulations';
 
 interface LoanSimulationDetailsDialogProps {
@@ -34,28 +31,28 @@ interface LoanSimulationDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  isLoading?: boolean;
 }
 
 export function LoanSimulationDetailsDialog({
   simulation,
   open,
   onOpenChange,
-  onSuccess
+  onSuccess,
+  isLoading = false
 }: LoanSimulationDetailsDialogProps) {
   const approveMutation = useApproveLoanSimulation();
   const withdrawMutation = useWithdrawLoanSimulation();
   const deleteMutation = useDeleteLoanSimulation();
-  
-  // Busca dados completos da simulação quando o dialog está aberto
-  const { data: fullSimulation, isLoading } = useLoanSimulation(simulation?.id ?? undefined);
-  
-  // Usa dados completos se disponíveis, caso contrário usa os dados passados por prop
-  const displaySimulation = fullSimulation ?? simulation;
 
-  if (!displaySimulation) return null;
-  
+  // Usa diretamente os dados passados por prop
+  const displaySimulation = simulation;
+
+  // Verificação de segurança - não renderiza se não tiver simulação ou dialog fechado
+  if (!displaySimulation || !open) return null;
+
   // Mostra loading enquanto busca dados completos
-  if (isLoading && open) {
+  if (isLoading) {
     return (
       <Dialog.Root open={open} onOpenChange={(e) => onOpenChange(e.open)} size="xl">
         <Dialog.Backdrop />
@@ -118,7 +115,7 @@ export function LoanSimulationDetailsDialog({
           <HStack justify="space-between">
             <VStack align="start" gap={0}>
               <Dialog.Title>Detalhes da Simulação</Dialog.Title>
-              <Text fontSize="sm" color="gray.500">ID: {displaySimulation.id.substring(0, 8)}...</Text>
+              <Text fontSize="sm" color="gray.500">ID: {displaySimulation?.id?.substring(0, 8) ?? '...'}...</Text>
             </VStack>
             <Badge colorPalette={statusColor}>{statusLabel}</Badge>
           </HStack>

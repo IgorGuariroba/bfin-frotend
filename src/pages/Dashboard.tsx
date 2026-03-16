@@ -204,7 +204,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         case 'emprestimos':
           return (
             <LoanForm
-              onSuccess={() => setExpandedForm(null)}
               onCancel={() => setExpandedForm(null)}
             />
           );

@@ -22,12 +22,6 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
     setIsDetailsOpen(true);
   };
 
-  const handleSuccess = () => {
-    if (onBack) {
-      onBack();
-    }
-  };
-
   const handleCancel = () => {
     if (onBack) {
       onBack();
@@ -37,7 +31,7 @@ export function LoanSimulationsView({ onBack }: LoanSimulationsViewProps) {
   return (
     <VStack gap={0} align="stretch" minH="100vh" pb={8}>
       {/* Formulário */}
-      <LoanForm onSuccess={handleSuccess} onCancel={handleCancel} />
+      <LoanForm onCancel={handleCancel} />
 
       {/* Lista de Simulações */}
       <Box mx={6} mt={6} mb={8}>

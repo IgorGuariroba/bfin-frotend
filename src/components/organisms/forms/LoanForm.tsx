@@ -8,6 +8,9 @@ import {
   Field,
   Input,
   HStack,
+  SimpleGrid,
+  Badge,
+  IconButton,
 } from '@chakra-ui/react';
 import { Button } from '../../atoms/Button';
 import {
@@ -18,6 +21,10 @@ import {
   DollarSign,
   Calendar,
   Percent,
+  Eye,
+  CheckCircle,
+  ArrowDownToLine,
+  Trash2,
 } from 'lucide-react';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
@@ -25,24 +32,43 @@ import {
   createLoanSimulationSchema,
   type CreateLoanSimulationFormData,
   LOAN_SIMULATION_CONSTANTS,
+  LOAN_SIMULATION_STATUS_LABELS,
+  LOAN_SIMULATION_STATUS_COLORS,
+  type LoanSimulation,
 } from '../../../types/loanSimulation';
-import { useCreateLoanSimulation, useLoanSimulations } from '../../../hooks/useLoanSimulations';
+import {
+  useCreateLoanSimulation,
+  useLoanSimulations,
+  useApproveLoanSimulation,
+  useWithdrawLoanSimulation,
+  useDeleteLoanSimulation,
+  useLoanSimulation,
+} from '../../../hooks/useLoanSimulations';
+import { LoanSimulationDetailsDialog } from '../dialogs/LoanSimulationDetailsDialog';
 
 interface LoanFormProps {
-  onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export function LoanForm({ onSuccess, onCancel }: LoanFormProps) {
+export function LoanForm({ onCancel }: LoanFormProps) {
   const createMutation = useCreateLoanSimulation();
-  const { refetch: refetchSimulations } = useLoanSimulations();
+  const approveMutation = useApproveLoanSimulation();
+  const withdrawMutation = useWithdrawLoanSimulation();
+  const deleteMutation = useDeleteLoanSimulation();
+  const { data, refetch: refetchSimulations } = useLoanSimulations();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedSimulationId, setSelectedSimulationId] = useState<string | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  // Busca dados completos da simulação selecionada
+  const { data: fullSimulation, isLoading: isLoadingSimulation } = useLoanSimulation(selectedSimulationId ?? undefined);
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<CreateLoanSimulationFormData>({
     resolver: zodResolver(createLoanSimulationSchema),
@@ -90,11 +116,14 @@ export function LoanForm({ onSuccess, onCancel }: LoanFormProps) {
       // Atualizar lista de simulações
       await refetchSimulations();
 
-      toast.success('Simulação criada com sucesso!');
+      // Resetar formulário para valores padrão
+      reset({
+        amount: 1000,
+        termMonths: 12,
+        interestRateMonthly: 2.5,
+      });
 
-      if (onSuccess) {
-        onSuccess();
-      }
+      toast.success('Simulação criada com sucesso!');
     } catch (error) {
       console.error('Error creating loan simulation:', error);
     } finally {
@@ -102,10 +131,49 @@ export function LoanForm({ onSuccess, onCancel }: LoanFormProps) {
     }
   };
 
+  const handleViewSimulation = (simulation: LoanSimulation) => {
+    setSelectedSimulationId(simulation.id);
+    setIsDetailsOpen(true);
+  };
+
+  const handleApproveSimulation = async (simulation: LoanSimulation) => {
+    try {
+      await approveMutation.mutateAsync(simulation.id);
+      await refetchSimulations();
+      toast.success('Simulação aprovada com sucesso!');
+    } catch (error) {
+      console.error('Error approving simulation:', error);
+    }
+  };
+
+  const handleWithdrawSimulation = async (simulation: LoanSimulation) => {
+    try {
+      await withdrawMutation.mutateAsync(simulation.id);
+      await refetchSimulations();
+      toast.success('Empréstimo sacado com sucesso!');
+    } catch (error) {
+      console.error('Error withdrawing simulation:', error);
+    }
+  };
+
+  const handleDeleteSimulation = async (simulation: LoanSimulation) => {
+    if (confirm('Tem certeza que deseja excluir esta simulação?')) {
+      try {
+        await deleteMutation.mutateAsync(simulation.id);
+        await refetchSimulations();
+        toast.success('Simulação excluída com sucesso!');
+      } catch (error) {
+        console.error('Error deleting simulation:', error);
+      }
+    }
+  };
+
+  const simulations = data?.simulations || [];
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap={0} align="stretch" pb={8}>
-        {/* Card Branco */}
+    <VStack gap={0} align="stretch" pb={8}>
+      {/* Formulário de Simulação */}
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Box
           bg="var(--card)"
           borderRadius="2xl"
@@ -327,7 +395,160 @@ export function LoanForm({ onSuccess, onCancel }: LoanFormProps) {
             )}
           </VStack>
         </Box>
-      </VStack>
-    </form>
+      </form>
+
+      {/* Lista de Simulações */}
+      <Box mx={6} mt={6} mb={8}>
+        <HStack justify="space-between" mb={4}>
+          <Text fontSize="lg" fontWeight="bold" color="var(--foreground)">
+            Minhas Simulações
+          </Text>
+          {simulations.length > 0 && (
+            <Badge variant="subtle" colorPalette="gray">
+              {simulations.length} {simulations.length === 1 ? 'simulação' : 'simulações'}
+            </Badge>
+          )}
+        </HStack>
+
+        {simulations.length === 0 ? (
+          <Box
+            bg="var(--card)"
+            borderRadius="xl"
+            p={8}
+            textAlign="center"
+          >
+            <Clock size={48} color="var(--muted-foreground)" style={{ margin: '0 auto 16px' }} />
+            <Text color="var(--muted-foreground)" fontSize="sm">
+              Nenhuma simulação encontrada.
+            </Text>
+            <Text color="var(--muted-foreground)" fontSize="xs" mt={1}>
+              Crie uma simulação para começar.
+            </Text>
+          </Box>
+        ) : (
+          <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+            {simulations.map((simulation) => (
+              <Box
+                key={simulation.id}
+                bg="var(--card)"
+                borderRadius="lg"
+                p={4}
+                borderWidth="1px"
+                borderColor="var(--border)"
+                _hover={{ shadow: 'md', borderColor: 'var(--primary)' }}
+              >
+                <VStack gap={3} align="stretch">
+                  {/* Header com status e data */}
+                  <HStack justify="space-between">
+                    <Badge colorPalette={LOAN_SIMULATION_STATUS_COLORS[simulation.status]} variant="subtle">
+                      {LOAN_SIMULATION_STATUS_LABELS[simulation.status]}
+                    </Badge>
+                    <Text fontSize="xs" color="gray.500">
+                      {new Date(simulation.createdAt).toLocaleDateString('pt-BR')}
+                    </Text>
+                  </HStack>
+
+                  {/* Valores principais */}
+                  <HStack justify="space-between">
+                    <VStack gap={0} align="start">
+                      <Text fontSize="xs" color="gray.500">Valor</Text>
+                      <Text fontWeight="bold" fontSize="lg" color="var(--foreground)">
+                        {formatCurrency(simulation.amount)}
+                      </Text>
+                    </VStack>
+                    <VStack gap={0} align="end">
+                      <Text fontSize="xs" color="gray.500">Parcelas</Text>
+                      <Text fontWeight="bold" color="var(--foreground)">
+                        {simulation.termMonths}x {formatCurrency(simulation.installmentAmount)}
+                      </Text>
+                    </VStack>
+                  </HStack>
+
+                  {/* Detalhes */}
+                  <HStack gap={3} fontSize="xs" color="gray.500">
+                    <HStack gap={1}>
+                      <Clock size={14} />
+                      <Text>{simulation.termMonths} meses</Text>
+                    </HStack>
+                    <HStack gap={1}>
+                      <Percent size={14} />
+                      <Text>{(simulation.interestRateMonthly * 100).toFixed(2)}% a.m.</Text>
+                    </HStack>
+                  </HStack>
+
+                  {/* Ações */}
+                  <HStack gap={2} pt={2} borderTop="1px solid" borderColor="var(--border)">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      flex="1"
+                      onClick={() => handleViewSimulation(simulation)}
+                    >
+                      <Eye size={16} /> Ver
+                    </Button>
+
+                    {simulation.status === 'PENDING' && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          colorPalette="green"
+                          flex="1"
+                          onClick={() => handleApproveSimulation(simulation)}
+                          loading={approveMutation.isPending}
+                        >
+                          <CheckCircle size={16} /> Aprovar
+                        </Button>
+                        <IconButton
+                          size="sm"
+                          variant="ghost"
+                          colorPalette="red"
+                          aria-label="Excluir"
+                          onClick={() => handleDeleteSimulation(simulation)}
+                          loading={deleteMutation.isPending}
+                        >
+                          <Trash2 size={16} />
+                        </IconButton>
+                      </>
+                    )}
+
+                    {simulation.status === 'APPROVED' && (
+                      <Button
+                        size="sm"
+                        colorPalette="green"
+                        flex="1"
+                        onClick={() => handleWithdrawSimulation(simulation)}
+                        loading={withdrawMutation.isPending}
+                      >
+                        <ArrowDownToLine size={16} /> Sacar
+                      </Button>
+                    )}
+
+                    {simulation.status === 'COMPLETED' && (
+                      <Badge colorPalette="green" variant="subtle">
+                        <CheckCircle size={12} /> Concluído
+                      </Badge>
+                    )}
+                  </HStack>
+                </VStack>
+              </Box>
+            ))}
+          </SimpleGrid>
+        )}
+      </Box>
+
+      {/* Dialog de Detalhes */}
+      <LoanSimulationDetailsDialog
+        simulation={fullSimulation ?? null}
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        isLoading={isLoadingSimulation}
+        onSuccess={() => {
+          refetchSimulations();
+          setIsDetailsOpen(false);
+          setSelectedSimulationId(null);
+        }}
+      />
+    </VStack>
   );
 }
