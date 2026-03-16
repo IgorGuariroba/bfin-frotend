@@ -27,7 +27,7 @@ import {
   FooterActions,
   Sidebar,
   SidebarState,
-  Calendar,
+  CalendarForm,
   ExpandedFormType,
   TransferForm,
   LoanForm
@@ -216,11 +216,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           );
         case 'calendario':
           return (
-            <Calendar
-              showFilters={true}
-              compact={false}
-              height="calc(100vh - 200px)"
-            />
+            <CalendarForm />
           );
         default:
           return null;
