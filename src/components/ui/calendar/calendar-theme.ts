@@ -19,16 +19,19 @@ export const eventColors = {
 export const calendarStyles = {
   calendar: {
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: { base: '100%', md: '500px', lg: '600px' },
+    minHeight: '400px',
     borderRadius: 'xl',
     border: '1px solid var(--border)',
     bg: 'var(--card)',
     boxShadow: 'var(--shadow-sm)',
     p: 4,
+    mx: 'auto', // Centralizar em telas maiores
   },
 
   calendarCompact: {
-    maxWidth: '300px',
+    maxWidth: '400px',
+    minHeight: '300px',
     p: 2,
   },
 
@@ -96,7 +99,7 @@ export const calendarStyles = {
 
 // CSS variables para integração com React Day Picker
 export const getCalendarCSSVars = (size: 'sm' | 'md' | 'lg' = 'md', _colorMode: 'light' | 'dark' = 'light') => {
-  const cellSize = size === 'sm' ? '32px' : size === 'lg' ? '48px' : '40px'
+  const cellSize = size === 'sm' ? '45px' : size === 'lg' ? '55px' : '50px'
 
   return {
     '--rdp-cell-size': cellSize,
@@ -119,17 +122,17 @@ export const getEventColorValue = (color: CalendarEventColor): string => {
 // Estilos responsivos
 export const responsiveStyles = {
   base: { // Mobile
-    calendar: { maxW: '100%', p: 2 },
+    calendar: { maxW: '100%', p: 2, minH: '300px' },
     day: { w: '32px', h: '32px', fontSize: 'xs' },
     showFilters: false,
   },
   md: { // Tablet
-    calendar: { maxW: '400px', p: 4 },
+    calendar: { maxW: '100%', p: 4, minH: '400px' },
     day: { w: '40px', h: '40px', fontSize: 'sm' },
     showFilters: true,
   },
   lg: { // Desktop
-    calendar: { maxW: '500px', p: 6 },
+    calendar: { maxW: '100%', p: 6, minH: '500px' },
     day: { w: '48px', h: '48px', fontSize: 'md' },
     showFilters: true,
   },

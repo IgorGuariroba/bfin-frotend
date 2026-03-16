@@ -83,51 +83,55 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
   }
 
   return (
-    <VStack gap={4} align="stretch" h={height}>
+    <VStack gap={4} align="center" h={height} w="100%">
       {/* Cabeçalho */}
-      <CalendarHeader
-        currentDate={currentDate}
-        onPrevMonth={goToPrevMonth}
-        onNextMonth={goToNextMonth}
-        onToday={goToToday}
-        isLoading={isLoading}
-      />
+      <Box maxW={{ base: '100%', md: '500px', lg: '600px' }} w="100%">
+        <CalendarHeader
+          currentDate={currentDate}
+          onPrevMonth={goToPrevMonth}
+          onNextMonth={goToNextMonth}
+          onToday={goToToday}
+          isLoading={isLoading}
+        />
+      </Box>
 
       {/* Toggle de Filtros */}
       {showFilters && (
-        <Collapsible.Root open={showFiltersPanel} onOpenChange={(e) => setShowFiltersPanel(e.open)}>
-          <Collapsible.Trigger asChild>
-            <Button
-              size="md"
-              onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-              alignSelf="flex-start"
-              {...secondaryButtonStyles}
-            >
-              <Filter size={16} style={{ marginRight: '8px' }} />
-              Filtros
-            </Button>
-          </Collapsible.Trigger>
-          <Collapsible.Content>
-             <Box
-               p={4}
-               bg="var(--secondary)"
-               borderRadius="md"
-               borderWidth="1px"
-               borderColor="var(--border)"
-               mt={2}
-             >
-              <CalendarFilters
-                filters={filters}
-                onFiltersChange={setFilters}
-                compact={compact}
-              />
-            </Box>
-          </Collapsible.Content>
-        </Collapsible.Root>
+        <Box maxW={{ base: '100%', md: '500px', lg: '600px' }} w="100%">
+          <Collapsible.Root open={showFiltersPanel} onOpenChange={(e) => setShowFiltersPanel(e.open)}>
+            <Collapsible.Trigger asChild>
+              <Button
+                size="md"
+                onClick={() => setShowFiltersPanel(!showFiltersPanel)}
+                alignSelf="flex-start"
+                {...secondaryButtonStyles}
+              >
+                <Filter size={16} style={{ marginRight: '8px' }} />
+                Filtros
+              </Button>
+            </Collapsible.Trigger>
+            <Collapsible.Content>
+               <Box
+                 p={4}
+                 bg="var(--secondary)"
+                 borderRadius="md"
+                 borderWidth="1px"
+                 borderColor="var(--border)"
+                 mt={2}
+               >
+                <CalendarFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  compact={compact}
+                />
+              </Box>
+            </Collapsible.Content>
+          </Collapsible.Root>
+        </Box>
       )}
 
       {/* Calendário */}
-      <Box position="relative">
+      <Box position="relative" flex="1" maxW={{ base: '100%', md: '500px', lg: '600px' }} mx="auto">
         {isLoading && (
           <Skeleton
             height="300px"

@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import { Calendar } from '../Calendar';
 import type { CalendarEvent } from '@/types/calendar';
 
@@ -11,11 +12,21 @@ export function CalendarForm() {
   }
 
   return (
-    <Calendar
-      onDateSelect={handleDateSelect}
-      onEventClick={handleEventClick}
-      showFilters={true}
-      compact={false}
-    />
+    <Box
+      width="100%"
+      maxWidth={{ base: '100%', md: '600px', lg: '700px' }}
+      mx="auto"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
+      <Calendar
+        onDateSelect={handleDateSelect}
+        onEventClick={handleEventClick}
+        showFilters={true}
+        compact={false}
+        height="calc(100vh - 200px)"
+      />
+    </Box>
   );
 }
