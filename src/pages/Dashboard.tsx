@@ -192,13 +192,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
               onCancel={() => setExpandedForm(null)}
             />
           );
-        case 'depositar':
-          return (
-            <IncomeForm
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
         case 'bfin-parceiro':
           return (
             <BfinParceiroForm
@@ -224,8 +217,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
-    const usesBaseForm = expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const usesBaseForm = expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar';
 
     return (
       <Box
@@ -271,6 +264,11 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <ExtratoForm onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
         ) : expandedForm === 'transacoes' ? (
           <AllTransactionsForm onBack={() => setExpandedForm(null)} />
+        ) : expandedForm === 'depositar' ? (
+          <IncomeForm
+            onSuccess={() => setExpandedForm(null)}
+            onCancel={() => setExpandedForm(null)}
+          />
         ) : expandedForm === 'emprestimos' ? (
           <LoanForm onCancel={() => setExpandedForm(null)} />
         ) : expandedForm === 'ajustar-limite' ? (

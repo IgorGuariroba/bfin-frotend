@@ -210,6 +210,52 @@ case 'nova-transacao':
   )
 ```
 
+## Migração para BaseForm — Registro no Dashboard
+
+Quando um form é migrado para usar `BaseForm` (com header e navegação próprios), o Dashboard precisa ser atualizado em **dois lugares**:
+
+### 1. Remover do `hasGreenHeader` e adicionar ao `usesBaseForm`
+
+```tsx
+// ANTES
+const hasGreenHeader = expandedForm === 'depositar' || ...;
+const usesBaseForm = expandedForm === 'emprestimos' || ...;
+
+// DEPOIS (BaseForm cuida do próprio header)
+const hasGreenHeader = ...; // sem 'depositar'
+const usesBaseForm = expandedForm === 'depositar' || expandedForm === 'emprestimos' || ...;
+```
+
+### 2. Renderizar diretamente (fora do `getContent()`)
+
+```tsx
+// ANTES — dentro de getContent() → nunca use isso para forms com BaseForm
+case 'depositar':
+  return (
+    <IncomeForm
+      onSuccess={() => setExpandedForm(null)}
+      onCancel={() => setExpandedForm(null)}
+    />
+  );
+
+// DEPOIS — renderizado diretamente no bloco de condicionais
+} : expandedForm === 'depositar' ? (
+  <IncomeForm
+    onSuccess={() => setExpandedForm(null)}
+    onCancel={() => setExpandedForm(null)}
+  />
+) : expandedForm === 'emprestimos' ? (
+```
+
+> **Por que?** Forms com `BaseForm` têm header verde próprio. Se renderizados via `getContent()`, o Dashboard envolveria em outro header verde — causando **duplo header**. Forms com `BaseForm` devem ser renderizados diretamente, como `LoanForm` e `DailyLimitForm`.
+
+### Também remover o título morto de `getTitle()`
+
+```tsx
+// Remover — vira código morto após a migração
+case 'depositar': return 'Depositar';
+```
+
 ## ⚠️ Regras Importantes
 
 1. **SEMPRE use Zod** para validação
@@ -217,3 +263,4 @@ case 'nova-transacao':
 3. **SEMPRE trate loading** nos botões de submit
 4. **SEMPRE invalide queries** após mutations
 5. **SEMPRE siga Dashboard-First** - forms no Dashboard!
+6. **Forms com BaseForm** devem ser renderizados diretamente no Dashboard, nunca via `getContent()`
