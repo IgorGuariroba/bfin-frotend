@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Flex,
@@ -26,11 +25,11 @@ import {
   Zap,
   ArrowLeft,
 } from 'lucide-react';
-import { useAccounts } from '../../hooks/useAccounts';
-import { useTransactions } from '../../hooks/useTransactions';
+import { useAccounts } from '../../../hooks/useAccounts';
+import { useTransactions } from '../../../hooks/useTransactions';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { Transaction } from '../../types/transaction';
+import type { Transaction } from '../../../types/transaction';
 
 interface TransactionItemProps {
   title: string;
@@ -84,12 +83,13 @@ function TransactionItem({ title, date, amount, type, icon, isIncome }: Transact
   );
 }
 
-interface ExtratoProps {
+interface ExtratoFormProps {
   onBack?: () => void;
   onViewAll?: () => void;
+  onCancel?: () => void;
 }
 
-export function Extrato({ onBack, onViewAll }: ExtratoProps) {
+export function ExtratoForm({ onBack, onViewAll, onCancel }: ExtratoFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: transactionsData, isLoading: loadingTransactions } = useTransactions({ limit: 10 });
   const [showBalance, setShowBalance] = useState(true);
@@ -147,12 +147,12 @@ export function Extrato({ onBack, onViewAll }: ExtratoProps) {
     <VStack gap={0} align="stretch" w="100%" minH="100vh" bg="gray.50">
       {/* Green Header */}
       <Box bg="var(--primary)" pt={6} pb={16} px={6}>
-        {onBack && (
+        {(onBack || onCancel) && (
           <IconButton
             aria-label="Voltar"
             variant="ghost"
             color="white"
-            onClick={onBack}
+            onClick={onBack || onCancel}
             mb={2}
             size="sm"
             _hover={{ bg: 'whiteAlpha.200' }}
@@ -223,15 +223,9 @@ export function Extrato({ onBack, onViewAll }: ExtratoProps) {
           <Text fontSize="xl" fontWeight="bold" color="gray.900">
             Extrato Recente
           </Text>
-          {onViewAll ? (
+          {onViewAll && (
             <ChakraLink color={viewAllColor} fontWeight="bold" fontSize="sm" onClick={onViewAll}>
               Ver tudo
-            </ChakraLink>
-          ) : (
-            <ChakraLink asChild color={viewAllColor} fontWeight="bold" fontSize="sm">
-              <RouterLink to="/transactions">
-                Ver tudo
-              </RouterLink>
             </ChakraLink>
           )}
         </Flex>

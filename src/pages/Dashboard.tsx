@@ -19,7 +19,8 @@ import {
   ExpenseForm,
   IncomeForm,
   BfinParceiroForm,
-  Extrato,
+  ExtratoForm,
+  AllTransactionsForm,
   CreateAccountForm,
   DailyLimitForm,
   FooterActions,
@@ -48,7 +49,6 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { iconColors, customShadows } from '../theme';
-import { AllTransactionsView } from './AllTransactionsPage';
 
 interface DashboardProps {
   initialExpandedForm?: ExpandedFormType;
@@ -179,10 +179,10 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
     const getContent = () => {
       switch (expandedForm) {
         case 'extrato':
-          return <Extrato onViewAll={() => setExpandedForm('transacoes')} />;
+          return <ExtratoForm onViewAll={() => setExpandedForm('transacoes')} onCancel={() => setExpandedForm(null)} />;
         case 'transacoes':
           return (
-            <AllTransactionsView onBack={() => setExpandedForm(null)} />
+            <AllTransactionsForm onCancel={() => setExpandedForm(null)} />
           );
         case 'pagar':
           return (
@@ -279,9 +279,9 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         }}
       >
         {expandedForm === 'extrato' ? (
-          <Extrato onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
+          <ExtratoForm onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
         ) : expandedForm === 'transacoes' ? (
-          <AllTransactionsView onBack={() => setExpandedForm(null)} />
+          <AllTransactionsForm onBack={() => setExpandedForm(null)} />
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}

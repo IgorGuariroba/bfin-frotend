@@ -1,13 +1,15 @@
-import { useNavigate } from 'react-router-dom';
 import { Container, Box, Heading, IconButton, VStack, Text } from '@chakra-ui/react';
 import { ArrowLeft } from 'lucide-react';
-import { TransactionList } from '../components/organisms/lists';
+import { TransactionList } from '../lists';
 
-interface AllTransactionsViewProps {
-  onBack: () => void;
+interface AllTransactionsFormProps {
+  onBack?: () => void;
+  onCancel?: () => void;
 }
 
-export function AllTransactionsView({ onBack }: AllTransactionsViewProps) {
+export function AllTransactionsForm({ onBack, onCancel }: AllTransactionsFormProps) {
+  const handleBack = onBack || onCancel;
+
   return (
     <Box minH="100vh" bg="var(--background)">
       {/* Header */}
@@ -19,18 +21,20 @@ export function AllTransactionsView({ onBack }: AllTransactionsViewProps) {
       >
         <Container maxW="7xl">
           <VStack align="stretch" gap={3}>
-            <IconButton
-              aria-label="Voltar"
-              onClick={onBack}
-              variant="ghost"
-              size="sm"
-              color="var(--primary-foreground)"
-              alignSelf="flex-start"
-              _hover={{ bg: 'var(--primary-600)' }}
-              _active={{ bg: 'var(--primary-700)' }}
-            >
-              <ArrowLeft size={20} />
-            </IconButton>
+            {handleBack && (
+              <IconButton
+                aria-label="Voltar"
+                onClick={handleBack}
+                variant="ghost"
+                size="sm"
+                color="var(--primary-foreground)"
+                alignSelf="flex-start"
+                _hover={{ bg: 'var(--primary-600)' }}
+                _active={{ bg: 'var(--primary-700)' }}
+              >
+                <ArrowLeft size={20} />
+              </IconButton>
+            )}
             <Heading size="lg" color="var(--primary-foreground)">
               Todas as Transações
             </Heading>
@@ -56,10 +60,4 @@ export function AllTransactionsView({ onBack }: AllTransactionsViewProps) {
       </Container>
     </Box>
   );
-}
-
-export function AllTransactionsPage() {
-  const navigate = useNavigate();
-
-  return <AllTransactionsView onBack={() => navigate('/dashboard')} />;
 }
