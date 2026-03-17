@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import {
-  Stack,
   HStack,
   VStack,
   Center,
@@ -8,17 +7,18 @@ import {
   Box,
   Menu,
 } from '@chakra-ui/react';
+import { BaseForm } from '../../ui/BaseForm';
 import { Button } from '../../atoms/Button';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useDailyLimit } from '../../../hooks/useDailyLimit';
-import { ChevronDown, Check, Zap, Info, Calendar, DollarSign } from 'lucide-react';
+import { ChevronDown, Check, Zap, Info, Calendar, DollarSign, Target } from 'lucide-react';
 import { iconColors } from '../../../theme';
 
-interface DailyLimitDisplayProps {
+interface DailyLimitFormProps {
   onCancel?: () => void;
 }
 
-export function DailyLimitForm({ onCancel }: DailyLimitDisplayProps) {
+export function DailyLimitForm({ onCancel }: DailyLimitFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
@@ -35,22 +35,27 @@ export function DailyLimitForm({ onCancel }: DailyLimitDisplayProps) {
     }
   }, [accounts, selectedAccountId]);
 
-  if (loadingAccounts || loadingLimit) {
-    return (
-      <Center py={4}>
-        <Text>Carregando...</Text>
-      </Center>
-    );
-  }
-
   if (!accounts || accounts.length === 0) {
     return (
-      <Center py={4}>
-        <Stack gap={4} align="center">
-          <Text color="gray.600">Você precisa criar uma conta primeira.</Text>
-          <Button onClick={onCancel}>Voltar</Button>
-        </Stack>
-      </Center>
+      <BaseForm
+        title="Limite Diário"
+        variant="green-header"
+        icon={Target}
+        onBack={onCancel}
+      >
+        <Box px={{ base: 4, md: 6 }} py={8}>
+          <VStack gap={4} align="center">
+            <Text color="var(--muted-foreground)" fontSize="sm" textAlign="center">
+              Você precisa criar uma conta primeiro.
+            </Text>
+            {onCancel && (
+              <Button size="sm" variant="outline" onClick={onCancel}>
+                Voltar
+              </Button>
+            )}
+          </VStack>
+        </Box>
+      </BaseForm>
     );
   }
 
@@ -88,29 +93,20 @@ export function DailyLimitForm({ onCancel }: DailyLimitDisplayProps) {
   const strokeDashoffset = circumference - (percentageUsed / 100) * circumference;
 
   return (
-    <VStack gap={0} align="stretch" minH="100vh" pb={8}>
-      {/* Valor em destaque no header verde */}
-      <Box mb={6}>
-        <VStack gap={2} align="center">
-          <Text
-            fontSize="4xl"
-            fontWeight="bold"
-            color="var(--primary-foreground)"
-          >
-            {formatCurrency(dailyLimit)}
-          </Text>
-          <HStack gap={2} align="center">
-            <Info size={16} color="var(--primary-foreground)" />
-            <Text
-              fontSize="sm"
-              color="var(--primary-foreground)"
-              opacity={0.8}
-            >
-              Limite calculado automaticamente
-            </Text>
-          </HStack>
-        </VStack>
-
+    <BaseForm
+      title="Limite Diário"
+      subtitle="Gerencie seus gastos diários"
+      icon={Target}
+      variant="green-header"
+      onBack={onCancel}
+      isLoading={loadingAccounts || loadingLimit}
+      contentPb={24}
+      displayValue={{
+        value: formatCurrency(dailyLimit),
+        label: "Limite calculado automaticamente"
+      }}
+    >
+      <Box px={{ base: 4, md: 6 }}>
         {/* Dropdown de Conta Customizado */}
         <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
           <Menu.Trigger asChild>
@@ -122,280 +118,266 @@ export function DailyLimitForm({ onCancel }: DailyLimitDisplayProps) {
               justifyContent="space-between"
               px={4}
               py={3}
+              mb={6}
               fontSize="md"
               fontWeight="medium"
-              color="primary.fg"
-              bg="var(--primary)"
+              color="var(--card-foreground)"
+              bg="var(--card)"
               borderWidth="1px"
-              borderColor="primary.fg"
-              borderRadius="full"
+              borderColor="var(--border)"
+              borderRadius="lg"
               transition="all 0.2s"
-              css={{
-                '&:hover': {
-                  backgroundColor: iconColors.brandDark,
-                },
-                '&:focus': {
-                  outline: 'none',
-                  boxShadow: 'none',
-                },
+              _hover={{
+                borderColor: 'var(--primary)',
+              }}
+              _focus={{
+                outline: 'none',
+                borderColor: 'var(--primary)',
+                boxShadow: '0 0 0 1px var(--primary)',
               }}
             >
-              <Text color="primary.fg">
+              <Text>
                 {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
               </Text>
-              <ChevronDown size={20} color={iconColors.primaryFg} />
+              <ChevronDown size={20} />
             </Box>
           </Menu.Trigger>
           <Menu.Positioner>
             <Menu.Content
               maxH="300px"
               overflowY="auto"
-              bg="var(--primary)"
+              bg="var(--card)"
               borderRadius="lg"
               boxShadow="lg"
               borderWidth="1px"
-              borderColor="primary.fg"
-              p={0}
-              css={{
-                zIndex: 'var(--z-dropdown)',
-              }}
+              borderColor="var(--border)"
+              p={1}
             >
-            {/* Cabeçalho do Menu */}
-            <Box
-              px={3}
-              py={2}
-              bg="var(--primary)"
-              borderTopRadius="lg"
-              borderBottomWidth="1px"
-              borderBottomColor="primary.fg"
-            >
-              <HStack gap={2}>
-                <Check size={16} color={iconColors.primaryFg} />
-                <Text fontSize="sm" fontWeight="bold" color="primary.fg">
-                  Selecione uma conta
-                </Text>
-              </HStack>
-            </Box>
-
-            {/* Lista de Contas */}
-            <Box py={1}>
               {accounts?.map((account) => (
                 <Menu.Item
                   key={account.id ?? ''}
                   value={account.id ?? ''}
                   onClick={() => setSelectedAccountId(account.id ?? '')}
-                  css={{
-                    backgroundColor: selectedAccountId === account.id ? iconColors.brandDark : 'transparent',
-                    '&:hover': {
-                      backgroundColor: iconColors.brandDark,
-                    },
-                  }}
                   px={3}
                   py={2}
+                  borderRadius="md"
+                  cursor="pointer"
+                  bg={selectedAccountId === account.id ? 'var(--muted)' : 'transparent'}
+                  _hover={{
+                    bg: 'var(--muted)',
+                  }}
                 >
-                  <Text fontSize="sm" color="var(--primary-foreground)">
-                    {account.account_name}
-                  </Text>
+                  <HStack justify="space-between" w="full">
+                    <VStack align="flex-start" gap={0}>
+                      <Text fontWeight="medium" color="var(--card-foreground)">
+                        {account.account_name}
+                      </Text>
+                      <Text fontSize="sm" color="var(--muted-foreground)">
+                        {formatCurrency(Number(account.available_balance))}
+                      </Text>
+                    </VStack>
+                    {selectedAccountId === account.id && (
+                      <Check size={16} color={iconColors.success} />
+                    )}
+                  </HStack>
                 </Menu.Item>
               ))}
-            </Box>
             </Menu.Content>
           </Menu.Positioner>
         </Menu.Root>
-        </Box>
 
-        {/* Card branco com conteúdo */}
+        {/* Card com informações do limite */}
         <Box
           bg="var(--card)"
-          borderRadius="2xl"
+          borderRadius="xl"
           p={6}
           shadow="md"
-          mt={4}
-          mb={8}
+          mb={6}
         >
-          <VStack gap={6} align="stretch">
-            {/* Gráfico circular com informações */}
-            <VStack gap={4} align="stretch">
-              {/* Gráfico circular */}
-              <Center>
-                <Box position="relative" w="150px" h="150px">
-                  <svg width="150" height="150" style={{ transform: 'rotate(-90deg)' }}>
-                    {/* Círculo de fundo */}
-                    <circle
-                      cx="75"
-                      cy="75"
-                      r={circleRadius}
-                      stroke="#f0f0f0"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    {/* Círculo de progresso */}
-                    <circle
-                      cx="75"
-                      cy="75"
-                      r={circleRadius}
-                      stroke="var(--primary)"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={strokeDasharray}
-                      strokeDashoffset={strokeDashoffset}
-                      strokeLinecap="round"
-                      style={{
-                        transition: 'stroke-dashoffset 0.5s ease-in-out',
-                      }}
-                    />
-                  </svg>
-                  {/* Texto central */}
-                  <Box
-                    position="absolute"
-                    top="50%"
-                    left="50%"
-                    transform="translate(-50%, -50%)"
-                    textAlign="center"
-                  >
-                    <Text
-                      fontSize="xl"
-                      fontWeight="bold"
-                      color="var(--card-foreground)"
-                      lineHeight="1"
-                    >
-                      {percentageUsed.toFixed(1)}%
-                    </Text>
-                    <Text
-                      fontSize="xs"
-                      color="var(--muted-foreground)"
-                      mt={1}
-                    >
-                      Usado
-                    </Text>
-                  </Box>
-                </Box>
-              </Center>
+          {/* Gráfico circular do uso */}
+          <Center mb={6}>
+            <Box position="relative" width="140px" height="140px">
+              <svg
+                width="140"
+                height="140"
+                style={{ transform: 'rotate(-90deg)' }}
+              >
+                {/* Círculo de fundo */}
+                <circle
+                  cx="70"
+                  cy="70"
+                  r={circleRadius}
+                  stroke="var(--muted)"
+                  strokeWidth="8"
+                  fill="none"
+                />
+                {/* Círculo de progresso */}
+                <circle
+                  cx="70"
+                  cy="70"
+                  r={circleRadius}
+                  stroke={exceeded ? "#ef4444" : "var(--primary)"}
+                  strokeWidth="8"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={strokeDasharray}
+                  strokeDashoffset={strokeDashoffset}
+                  style={{
+                    transition: 'stroke-dashoffset 0.6s ease-in-out',
+                  }}
+                />
+              </svg>
 
-              {/* Valores em duas colunas */}
-              <HStack justify="space-between" gap={6}>
-                <VStack align="center" flex="1">
-                  <Text fontSize="sm" color="var(--muted-foreground)">
-                    Gasto Hoje
-                  </Text>
-                  <Text
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color={exceeded ? "red.500" : "var(--card-foreground)"}
-                  >
-                    {formatCurrency(spentToday)}
-                  </Text>
-                </VStack>
+              {/* Texto central */}
+              <Box
+                position="absolute"
+                top="50%"
+                left="50%"
+                transform="translate(-50%, -50%)"
+                textAlign="center"
+              >
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  color="var(--card-foreground)"
+                  lineHeight="1"
+                >
+                  {percentageUsed.toFixed(1)}%
+                </Text>
+                <Text
+                  fontSize="xs"
+                  color="var(--muted-foreground)"
+                  mt={1}
+                >
+                  Usado
+                </Text>
+              </Box>
+            </Box>
+          </Center>
 
-                <VStack align="center" flex="1">
-                  <Text fontSize="sm" color="var(--muted-foreground)">
-                    Restante
-                  </Text>
-                  <Text
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color={exceeded ? "red.500" : "var(--primary)"}
-                  >
-                    {formatCurrency(remaining)}
-                  </Text>
-                </VStack>
-              </HStack>
+          {/* Valores em duas colunas */}
+          <HStack justify="space-between" gap={6}>
+            <VStack align="center" flex="1">
+              <Text fontSize="sm" color="var(--muted-foreground)">
+                Gasto Hoje
+              </Text>
+              <Text
+                fontSize="lg"
+                fontWeight="bold"
+                color={exceeded ? "#ef4444" : "var(--card-foreground)"}
+              >
+                {formatCurrency(spentToday)}
+              </Text>
             </VStack>
 
-            {/* Informações sobre o cálculo */}
-            <VStack gap={4} align="stretch">
-              <Box
-                bg={{ base: 'gray.50', _dark: 'gray.800' }}
-                borderRadius="lg"
-                p={4}
+            <VStack align="center" flex="1">
+              <Text fontSize="sm" color="var(--muted-foreground)">
+                Restante
+              </Text>
+              <Text
+                fontSize="lg"
+                fontWeight="bold"
+                color={exceeded ? "#ef4444" : "var(--primary)"}
               >
-                <HStack gap={2} mb={3}>
-                  <Info size={18} color={iconColors.brandDark} />
-                  <Text fontWeight="semibold" color="var(--card-foreground)" fontSize="sm">
-                    Informações do Cálculo
+                {formatCurrency(remaining)}
+              </Text>
+            </VStack>
+          </HStack>
+        </Box>
+
+        {/* Informações sobre o cálculo */}
+        <VStack gap={4} align="stretch">
+          <Box
+            bg="var(--muted)"
+            borderRadius="lg"
+            p={4}
+          >
+            <HStack gap={2} mb={3}>
+              <Info size={18} color="var(--primary)" />
+              <Text fontWeight="semibold" color="var(--card-foreground)" fontSize="sm">
+                Informações do Cálculo
+              </Text>
+            </HStack>
+            <VStack gap={3} align="stretch">
+              <HStack justify="space-between">
+                <HStack gap={2}>
+                  <DollarSign size={16} color="var(--muted-foreground)" />
+                  <Text fontSize="sm" color="var(--muted-foreground)">
+                    Saldo disponível:
                   </Text>
                 </HStack>
-                <VStack gap={3} align="stretch">
-                  <HStack justify="space-between">
-                    <HStack gap={2}>
-                      <DollarSign size={16} color="var(--muted-foreground)" />
-                      <Text fontSize="sm" color="var(--muted-foreground)">
-                        Saldo disponível:
-                      </Text>
-                    </HStack>
-                    <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
-                      {formatCurrency(availableBalance)}
-                    </Text>
-                  </HStack>
-                  <HStack justify="space-between">
-                    <HStack gap={2}>
-                      <Calendar size={16} color="var(--muted-foreground)" />
-                      <Text fontSize="sm" color="var(--muted-foreground)">
-                        Dias considerados:
-                      </Text>
-                    </HStack>
-                    <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
-                      {daysConsidered} dias
-                    </Text>
-                  </HStack>
-                  <HStack justify="space-between">
-                    <Text fontSize="sm" color="var(--muted-foreground)">
-                      Calculado em:
-                    </Text>
-                    <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
-                      {formatDate(calculatedAt)}
-                    </Text>
-                  </HStack>
-                </VStack>
-              </Box>
-            </VStack>
-
-            {/* Box informativo verde */}
-            <Box
-              bg={{ base: 'brand.50', _dark: 'brand.950' }}
-              borderWidth="1px"
-              borderColor={{ base: 'brand.200', _dark: 'brand.800' }}
-              borderRadius="lg"
-              p={4}
-              mt={2}
-            >
-              <HStack gap={2} mb={3}>
-                <Zap size={18} color={iconColors.brandDark} />
-                <Text fontWeight="semibold" color={{ base: 'brand.700', _dark: 'brand.300' }} fontSize="sm">
-                  Como funciona:
+                <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
+                  {formatCurrency(availableBalance)}
                 </Text>
               </HStack>
-              <VStack gap={2} align="stretch" fontSize="sm" color="muted.fg">
+              <HStack justify="space-between">
                 <HStack gap={2}>
-                  <Check size={16} color={iconColors.brandDark} />
-                  <Text>O limite é <strong>calculado automaticamente</strong> baseado no seu saldo disponível</Text>
+                  <Calendar size={16} color="var(--muted-foreground)" />
+                  <Text fontSize="sm" color="var(--muted-foreground)">
+                    Dias considerados:
+                  </Text>
                 </HStack>
-                <HStack gap={2}>
-                  <Check size={16} color={iconColors.brandDark} />
-                  <Text>O cálculo considera os <strong>próximos {daysConsidered} dias</strong> para otimizar seus gastos</Text>
-                </HStack>
-                <HStack gap={2}>
-                  <Check size={16} color={iconColors.brandDark} />
-                  <Text>O sistema te alerta quando estiver próximo do limite</Text>
-                </HStack>
-              </VStack>
-            </Box>
+                <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
+                  {daysConsidered} dias
+                </Text>
+              </HStack>
+              <HStack justify="space-between">
+                <Text fontSize="sm" color="var(--muted-foreground)">
+                  Calculado em:
+                </Text>
+                <Text fontSize="sm" fontWeight="medium" color="var(--card-foreground)">
+                  {formatDate(calculatedAt)}
+                </Text>
+              </HStack>
+            </VStack>
+          </Box>
 
-            {/* Botão Voltar */}
-            {onCancel && (
-              <Button
-                onClick={onCancel}
-                w="full"
-                size="lg"
-                variant="outline"
-                borderRadius="full"
-                mt={4}
-              >
-                Voltar
-              </Button>
-            )}
-          </VStack>
-        </Box>
-      </VStack>
+          {/* Box informativo */}
+          <Box
+            bg="var(--success-subtle)"
+            borderWidth="1px"
+            borderColor="var(--success-border)"
+            borderRadius="lg"
+            p={4}
+          >
+            <HStack gap={2} mb={3}>
+              <Zap size={18} color="var(--success)" />
+              <Text fontWeight="semibold" color="var(--success)" fontSize="sm">
+                Como funciona:
+              </Text>
+            </HStack>
+            <VStack gap={2} align="stretch" fontSize="sm" color="var(--muted-foreground)">
+              <HStack gap={2}>
+                <Check size={16} color="var(--success)" />
+                <Text>O limite é <Text as="span" fontWeight="bold">calculado automaticamente</Text> baseado no seu saldo disponível</Text>
+              </HStack>
+              <HStack gap={2}>
+                <Check size={16} color="var(--success)" />
+                <Text>O cálculo considera os <Text as="span" fontWeight="bold">próximos {daysConsidered} dias</Text> para otimizar seus gastos</Text>
+              </HStack>
+              <HStack gap={2}>
+                <Check size={16} color="var(--success)" />
+                <Text>O sistema te alerta quando estiver próximo do limite</Text>
+              </HStack>
+            </VStack>
+          </Box>
+        </VStack>
+
+        {/* Botão Voltar */}
+        {onCancel && (
+          <Box mt={6}>
+            <Button
+              onClick={onCancel}
+              w="full"
+              size="lg"
+              variant="outline"
+              borderRadius="full"
+            >
+              Voltar
+            </Button>
+          </Box>
+        )}
+      </Box>
+    </BaseForm>
   );
 }

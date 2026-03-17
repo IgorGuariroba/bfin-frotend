@@ -60,6 +60,7 @@ export interface BaseFormProps {
   // Customization
   headerContent?: React.ReactNode;
   footerContent?: React.ReactNode;
+  contentPb?: number | string | Record<string, number | string>;
   className?: string;
 
   // Form specific
@@ -84,6 +85,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
   variant = 'green-header',
   headerContent,
   footerContent,
+  contentPb,
   className,
   formId,
   onSubmit,
@@ -263,7 +265,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
         </Box>
 
         {/* Form Content */}
-        <Box flex="1" pb={8}>
+        <Box flex="1" pb={contentPb ?? 8}>
           {formId || onSubmit ? (
             <form id={formId} onSubmit={onSubmit}>
               {children}
