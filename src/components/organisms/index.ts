@@ -9,6 +9,9 @@ export * from './SidebarCollapsed';
 export * from './SidebarExpanded';
 export { Calendar } from './Calendar';
 export { CalendarPopover } from './CalendarPopover';
+export { DashboardHeader } from './DashboardHeader';
+export { DashboardDialogs } from './DashboardDialogs';
+export { EmergencyReserveDialog } from './EmergencyReserveDialog';
 
 // Export types
 export type { SidebarState } from '../../types/sidebar';
