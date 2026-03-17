@@ -183,22 +183,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           return (
             <AllTransactionsForm onCancel={() => setExpandedForm(null)} />
           );
-        case 'bfin-parceiro':
-          return (
-            <BfinParceiroForm
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-              invitationsCount={_invitations.length}
-              onOpenInvitations={() => setInvitationsDialogOpen(true)}
-            />
-          );
-        case 'transferir':
-          return (
-            <TransferForm
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
         case 'calendario':
           return (
             <CalendarForm />
@@ -208,8 +192,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
-    const usesBaseForm = expandedForm === 'bfin-parceiro' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar';
+    const hasGreenHeader = expandedForm === 'extrato' || expandedForm === 'calendario';
+    const usesBaseForm = expandedForm === 'bfin-parceiro' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar' || expandedForm === 'transferir';
 
     return (
       <Box
@@ -270,6 +254,11 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <LoanForm onCancel={() => setExpandedForm(null)} />
         ) : expandedForm === 'ajustar-limite' ? (
           <DailyLimitForm onCancel={() => setExpandedForm(null)} />
+        ) : expandedForm === 'transferir' ? (
+          <TransferForm
+            onSuccess={() => setExpandedForm(null)}
+            onCancel={() => setExpandedForm(null)}
+          />
         ) : expandedForm === 'bfin-parceiro' ? (
           <BfinParceiroForm
             onSuccess={() => setExpandedForm(null)}
