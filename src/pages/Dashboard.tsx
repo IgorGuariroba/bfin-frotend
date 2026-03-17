@@ -208,8 +208,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
-    const usesBaseForm = expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar';
+    const hasGreenHeader = expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const usesBaseForm = expandedForm === 'bfin-parceiro' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar';
 
     return (
       <Box
@@ -270,6 +270,13 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <LoanForm onCancel={() => setExpandedForm(null)} />
         ) : expandedForm === 'ajustar-limite' ? (
           <DailyLimitForm onCancel={() => setExpandedForm(null)} />
+        ) : expandedForm === 'bfin-parceiro' ? (
+          <BfinParceiroForm
+            onSuccess={() => setExpandedForm(null)}
+            onCancel={() => setExpandedForm(null)}
+            invitationsCount={_invitations.length}
+            onOpenInvitations={() => setInvitationsDialogOpen(true)}
+          />
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}

@@ -210,51 +210,25 @@ case 'nova-transacao':
   )
 ```
 
-## Migração para BaseForm — Registro no Dashboard
+## Registro no Dashboard
 
-Quando um form é migrado para usar `BaseForm` (com header e navegação próprios), o Dashboard precisa ser atualizado em **dois lugares**:
-
-### 1. Remover do `hasGreenHeader` e adicionar ao `usesBaseForm`
+**Todos os forms usam `BaseForm`** — o Dashboard renderiza cada form diretamente, sem wrappers de header.
 
 ```tsx
-// ANTES
-const hasGreenHeader = expandedForm === 'depositar' || ...;
-const usesBaseForm = expandedForm === 'emprestimos' || ...;
-
-// DEPOIS (BaseForm cuida do próprio header)
-const hasGreenHeader = ...; // sem 'depositar'
-const usesBaseForm = expandedForm === 'depositar' || expandedForm === 'emprestimos' || ...;
-```
-
-### 2. Renderizar diretamente (fora do `getContent()`)
-
-```tsx
-// ANTES — dentro de getContent() → nunca use isso para forms com BaseForm
-case 'depositar':
-  return (
-    <IncomeForm
-      onSuccess={() => setExpandedForm(null)}
-      onCancel={() => setExpandedForm(null)}
-    />
-  );
-
-// DEPOIS — renderizado diretamente no bloco de condicionais
-} : expandedForm === 'depositar' ? (
+// Dashboard.tsx — renderExpandedContent()
+{expandedForm === 'depositar' ? (
   <IncomeForm
     onSuccess={() => setExpandedForm(null)}
     onCancel={() => setExpandedForm(null)}
   />
 ) : expandedForm === 'emprestimos' ? (
+  <LoanForm onCancel={() => setExpandedForm(null)} />
+) : expandedForm === 'ajustar-limite' ? (
+  <DailyLimitForm onCancel={() => setExpandedForm(null)} />
+) : null}
 ```
 
-> **Por que?** Forms com `BaseForm` têm header verde próprio. Se renderizados via `getContent()`, o Dashboard envolveria em outro header verde — causando **duplo header**. Forms com `BaseForm` devem ser renderizados diretamente, como `LoanForm` e `DailyLimitForm`.
-
-### Também remover o título morto de `getTitle()`
-
-```tsx
-// Remover — vira código morto após a migração
-case 'depositar': return 'Depositar';
-```
+> Não existe `getContent()`, `hasGreenHeader` ou wrappers de layout — o `BaseForm` cuida do próprio header, navegação e layout.
 
 ## ⚠️ Regras Importantes
 
@@ -263,4 +237,4 @@ case 'depositar': return 'Depositar';
 3. **SEMPRE trate loading** nos botões de submit
 4. **SEMPRE invalide queries** após mutations
 5. **SEMPRE siga Dashboard-First** - forms no Dashboard!
-6. **Forms com BaseForm** devem ser renderizados diretamente no Dashboard, nunca via `getContent()`
+6. **SEMPRE use `BaseForm`** — nunca crie layout de header manual no form
