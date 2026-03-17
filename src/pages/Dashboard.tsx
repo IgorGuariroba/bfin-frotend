@@ -13,7 +13,6 @@ import {
   List,
   Grid,
 } from '@chakra-ui/react';
-import { Button } from '../components/atoms/Button';
 import {
   AccountsDialog,
   InvitationsDialog,
@@ -33,7 +32,8 @@ import {
   LoanForm
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
-import { MobileHeaderControls, CalendarWidget } from '../components/molecules';
+import { MobileHeaderControls } from '../components/molecules';
+import { BfincontaWidget, CalendarWidget } from '../components/widgets';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
@@ -67,6 +67,21 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
   const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
+
+  // Cálculos necessários para o dialog de reserva de emergência
+  const totals = accounts?.reduce(
+    (acc, account) => ({
+      emergencyReserve: acc.emergencyReserve + Number(account.emergency_reserve),
+    }),
+    { emergencyReserve: 0 }
+  ) || { emergencyReserve: 0 };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
 
   function handleSignOut() {
     signOut();
@@ -318,22 +333,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
     );
   };
 
-  const totals = accounts?.reduce(
-    (acc, account) => ({
-      totalBalance: acc.totalBalance + Number(account.total_balance),
-      availableBalance: acc.availableBalance + Number(account.available_balance),
-      lockedBalance: acc.lockedBalance + Number(account.locked_balance),
-      emergencyReserve: acc.emergencyReserve + Number(account.emergency_reserve),
-    }),
-    { totalBalance: 0, availableBalance: 0, lockedBalance: 0, emergencyReserve: 0 }
-  ) || { totalBalance: 0, availableBalance: 0, lockedBalance: 0, emergencyReserve: 0 };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
 
   return (
     <Flex minH="100vh" bg="var(--primary)" direction="column">
@@ -425,52 +424,35 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
               pb={{ base: '180px', md: '140px' }}
               flex="1"
             >
-            {/* Left Column - Cards */}
+            {/* Left Column - Main Cards */}
             <VStack gap={4} align="stretch">
-              {/* Card Bfinconta */}
-              <Box
-                bg="var(--card)"
-                borderRadius="xl"
-                p={{ base: 4, md: 6 }}
-                shadow="md"
-              >
-                <HStack mb={4}>
-                  <DollarSign size={20} color="var(--muted-foreground)" />
-                  <Text color="var(--muted-foreground)" fontWeight="medium">
-                    Bfinconta
-                  </Text>
-                </HStack>
+              {/* ESPAÇO RESERVADO PARA CARDS PRINCIPAIS */}
+              {/* Adicione cards principais aqui (não widgets) */}
 
-                <Box mb={4}>
-                  <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
-                    Saldo disponível
-                  </Text>
-                  <Text fontSize={{ base: '2xl', md: '3xl' }} fontWeight="bold" color="var(--foreground)">
-                    {loadingAccounts ? 'Carregando...' : formatCurrency(totals.availableBalance)}
-                  </Text>
-                  <Text fontSize="sm" color="var(--muted-foreground)" mt={1}>
-                    Valor investido: <Text as="span" color="var(--muted-foreground)" fontWeight="medium">{formatCurrency(totals.emergencyReserve)}</Text>
-                  </Text>
-                </Box>
-
-                <Button
-                  size={{ base: 'sm', md: 'md' }}
-                  bg="var(--primary)"
-                  color="var(--primary-foreground)"
-                  _hover={{ opacity: 0.9 }}
-                  onClick={() => setExpandedForm('extrato')}
-                >
-                  ACESSAR
-                </Button>
-              </Box>
-
+              {/* Exemplo de card principal:
+                  <SummaryCard />
+                  <QuickActionsCard />
+              */}
             </VStack>
 
-            {/* Right Column - Info & Charts */}
+            {/* Right Column - Widgets Area */}
             <VStack gap={6} align="stretch">
+              {/* ÁREA RESERVADA PARA WIDGETS */}
+              {/* Adicione novos widgets aqui seguindo o padrão: NomeWidget */}
+
+              <BfincontaWidget
+                onAccessClick={() => setExpandedForm('extrato')}
+              />
+
               <CalendarWidget
                 onViewFullCalendar={() => setExpandedForm('calendario')}
               />
+
+              {/* Espaço para novos widgets - exemplos:
+                  <TransactionsWidget />
+                  <GoalsWidget />
+                  <StatisticsWidget />
+              */}
             </VStack>
           </Grid>
           )}
