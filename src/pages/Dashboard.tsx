@@ -163,7 +163,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
 
     const getTitle = () => {
       switch (expandedForm) {
-        case 'pagar': return 'Nova Despesa';
         case 'bfin-parceiro': return 'Convidar Bfin Parceiro';
         case 'transferir': return 'Transferir';
         case 'depositar': return 'Depositar';
@@ -183,14 +182,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         case 'transacoes':
           return (
             <AllTransactionsForm onCancel={() => setExpandedForm(null)} />
-          );
-        case 'pagar':
-          return (
-            <ExpenseForm
-              defaultType="variable"
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-            />
           );
         case 'bfin-parceiro':
           return (
@@ -217,8 +208,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
-    const usesBaseForm = expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar';
+    const hasGreenHeader = expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const usesBaseForm = expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar';
 
     return (
       <Box
@@ -264,6 +255,12 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <ExtratoForm onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
         ) : expandedForm === 'transacoes' ? (
           <AllTransactionsForm onBack={() => setExpandedForm(null)} />
+        ) : expandedForm === 'pagar' ? (
+          <ExpenseForm
+            defaultType="variable"
+            onSuccess={() => setExpandedForm(null)}
+            onCancel={() => setExpandedForm(null)}
+          />
         ) : expandedForm === 'depositar' ? (
           <IncomeForm
             onSuccess={() => setExpandedForm(null)}
