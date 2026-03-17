@@ -334,7 +334,7 @@ export function DailyLimitForm({ onCancel }: DailyLimitFormProps) {
 
           {/* Box informativo */}
           <Box
-            bg="var(--success-subtle)"
+            bg="var(--card)"
             borderWidth="1px"
             borderColor="var(--success-border)"
             borderRadius="lg"
@@ -346,7 +346,7 @@ export function DailyLimitForm({ onCancel }: DailyLimitFormProps) {
                 Como funciona:
               </Text>
             </HStack>
-            <VStack gap={2} align="stretch" fontSize="sm" color="var(--muted-foreground)">
+            <VStack gap={2} align="stretch" fontSize="sm" color="var(--foreground)">
               <HStack gap={2}>
                 <Check size={16} color="var(--success)" />
                 <Text>O limite é <Text as="span" fontWeight="bold">calculado automaticamente</Text> baseado no seu saldo disponível</Text>
