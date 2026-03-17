@@ -161,36 +161,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
   const renderExpandedContent = () => {
     if (!expandedForm) return null;
 
-    const getTitle = () => {
-      switch (expandedForm) {
-        case 'bfin-parceiro': return 'Convidar Bfin Parceiro';
-        case 'transferir': return 'Transferir';
-        case 'depositar': return 'Depositar';
-        case 'emprestimos': return 'Empréstimos';
-        case 'ajustar-limite': return 'Ajustar Limite';
-        case 'extrato': return 'Extrato da Conta';
-        case 'transacoes': return 'Todas as Transações';
-        case 'calendario': return 'Calendário de Contas';
-        default: return '';
-      }
-    };
-
-    const getContent = () => {
-      switch (expandedForm) {
-        case 'extrato':
-          return <ExtratoForm onViewAll={() => setExpandedForm('transacoes')} onCancel={() => setExpandedForm(null)} />;
-        case 'transacoes':
-          return (
-            <AllTransactionsForm onCancel={() => setExpandedForm(null)} />
-          );
-        default:
-          return null;
-      }
-    };
-
-    const hasGreenHeader = expandedForm === 'extrato';
-    const usesBaseForm = expandedForm === 'bfin-parceiro' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar' || expandedForm === 'transferir' || expandedForm === 'calendario';
-
     return (
       <Box
         position="absolute"
@@ -198,7 +168,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         left={0}
         right={0}
         bottom={0}
-        bg={(hasGreenHeader || usesBaseForm) ? 'var(--primary)' : 'var(--background)'}
+        bg="var(--primary)"
         zIndex={10}
         overflow="auto"
         css={{
@@ -232,9 +202,9 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         }}
       >
         {expandedForm === 'extrato' ? (
-          <ExtratoForm onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
+          <ExtratoForm onCancel={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
         ) : expandedForm === 'transacoes' ? (
-          <AllTransactionsForm onBack={() => setExpandedForm(null)} />
+          <AllTransactionsForm onCancel={() => setExpandedForm(null)} />
         ) : expandedForm === 'pagar' ? (
           <ExpenseForm
             defaultType="variable"
@@ -284,52 +254,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
               <CalendarForm />
             </Box>
           </VStack>
-        ) : hasGreenHeader ? (
-          <VStack gap={0} align="stretch" minH="100vh">
-            {/* Green Header */}
-            <Box bg="var(--primary)" px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }} pb={{ base: 6, md: 8 }}>
-              <Flex align="center" gap={4} mb={6}>
-                <IconButton
-                  aria-label="Voltar"
-                  variant="ghost"
-                  onClick={() => setExpandedForm(null)}
-                  size="sm"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                >
-                  <ArrowLeft size={20} />
-                </IconButton>
-                <Heading size={{ base: 'md', md: 'lg' }} color="var(--primary-foreground)" flex="1">
-                  {getTitle()}
-                </Heading>
-              </Flex>
-              {getContent()}
-            </Box>
-          </VStack>
-        ) : (
-          <Box p={{ base: 4, md: 8 }} maxW={{ base: '100%', md: '2xl' }} mx="auto" pb={{ base: '180px', md: '140px' }}>
-            <Flex align="center" gap={4} mb={6}>
-              <IconButton
-                aria-label="Fechar"
-                variant="ghost"
-                onClick={() => setExpandedForm(null)}
-                size="sm"
-                color="var(--card-foreground)"
-              >
-                <X size={20} />
-              </IconButton>
-              <Heading size="lg" color="var(--card-foreground)">{getTitle()}</Heading>
-            </Flex>
-            <Box
-              bg="var(--card)"
-              borderRadius="xl"
-              p={{ base: 4, md: 6 }}
-              shadow="md"
-            >
-              {getContent()}
-            </Box>
-          </Box>
-        )}
+        ) : null}
       </Box>
     );
   };
