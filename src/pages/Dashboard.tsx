@@ -183,17 +183,13 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           return (
             <AllTransactionsForm onCancel={() => setExpandedForm(null)} />
           );
-        case 'calendario':
-          return (
-            <CalendarForm />
-          );
         default:
           return null;
       }
     };
 
-    const hasGreenHeader = expandedForm === 'extrato' || expandedForm === 'calendario';
-    const usesBaseForm = expandedForm === 'bfin-parceiro' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar' || expandedForm === 'transferir';
+    const hasGreenHeader = expandedForm === 'extrato';
+    const usesBaseForm = expandedForm === 'bfin-parceiro' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'depositar' || expandedForm === 'pagar' || expandedForm === 'transferir' || expandedForm === 'calendario';
 
     return (
       <Box
@@ -266,6 +262,28 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
             invitationsCount={_invitations.length}
             onOpenInvitations={() => setInvitationsDialogOpen(true)}
           />
+        ) : expandedForm === 'calendario' ? (
+          <VStack gap={0} align="stretch" minH="100vh">
+            {/* Green Header */}
+            <Box bg="var(--primary)" px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }} pb={{ base: 6, md: 8 }}>
+              <Flex align="center" gap={4} mb={6}>
+                <IconButton
+                  aria-label="Voltar"
+                  variant="ghost"
+                  onClick={() => setExpandedForm(null)}
+                  size="sm"
+                  color="var(--primary-foreground)"
+                  _hover={{ bg: 'whiteAlpha.100' }}
+                >
+                  <ArrowLeft size={20} />
+                </IconButton>
+                <Heading size={{ base: 'md', md: 'lg' }} color="var(--primary-foreground)" flex="1">
+                  Calendário de Contas
+                </Heading>
+              </Flex>
+              <CalendarForm />
+            </Box>
+          </VStack>
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}
