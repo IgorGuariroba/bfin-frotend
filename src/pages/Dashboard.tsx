@@ -215,18 +215,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
               onCancel={() => setExpandedForm(null)}
             />
           );
-        case 'emprestimos':
-          return (
-            <LoanForm
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
-        case 'ajustar-limite':
-          return (
-            <DailyLimitForm
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
         case 'calendario':
           return (
             <CalendarForm />
@@ -236,7 +224,8 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       }
     };
 
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'extrato' || expandedForm === 'calendario';
+    const usesBaseForm = expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite';
 
     return (
       <Box
@@ -245,7 +234,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         left={0}
         right={0}
         bottom={0}
-        bg={hasGreenHeader ? 'var(--primary)' : 'var(--background)'}
+        bg={(hasGreenHeader || usesBaseForm) ? 'var(--primary)' : 'var(--background)'}
         zIndex={10}
         overflow="auto"
         css={{
@@ -282,6 +271,10 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <ExtratoForm onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
         ) : expandedForm === 'transacoes' ? (
           <AllTransactionsForm onBack={() => setExpandedForm(null)} />
+        ) : expandedForm === 'emprestimos' ? (
+          <LoanForm onCancel={() => setExpandedForm(null)} />
+        ) : expandedForm === 'ajustar-limite' ? (
+          <DailyLimitForm onCancel={() => setExpandedForm(null)} />
         ) : hasGreenHeader ? (
           <VStack gap={0} align="stretch" minH="100vh">
             {/* Green Header */}
