@@ -11,7 +11,6 @@ import {
   IconButton,
   Dialog,
   List,
-  Grid,
 } from '@chakra-ui/react';
 import {
   AccountsDialog,
@@ -33,7 +32,7 @@ import {
 } from '../components/organisms';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
 import { MobileHeaderControls } from '../components/molecules';
-import { BfincontaWidget, CalendarWidget } from '../components/widgets';
+import { WidgetManager } from '../components/widgets';
 import { useAccounts } from '../hooks/useAccounts';
 import { useMyInvitations } from '../hooks/useAccountMembers';
 import {
@@ -417,44 +416,11 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         <Flex flex="1" direction="column" overflow="auto" position="relative">
           {renderExpandedContent()}
           {!expandedForm && (
-            <Grid
-              templateColumns={{ base: '1fr', lg: '440px 1fr' }}
-              gap={{ base: 4, md: 6 }}
-              p={{ base: 4, md: 8 }}
-              pb={{ base: '180px', md: '140px' }}
-              flex="1"
-            >
-            {/* Left Column - Main Cards */}
-            <VStack gap={4} align="stretch">
-              {/* ESPAÇO RESERVADO PARA CARDS PRINCIPAIS */}
-              {/* Adicione cards principais aqui (não widgets) */}
-
-              {/* Exemplo de card principal:
-                  <SummaryCard />
-                  <QuickActionsCard />
-              */}
-            </VStack>
-
-            {/* Right Column - Widgets Area */}
-            <VStack gap={6} align="stretch">
-              {/* ÁREA RESERVADA PARA WIDGETS */}
-              {/* Adicione novos widgets aqui seguindo o padrão: NomeWidget */}
-
-              <BfincontaWidget
-                onAccessClick={() => setExpandedForm('extrato')}
-              />
-
-              <CalendarWidget
-                onViewFullCalendar={() => setExpandedForm('calendario')}
-              />
-
-              {/* Espaço para novos widgets - exemplos:
-                  <TransactionsWidget />
-                  <GoalsWidget />
-                  <StatisticsWidget />
-              */}
-            </VStack>
-          </Grid>
+            <WidgetManager
+              onExpandForm={setExpandedForm}
+              layout="auto"
+              maxWidgetsPerColumn={3}
+            />
           )}
 
           {/* Footer Actions */}
