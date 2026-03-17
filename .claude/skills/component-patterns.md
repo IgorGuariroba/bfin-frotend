@@ -438,12 +438,115 @@ describe('Button', () => {
 
 ---
 
-## ⚠️ Regras Importantes
+---
 
+## 🎯 Registry Pattern para Formulários (NOVO)
+
+### Como Extender Organisms/Forms
+```tsx
+// ✅ NOVO: Não mais modificar Dashboard.tsx diretamente
+// src/components/forms/FormRegistry.tsx
+
+import { EXPANDED_FORMS } from '../../types/ExpandedForms';
+import { MeuNovoForm } from '../organisms/forms/MeuNovoForm';
+
+export const FORM_REGISTRY = {
+  // ... existentes
+  [EXPANDED_FORMS.MEU_NOVO]: {
+    component: MeuNovoForm,
+    props: {
+      defaultType: 'variable',
+      customSetting: true,
+    }
+  }
+};
+```
+
+### Organism Form com Registry
+```tsx
+// components/organisms/forms/MeuNovoForm.tsx
+import { useForm } from 'react-hook-form';
+import { VStack, HStack } from '@chakra-ui/react';
+import { FormField } from '../../molecules/FormField';
+import { Button } from '../../atoms/Button';
+
+interface MeuNovoFormProps {
+  onCancel: () => void;     // ✅ Injetado automaticamente pelo Registry
+  onSuccess?: () => void;   // ✅ Injetado automaticamente pelo Registry
+  defaultType?: string;     // Props específicas via registry
+  customSetting?: boolean;
+}
+
+export const MeuNovoForm = ({
+  onCancel,
+  onSuccess,
+  defaultType,
+  customSetting
+}: MeuNovoFormProps) => {
+  // Form logic aqui
+
+  return (
+    <VStack gap={4} align="stretch">
+      {/* Campos do formulário */}
+
+      <HStack justify="end">
+        <Button variant="ghost" onClick={onCancel}>
+          Cancelar
+        </Button>
+        <Button type="submit" colorPalette="orange">
+          Salvar
+        </Button>
+      </HStack>
+    </VStack>
+  );
+};
+```
+
+### Hook Pattern para Forms
+```tsx
+// hooks/useExpandedForm.ts - Já implementado
+export function useExpandedForm(initialForm?: ExpandedFormType) {
+  const [expandedForm, setExpandedForm] = useState<ExpandedFormType>(initialForm ?? null);
+
+  // Single Responsibility: apenas gerencia estado de formulários
+  const openForm = useCallback((formType: ExpandedFormType) => {
+    if (formType && !isValidFormType(formType)) {
+      console.warn(`Tipo de formulário inválido: ${formType}`);
+      return;
+    }
+    setExpandedForm(formType);
+  }, []);
+
+  const closeForm = useCallback(() => setExpandedForm(null), []);
+
+  return { expandedForm, openForm, closeForm, hasOpenForm: !!expandedForm };
+}
+```
+
+---
+
+## ⚠️ Regras Clean Code Atualizadas
+
+### **HIERARQUIA & ATOMIC DESIGN**
 1. **SEMPRE siga a hierarquia Atomic Design**
 2. **NUNCA importe nível superior em inferior**
 3. **SEMPRE defina tipos TypeScript para props**
 4. **SEMPRE use naming conventions consistentes**
-5. **SEMPRE trate casos de loading e error**
-6. **SEMPRE teste componentes críticos**
-7. **SEMPRE siga Dashboard-First** para organisms/forms
+
+### **FORMULÁRIOS & REGISTRY PATTERN**
+5. **SEMPRE use Registry Pattern** para formulários expandidos
+6. **NUNCA modifique Dashboard.tsx** para adicionar forms
+7. **SEMPRE use EXPANDED_FORMS constants** - nunca magic strings
+8. **SEMPRE implemente onCancel/onSuccess** em form organisms
+
+### **QUALIDADE & PERFORMANCE**
+9. **SEMPRE trate casos de loading e error**
+10. **SEMPRE teste componentes críticos**
+11. **SEMPRE use useCallback** para funções que são props
+12. **SEMPRE use React.memo** para componentes caros
+
+### **DASHBOARD-FIRST ARCHITECTURE**
+13. **SEMPRE siga Dashboard-First** - nenhuma página dedicada
+14. **SEMPRE use ExpandedFormRenderer** para renderização
+15. **SEMPRE centralize configurações** via registries
+16. **SEMPRE mantenha Single Responsibility** por componente

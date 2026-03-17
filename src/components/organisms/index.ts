@@ -12,3 +12,4 @@ export { CalendarPopover } from './CalendarPopover';
 
 // Export types
 export type { SidebarState } from '../../types/sidebar';
+export type { ExpandedFormType } from '../../types/ExpandedForms';

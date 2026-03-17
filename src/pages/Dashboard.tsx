@@ -16,21 +16,16 @@ import {
   AccountsDialog,
   InvitationsDialog,
   BfinParceiroDialog,
-  ExpenseForm,
-  IncomeForm,
-  BfinParceiroForm,
-  ExtratoForm,
-  AllTransactionsForm,
   CreateAccountForm,
-  DailyLimitForm,
   FooterActions,
   Sidebar,
   SidebarState,
-  CalendarForm,
   ExpandedFormType,
-  TransferForm,
-  LoanForm
 } from '../components/organisms';
+import {
+  ExpandedFormRenderer,
+} from '../components/forms';
+import { useExpandedForm } from '../hooks/useExpandedForm';
 import type { MenuItem } from '../components/organisms/SidebarExpanded';
 import { MobileHeaderControls } from '../components/molecules';
 import { WidgetManager } from '../components/widgets';
@@ -44,7 +39,6 @@ import {
   DollarSign,
   Users,
   X,
-  ArrowLeft,
   Calendar as CalendarIcon
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -62,8 +56,10 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
   const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
   const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
   const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
-  const [expandedForm, setExpandedForm] = useState<ExpandedFormType>(initialExpandedForm ?? null);
   const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
+
+  // Usando o novo hook para gerenciar formulários expandidos
+  const { expandedForm, openForm, closeForm, hasOpenForm } = useExpandedForm(initialExpandedForm);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: _invitations = [] } = useMyInvitations();
 
@@ -108,7 +104,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
       id: 'calendar',
       icon: CalendarIcon,
       label: 'Calendário',
-      onClick: () => setExpandedForm('calendario'),
+      onClick: () => openForm('calendario'),
     },
     {
       id: 'help',
@@ -158,106 +154,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
     },
   ];
 
-  const renderExpandedContent = () => {
-    if (!expandedForm) return null;
-
-    return (
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        bg="var(--primary)"
-        zIndex={10}
-        overflow="auto"
-        css={{
-          animation: 'dropExpand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-          '@keyframes dropExpand': {
-            '0%': {
-              borderRadius: '50%',
-              width: 'calc((100% - 112px) / 7)',
-              height: '80px',
-              bottom: '90px',
-              left: '32px',
-              top: 'auto',
-              transform: 'scale(0.3)',
-              opacity: 0.5,
-            },
-            '50%': {
-              borderRadius: '24px',
-              opacity: 0.8,
-            },
-            '100%': {
-              borderRadius: '0',
-              width: '100%',
-              height: '100%',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              transform: 'scale(1)',
-              opacity: 1,
-            },
-          },
-        }}
-      >
-        {expandedForm === 'extrato' ? (
-          <ExtratoForm onCancel={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
-        ) : expandedForm === 'transacoes' ? (
-          <AllTransactionsForm onCancel={() => setExpandedForm(null)} />
-        ) : expandedForm === 'pagar' ? (
-          <ExpenseForm
-            defaultType="variable"
-            onSuccess={() => setExpandedForm(null)}
-            onCancel={() => setExpandedForm(null)}
-          />
-        ) : expandedForm === 'depositar' ? (
-          <IncomeForm
-            onSuccess={() => setExpandedForm(null)}
-            onCancel={() => setExpandedForm(null)}
-          />
-        ) : expandedForm === 'emprestimos' ? (
-          <LoanForm onCancel={() => setExpandedForm(null)} />
-        ) : expandedForm === 'ajustar-limite' ? (
-          <DailyLimitForm onCancel={() => setExpandedForm(null)} />
-        ) : expandedForm === 'transferir' ? (
-          <TransferForm
-            onSuccess={() => setExpandedForm(null)}
-            onCancel={() => setExpandedForm(null)}
-          />
-        ) : expandedForm === 'bfin-parceiro' ? (
-          <BfinParceiroForm
-            onSuccess={() => setExpandedForm(null)}
-            onCancel={() => setExpandedForm(null)}
-            invitationsCount={_invitations.length}
-            onOpenInvitations={() => setInvitationsDialogOpen(true)}
-          />
-        ) : expandedForm === 'calendario' ? (
-          <VStack gap={0} align="stretch" minH="100vh">
-            {/* Green Header */}
-            <Box bg="var(--primary)" px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }} pb={{ base: 6, md: 8 }}>
-              <Flex align="center" gap={4} mb={6}>
-                <IconButton
-                  aria-label="Voltar"
-                  variant="ghost"
-                  onClick={() => setExpandedForm(null)}
-                  size="sm"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                >
-                  <ArrowLeft size={20} />
-                </IconButton>
-                <Heading size={{ base: 'md', md: 'lg' }} color="var(--primary-foreground)" flex="1">
-                  Calendário de Contas
-                </Heading>
-              </Flex>
-              <CalendarForm />
-            </Box>
-          </VStack>
-        ) : null}
-      </Box>
-    );
-  };
 
 
   return (
@@ -277,7 +173,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <MobileHeaderControls
             sidebarState={sidebarState}
             onToggleSidebar={handleToggleSidebar}
-            onHomeClick={() => setExpandedForm(null)}
+            onHomeClick={closeForm}
             showHomeButton={true}
           />
 
@@ -327,7 +223,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         {/* Sidebar */}
         <Sidebar
           menuItems={sidebarMenuItems}
-          onHomeClick={() => setExpandedForm(null)}
+          onHomeClick={closeForm}
           onSignOut={handleSignOut}
           onVisibilityClick={() => {
             // TODO: Implement visibility toggle
@@ -341,10 +237,20 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
 
         {/* Content Area */}
         <Flex flex="1" direction="column" overflow="auto" position="relative">
-          {renderExpandedContent()}
-          {!expandedForm && (
+          {/* Renderizador de formulários expandidos - Clean Code refactored */}
+          <ExpandedFormRenderer
+            expandedForm={expandedForm}
+            onClose={closeForm}
+            extraProps={{
+              invitationsCount: _invitations.length,
+              onOpenInvitations: () => setInvitationsDialogOpen(true),
+            }}
+          />
+
+          {/* Dashboard principal - só mostra quando não há formulário expandido */}
+          {!hasOpenForm && (
             <WidgetManager
-              onExpandForm={setExpandedForm}
+              onExpandForm={openForm}
               layout="auto"
               maxWidgetsPerColumn={3}
             />
@@ -353,7 +259,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           {/* Footer Actions */}
           <FooterActions
             expandedForm={expandedForm}
-            onFormSelect={setExpandedForm}
+            onFormSelect={openForm}
           />
         </Flex>
       </Flex>

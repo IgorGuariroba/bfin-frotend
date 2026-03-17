@@ -8,8 +8,7 @@ import {
   Sliders,
 } from 'lucide-react';
 import { customShadows } from '../../theme';
-
-export type ExpandedFormType = 'pagar' | 'bfin-parceiro' | 'transferir' | 'depositar' | 'emprestimos' | 'ajustar-limite' | 'extrato' | 'calendario' | 'transacoes' | null;
+import type { ExpandedFormType } from '../../types/ExpandedForms';
 
 interface FooterActionsProps {
   expandedForm: ExpandedFormType;
