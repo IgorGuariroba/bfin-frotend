@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -11,6 +11,7 @@ import {
   SimpleGrid,
   Badge,
   IconButton,
+  Menu,
 } from '@chakra-ui/react';
 import { BaseForm } from '../../ui/BaseForm';
 import { Button } from '../../atoms/Button';
@@ -26,8 +27,10 @@ import {
   CheckCircle,
   ArrowDownToLine,
   Trash2,
+  ChevronDown,
 } from 'lucide-react';
 import { iconColors } from '../../../theme';
+import { useAccounts } from '../../../hooks/useAccounts';
 import { toast } from '../../../lib/toast';
 import {
   createLoanSimulationSchema,
@@ -57,10 +60,23 @@ export function LoanForm({ onCancel }: LoanFormProps) {
   const withdrawMutation = useWithdrawLoanSimulation();
   const deleteMutation = useDeleteLoanSimulation();
   const { data, refetch: refetchSimulations } = useLoanSimulations();
+  const { data: accounts } = useAccounts();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedSimulationId, setSelectedSimulationId] = useState<string | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
+
+  useEffect(() => {
+    if (accounts && accounts.length > 0 && !selectedAccountId) {
+      const defaultAccount = accounts.find((acc) => acc.is_default) || accounts[0];
+      if (defaultAccount?.id) {
+        setSelectedAccountId(defaultAccount.id);
+      }
+    }
+  }, [accounts, selectedAccountId]);
+
+  const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
 
   const { data: fullSimulation, isLoading: isLoadingSimulation } = useLoanSimulation(selectedSimulationId ?? undefined);
 
@@ -181,9 +197,83 @@ export function LoanForm({ onCancel }: LoanFormProps) {
       >
         <Box px={{ base: 4, md: 6 }} py={4}>
           <VStack gap={6} align="stretch">
+            {/* Conta */}
+            <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
+              <Menu.Trigger asChild>
+                <Box
+                  as="button"
+                  w="full"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  px={4}
+                  py={3}
+                  fontSize="md"
+                  fontWeight="medium"
+                  color="var(--card-foreground)"
+                  bg="var(--card)"
+                  borderWidth="1px"
+                  borderColor="var(--border)"
+                  borderRadius="lg"
+                  transition="all 0.2s"
+                  _hover={{ borderColor: 'var(--primary)' }}
+                  _focus={{
+                    outline: 'none',
+                    borderColor: 'var(--primary)',
+                    boxShadow: '0 0 0 1px var(--primary)',
+                  }}
+                >
+                  <Text>
+                    {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
+                  </Text>
+                  <ChevronDown size={20} />
+                </Box>
+              </Menu.Trigger>
+              <Menu.Positioner>
+                <Menu.Content
+                  maxH="300px"
+                  overflowY="auto"
+                  bg="var(--card)"
+                  borderRadius="lg"
+                  boxShadow="lg"
+                  borderWidth="1px"
+                  borderColor="var(--border)"
+                  p={1}
+                >
+                  {accounts?.map((account) => (
+                    <Menu.Item
+                      key={account.id ?? ''}
+                      value={account.id ?? ''}
+                      onClick={() => setSelectedAccountId(account.id ?? '')}
+                      px={3}
+                      py={2}
+                      borderRadius="md"
+                      cursor="pointer"
+                      bg={selectedAccountId === account.id ? 'var(--muted)' : 'transparent'}
+                      _hover={{ bg: 'var(--muted)' }}
+                    >
+                      <HStack justify="space-between" w="full">
+                        <VStack align="flex-start" gap={0}>
+                          <Text fontWeight="medium" color="var(--card-foreground)">
+                            {account.account_name}
+                          </Text>
+                          <Text fontSize="sm" color="var(--muted-foreground)">
+                            {formatCurrency(Number(account.available_balance))}
+                          </Text>
+                        </VStack>
+                        {selectedAccountId === account.id && (
+                          <Check size={16} color={iconColors.success} />
+                        )}
+                      </HStack>
+                    </Menu.Item>
+                  ))}
+                </Menu.Content>
+              </Menu.Positioner>
+            </Menu.Root>
+
             {/* Valor */}
             <Field.Root invalid={!!errors.amount}>
-              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+              <Field.Label fontSize="sm" color="var(--primary-foreground)" mb={2}>
                 Valor do Empréstimo
               </Field.Label>
               <Box position="relative">
@@ -209,7 +299,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
                   }}
                 />
               </Box>
-              <Field.HelperText fontSize="xs" mt={2}>
+              <Field.HelperText fontSize="xs" mt={2} color="var(--primary-foreground)" opacity={0.8}>
                 Mínimo: {formatCurrency(LOAN_SIMULATION_CONSTANTS.MIN_AMOUNT)}
               </Field.HelperText>
               {errors.amount && (
@@ -219,7 +309,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
 
             {/* Prazo */}
             <Field.Root invalid={!!errors.termMonths}>
-              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+              <Field.Label fontSize="sm" color="var(--primary-foreground)" mb={2}>
                 Prazo (meses)
               </Field.Label>
               <Box position="relative">
@@ -245,7 +335,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
                   }}
                 />
               </Box>
-              <Field.HelperText fontSize="xs" mt={2}>
+              <Field.HelperText fontSize="xs" mt={2} color="var(--primary-foreground)" opacity={0.8}>
                 Entre {LOAN_SIMULATION_CONSTANTS.MIN_TERM_MONTHS} e {LOAN_SIMULATION_CONSTANTS.MAX_TERM_MONTHS} meses
               </Field.HelperText>
               {errors.termMonths && (
@@ -255,7 +345,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
 
             {/* Taxa de Juros */}
             <Field.Root invalid={!!errors.interestRateMonthly}>
-              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+              <Field.Label fontSize="sm" color="var(--primary-foreground)" mb={2}>
                 Taxa de Juros Mensal (%)
               </Field.Label>
               <Box position="relative">
