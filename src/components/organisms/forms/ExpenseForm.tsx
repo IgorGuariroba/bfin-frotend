@@ -135,7 +135,6 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
           variant: 'ghost',
           colorPalette: 'gray',
         }] : []}
-        contentPb={24}
       >
         <Box px={{ base: 4, md: 6 }} py={4}>
           <VStack gap={6} align="stretch">

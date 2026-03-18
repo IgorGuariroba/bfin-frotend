@@ -283,15 +283,14 @@ export const BaseForm: React.FC<BaseFormProps> = ({
         {/* Footer Actions */}
         {(actions.length > 0 || primaryAction || footerContent) && (
           <Box
-            position="fixed"
+            position="sticky"
             bottom={0}
-            left={0}
-            right={0}
             bg="var(--card)"
             borderTopWidth="1px"
             borderColor="var(--border)"
             p={{ base: 4, md: 6 }}
             zIndex={10}
+            mt="auto"
           >
             <Flex
               maxW={{ base: '100%', md: '2xl' }}
