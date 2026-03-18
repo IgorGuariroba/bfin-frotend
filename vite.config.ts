@@ -50,7 +50,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['@chakra-ui/react', '@emotion/react']
+    include: ['@chakra-ui/react']
   },
   server: {
     port: 5173,
