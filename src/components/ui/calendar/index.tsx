@@ -1,198 +1,191 @@
-// src/components/ui/calendar/index.tsx
+"use client"
 
 import { forwardRef } from 'react'
-import { DayPicker, DayPickerProps } from 'react-day-picker'
-import { Box } from '@chakra-ui/react'
-import { useTheme } from 'next-themes'
-import { ptBR } from 'date-fns/locale'
+import { Box, Grid, Button, Text, VStack } from '@chakra-ui/react'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, getDay, addDays, subDays } from 'date-fns'
 import type { CalendarComponentProps } from '@/types/calendar'
-import { calendarStyles, getCalendarCSSVars } from './calendar-theme'
 
-export interface ChakraCalendarProps extends
-  Omit<DayPickerProps, 'locale'>,
-  CalendarComponentProps {
+// Temporary compatibility interface to maintain existing API
+export interface ChakraCalendarProps extends CalendarComponentProps {
   variant?: 'default' | 'compact'
   size?: 'sm' | 'md' | 'lg'
+  mode?: 'single' | 'multiple' | 'range'
+  selected?: Date | Date[] | undefined
   onSelect?: (date: Date | undefined) => void
+  month?: Date
+  onMonthChange?: (date: Date) => void
+  disabled?: boolean
   opacity?: number | string
+  bg?: string
+  backgroundColor?: string
+  components?: {
+    Day?: React.ComponentType<{
+      date: Date;
+      selected?: boolean;
+      today?: boolean;
+      outside?: boolean;
+      onClick?: () => void;
+    }>
+  }
+  fixedWeeks?: boolean
+  showOutsideDays?: boolean
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6
 }
 
 export const ChakraCalendar = forwardRef<HTMLDivElement, ChakraCalendarProps>(
-  ({ variant = 'default', size = 'md', className, compact, opacity, ...props }, ref) => {
-    const { resolvedTheme } = useTheme()
+  ({
+    variant = 'default', // eslint-disable-line @typescript-eslint/no-unused-vars
+    size = 'md',
+    compact, // eslint-disable-line @typescript-eslint/no-unused-vars
+    mode = 'single', // eslint-disable-line @typescript-eslint/no-unused-vars
+    selected,
+    onSelect,
+    month = new Date(),
+    disabled,
+    opacity = 1,
+    bg,
+    backgroundColor,
+    components,
+    fixedWeeks = true,
+    showOutsideDays = true,
+    weekStartsOn = 0, // Sunday
+    ...props
+  }, ref) => {
 
-    // Determinar tamanho baseado na prop compact ou size
-    const finalSize = compact ? 'sm' : size
+    // Generate calendar days
+    const monthStart = startOfMonth(month)
+    const monthEnd = endOfMonth(month)
+    const calendarStart = subDays(monthStart, getDay(monthStart) - weekStartsOn)
 
-    // CSS variables para integração com React Day Picker
-    const cssVars = getCalendarCSSVars(finalSize, resolvedTheme as 'light' | 'dark')
-
-    // Estilos do calendário baseado na variante
-    const calendarStyle = {
-      ...calendarStyles.calendar,
-      ...(variant === 'compact' || compact ? calendarStyles.calendarCompact : {}),
-      opacity,
+    let calendarEnd = addDays(monthEnd, 6 - getDay(monthEnd) + weekStartsOn)
+    if (getDay(monthEnd) === weekStartsOn - 1) {
+      calendarEnd = addDays(calendarEnd, 7)
     }
 
+    // If fixedWeeks is true, ensure we always have 6 weeks
+    if (fixedWeeks) {
+      const weeks = Math.ceil((calendarEnd.getTime() - calendarStart.getTime()) / (7 * 24 * 60 * 60 * 1000))
+      if (weeks < 6) {
+        calendarEnd = addDays(calendarEnd, (6 - weeks) * 7)
+      }
+    }
+
+    const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd })
+
+    const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+
+    const handleDayClick = (date: Date) => {
+      if (disabled) return
+      onSelect?.(date)
+    }
+
+    const isSelected = (date: Date) => {
+      if (!selected) return false
+      if (selected instanceof Date) {
+        return isSameDay(date, selected)
+      }
+      if (Array.isArray(selected)) {
+        return selected.some(s => isSameDay(date, s))
+      }
+      return false
+    }
+
+    const cellSize = size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'md'
+    const fontSize = size === 'sm' ? 'sm' : 'md'
+
+    // Custom Day component wrapper
+    const DayComponent = components?.Day
+
     return (
-      <Box
+      <VStack
         ref={ref}
-        {...calendarStyle}
-        style={cssVars as React.CSSProperties}
-        className={`chakra-calendar ${className || ''}`}
-        data-testid="calendar-grid"
+        gap={{ base: 1, md: 2 }}
+        opacity={opacity}
+        pointerEvents={disabled ? 'none' : 'auto'}
+        bg={bg || backgroundColor}
+        borderRadius="md"
+        p={bg || backgroundColor ? { base: 2, md: 4 } : 0}
+        w="100%"
+        maxW="100%"
+        {...props}
       >
-        <DayPicker
-          locale={ptBR}
-          weekStartsOn={0} // Domingo
-          fixedWeeks
-          showOutsideDays
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          {...(props as any)}
-        />
-      </Box>
+        {/* Week headers */}
+        <Grid templateColumns="repeat(7, 1fr)" gap={1} w="full">
+          {weekDays.map((day) => (
+            <Text
+              key={day}
+              textAlign="center"
+              fontSize="xs"
+              fontWeight="semibold"
+              color="fg.muted"
+              py={2}
+            >
+              {day}
+            </Text>
+          ))}
+        </Grid>
+
+        {/* Calendar grid */}
+        <Grid templateColumns="repeat(7, 1fr)" gap={1} w="full">
+          {calendarDays.map((date) => {
+            const isOutside = !isSameMonth(date, month)
+            const isSelectedDay = isSelected(date)
+            const isTodayDay = isToday(date)
+
+            // Use custom Day component if provided
+            if (DayComponent) {
+              return (
+                <Box key={date.toISOString()}>
+                  <DayComponent
+                    date={date}
+                    selected={isSelectedDay}
+                    today={isTodayDay}
+                    outside={isOutside}
+                    onClick={() => handleDayClick(date)}
+                  />
+                </Box>
+              )
+            }
+
+            return (
+              <Button
+                key={date.toISOString()}
+                variant={isSelectedDay ? 'solid' : 'ghost'}
+                colorPalette={isSelectedDay ? 'blue' : 'gray'}
+                size={cellSize}
+                fontSize={fontSize}
+                onClick={() => handleDayClick(date)}
+                opacity={
+                  isOutside && !showOutsideDays ? 0 :
+                  isOutside ? 0.4 : 1
+                }
+                fontWeight={isTodayDay ? 'bold' : 'normal'}
+                bg={
+                  isSelectedDay ? 'blue.500' :
+                  isTodayDay ? 'blue.100' :
+                  'transparent'
+                }
+                color={
+                  isSelectedDay ? 'white' :
+                  isTodayDay ? 'blue.700' :
+                  isOutside ? 'fg.muted' : 'fg'
+                }
+                _hover={{
+                  bg: isSelectedDay ? 'blue.600' : 'gray.100'
+                }}
+              >
+                {format(date, 'd')}
+              </Button>
+            )
+          })}
+        </Grid>
+      </VStack>
     )
   }
 )
 
 ChakraCalendar.displayName = 'ChakraCalendar'
 
-// CSS personalizado para React Day Picker integrado com Chakra UI
-export const calendarCSS = `
-.chakra-calendar {
-  display: flex;
-  justify-content: center;
-}
-
-.chakra-calendar .rdp {
-  --rdp-cell-size: var(--rdp-cell-size, 40px);
-  --rdp-accent-color: var(--rdp-accent-color);
-  --rdp-background-color: var(--rdp-background-color);
-  --rdp-outline-color: var(--rdp-outline-color);
-  margin: 0;
-  width: 100%;
-  max-width: min(100%, 500px);
-}
-
-.chakra-calendar .rdp-months {
-  display: flex;
-}
-
-.chakra-calendar .rdp-month {
-  margin: 0;
-}
-
-.chakra-calendar .rdp-table {
-  width: 100%;
-  max-width: none;
-  min-width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.chakra-calendar .rdp-head_row,
-.chakra-calendar .rdp-row {
-  height: auto;
-  min-height: var(--rdp-cell-size);
-  width: 100%;
-}
-
-.chakra-calendar .rdp-head_cell {
-  padding: 0.5rem 0.25rem;
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--rdp-text-color-disabled, #666);
-  text-transform: uppercase;
-  width: 14.28%; /* 100% / 7 dias */
-  min-height: 2.5rem;
-}
-
-.chakra-calendar .rdp-cell {
-  padding: 0;
-  width: 14.28%; /* 100% / 7 dias */
-  height: auto;
-  min-height: var(--rdp-cell-size);
-}
-
-.chakra-calendar .rdp-button {
-  width: 100%;
-  height: 100%;
-  min-height: var(--rdp-cell-size);
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--rdp-text-color);
-  transition: all 0.2s;
-  position: relative;
-  margin: 2px;
-}
-
-.chakra-calendar .rdp-button:hover:not(.rdp-day_disabled) {
-  background-color: var(--accent);
-}
-
-.chakra-calendar .rdp-day_today .rdp-button {
-  background-color: var(--rdp-accent-color);
-  color: var(--rdp-selected-color);
-  font-weight: 700;
-}
-
-.chakra-calendar .rdp-day_selected .rdp-button {
-  background-color: var(--rdp-accent-color);
-  color: var(--rdp-selected-color);
-}
-
-.chakra-calendar .rdp-day_selected .rdp-button:hover {
-  background-color: var(--rdp-outline-selected-color);
-}
-
-.chakra-calendar .rdp-day_outside {
-  opacity: var(--rdp-disabled-opacity, 0.4);
-}
-
-.chakra-calendar .rdp-day_disabled .rdp-button {
-  opacity: var(--rdp-disabled-opacity, 0.4);
-  cursor: not-allowed;
-}
-
-.chakra-calendar .rdp-day_disabled .rdp-button:hover {
-  background: none;
-}
-
-/* Navegação */
-.chakra-calendar .rdp-nav {
-  display: none; /* Será controlada pelo CalendarHeader */
-}
-
-.chakra-calendar .rdp-caption {
-  display: none; /* Será controlada pelo CalendarHeader */
-}
-
-/* Responsividade */
-@media (min-width: 768px) {
-  .chakra-calendar .rdp {
-    max-width: 500px;
-  }
-
-  .chakra-calendar .rdp-cell {
-    width: calc(100% / 7);
-  }
-
-  .chakra-calendar .rdp-head_cell {
-    width: calc(100% / 7);
-  }
-}
-
-@media (min-width: 1024px) {
-  .chakra-calendar .rdp {
-    max-width: 600px;
-  }
-}
-`
+// Re-export for new implementations
+export { DatePicker } from '@chakra-ui/react'
+export type { DateValue } from '@internationalized/date'

@@ -14,8 +14,9 @@ export function CalendarForm() {
   return (
     <Box
       width="100%"
-      maxWidth={{ base: '100%', md: '600px', lg: '700px' }}
+      maxWidth={{ base: 'calc(100vw - 16px)', md: '600px', lg: '700px' }}
       mx="auto"
+      px={{ base: 2, md: 4 }}
       display="flex"
       flexDirection="column"
       alignItems="center"
@@ -25,7 +26,7 @@ export function CalendarForm() {
         onEventClick={handleEventClick}
         showFilters={true}
         compact={false}
-        height="calc(100vh - 200px)"
+        height="calc(100vh - 120px)"
       />
     </Box>
   );

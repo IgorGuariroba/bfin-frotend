@@ -83,7 +83,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
   }
 
   return (
-    <VStack gap={4} align="center" h={height} w="100%">
+    <VStack gap={{ base: 2, md: 4 }} align="center" h={height} w="100%">
       {/* Cabeçalho */}
       <Box maxW={{ base: '100%', md: '500px', lg: '600px' }} w="100%">
         <CalendarHeader
@@ -131,7 +131,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
       )}
 
       {/* Calendário */}
-      <Box position="relative" flex="1" maxW={{ base: '100%', md: '500px', lg: '600px' }} mx="auto">
+      <Box position="relative" flex="1" maxW={{ base: '100%', md: '500px', lg: '600px' }} mx="auto" w="100%">
         {isLoading && (
           <Skeleton
             height="300px"
@@ -152,6 +152,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
           onMonthChange={() => {}} // Controlado pelo header
           variant={compact ? 'compact' : 'default'}
           size={compact ? 'sm' : 'md'}
+          bg="white"
           components={{
             Day: ({ date, ...props }) => (
               <CalendarDay

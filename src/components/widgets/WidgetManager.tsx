@@ -158,44 +158,61 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
     );
   }
 
+  // Layout mobile: uma coluna com espaçamento reduzido
   return (
-    <Grid
-      templateColumns={{ base: '1fr', lg: '440px 1fr' }}
-      gap={{ base: 4, md: 6 }}
-      p={{ base: 4, md: 8 }}
-      pb={{ base: '180px', md: '140px' }}
-      flex="1"
-    >
-      {/* Left Column */}
-      <VStack gap={4} align="stretch">
-        {leftColumn.map(renderWidget)}
-        {leftColumn.length === 0 && (
-          <div style={{
-            padding: '2rem',
-            textAlign: 'center',
-            color: 'var(--muted-foreground)',
-            fontSize: '0.875rem'
-          }}>
-            {/* Coluna principal vazia */}
-          </div>
-        )}
+    <>
+      {/* Mobile: Single Column Layout */}
+      <VStack
+        gap={3}
+        align="stretch"
+        p={{ base: 4, md: 8 }}
+        pb={{ base: '180px', md: '140px' }}
+        flex="1"
+        display={{ base: 'flex', lg: 'none' }}
+      >
+        {activeWidgets.map(renderWidget)}
       </VStack>
 
-      {/* Right Column */}
-      <VStack gap={6} align="stretch">
-        {rightColumn.map(renderWidget)}
-        {rightColumn.length === 0 && (
-          <div style={{
-            padding: '2rem',
-            textAlign: 'center',
-            color: 'var(--muted-foreground)',
-            fontSize: '0.875rem'
-          }}>
-            {/* Área de widgets informativos */}
-          </div>
-        )}
-      </VStack>
-    </Grid>
+      {/* Desktop: Two Column Layout */}
+      <Grid
+        templateColumns="440px 1fr"
+        gap={6}
+        p={8}
+        pb="140px"
+        flex="1"
+        display={{ base: 'none', lg: 'grid' }}
+      >
+        {/* Left Column */}
+        <VStack gap={4} align="stretch">
+          {leftColumn.map(renderWidget)}
+          {leftColumn.length === 0 && (
+            <div style={{
+              padding: '2rem',
+              textAlign: 'center',
+              color: 'var(--muted-foreground)',
+              fontSize: '0.875rem'
+            }}>
+              {/* Coluna principal vazia */}
+            </div>
+          )}
+        </VStack>
+
+        {/* Right Column */}
+        <VStack gap={6} align="stretch">
+          {rightColumn.map(renderWidget)}
+          {rightColumn.length === 0 && (
+            <div style={{
+              padding: '2rem',
+              textAlign: 'center',
+              color: 'var(--muted-foreground)',
+              fontSize: '0.875rem'
+            }}>
+              {/* Área de widgets informativos */}
+            </div>
+          )}
+        </VStack>
+      </Grid>
+    </>
   );
 };
 

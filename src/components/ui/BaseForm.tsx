@@ -31,10 +31,11 @@ export interface BaseFormProps {
 
   // Value display (comum em formulários financeiros)
   displayValue?: {
-    value: string;
+    value?: string;
     label?: string;
     editable?: boolean;
     onEdit?: () => void;
+    inputContent?: React.ReactNode;
   };
 
   // Navigation
@@ -249,17 +250,21 @@ export const BaseForm: React.FC<BaseFormProps> = ({
                   {displayValue.label}
                 </Text>
               )}
-              <Text
-                fontSize="4xl"
-                fontWeight="bold"
-                color="var(--primary-foreground)"
-                textAlign="center"
-                cursor={displayValue.editable ? 'pointer' : 'default'}
-                onClick={displayValue.editable ? displayValue.onEdit : undefined}
-                _hover={displayValue.editable ? { opacity: 0.8 } : {}}
-              >
-                {displayValue.value}
-              </Text>
+              {displayValue.inputContent ? (
+                displayValue.inputContent
+              ) : (
+                <Text
+                  fontSize="4xl"
+                  fontWeight="bold"
+                  color="var(--primary-foreground)"
+                  textAlign="center"
+                  cursor={displayValue.editable ? 'pointer' : 'default'}
+                  onClick={displayValue.editable ? displayValue.onEdit : undefined}
+                  _hover={displayValue.editable ? { opacity: 0.8 } : {}}
+                >
+                  {displayValue.value}
+                </Text>
+              )}
             </Box>
           )}
         </Box>
@@ -278,15 +283,14 @@ export const BaseForm: React.FC<BaseFormProps> = ({
         {/* Footer Actions */}
         {(actions.length > 0 || primaryAction || footerContent) && (
           <Box
-            position="fixed"
+            position="sticky"
             bottom={0}
-            left={0}
-            right={0}
             bg="var(--card)"
             borderTopWidth="1px"
             borderColor="var(--border)"
             p={{ base: 4, md: 6 }}
             zIndex={10}
+            mt="auto"
           >
             <Flex
               maxW={{ base: '100%', md: '2xl' }}
@@ -321,6 +325,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
                     loading={primaryAction.loading}
                     disabled={primaryAction.disabled}
                     type={formId ? 'submit' : 'button'}
+                    form={formId}
                   >
                     {primaryAction.label}
                   </Button>
@@ -401,6 +406,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
                   loading={primaryAction.loading}
                   disabled={primaryAction.disabled}
                   type={formId ? 'submit' : 'button'}
+                  form={formId}
                 >
                   {primaryAction.label}
                 </Button>

@@ -1,5 +1,6 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import {
+  Home,
   BarChart3,
   Users,
   Send,
@@ -13,10 +14,16 @@ import type { ExpandedFormType } from '../../types/ExpandedForms';
 interface FooterActionsProps {
   expandedForm: ExpandedFormType;
   onFormSelect: (form: ExpandedFormType) => void;
+  onHomeClick: () => void;
 }
 
-export function FooterActions({ expandedForm, onFormSelect }: FooterActionsProps) {
+export function FooterActions({ expandedForm, onFormSelect, onHomeClick }: FooterActionsProps) {
   const footerActions = [
+    {
+      key: 'home' as const,
+      icon: Home,
+      label: 'Home',
+    },
     {
       key: 'pagar' as const,
       icon: BarChart3,
@@ -49,8 +56,12 @@ export function FooterActions({ expandedForm, onFormSelect }: FooterActionsProps
     },
   ];
 
-  const handleActionClick = (actionKey: ExpandedFormType) => {
-    onFormSelect(expandedForm === actionKey ? null : actionKey);
+  const handleActionClick = (actionKey: string) => {
+    if (actionKey === 'home') {
+      onHomeClick();
+    } else {
+      onFormSelect(expandedForm === actionKey ? null : actionKey as ExpandedFormType);
+    }
   };
 
   return (
