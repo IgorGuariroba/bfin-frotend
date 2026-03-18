@@ -46,11 +46,9 @@
   "devDependencies": {
     "@chakra-ui/cli": "^3.31.0",
     "@eslint/js": "^9.39.2",
-    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
-    "@types/testing-library__jest-dom": "^5.14.9",
     "@typescript-eslint/eslint-plugin": "^8.53.0",
     "@typescript-eslint/parser": "^8.53.0",
     "@vitejs/plugin-react": "^4.2.1",
