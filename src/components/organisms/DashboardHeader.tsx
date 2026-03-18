@@ -1,7 +1,6 @@
 import {
   Flex,
   Text,
-  VStack,
   HStack,
   IconButton,
 } from '@chakra-ui/react';
@@ -15,20 +14,12 @@ import type { SidebarState } from './index';
  * Interface para props do DashboardHeader
  */
 interface DashboardHeaderProps {
-  userName?: string;
   sidebarState: SidebarState;
   onToggleSidebar: () => void;
   onHomeClick: () => void;
   onSignOut: () => void;
 }
 
-/**
- * Função utilitária para extrair primeiro nome
- */
-function getFirstName(fullName?: string): string {
-  if (!fullName) return 'Usuário';
-  return fullName.split(' ')[0];
-}
 
 /**
  * Componente Header do Dashboard
@@ -40,13 +31,11 @@ function getFirstName(fullName?: string): string {
  * - No Side Effects: apenas apresentação
  */
 export function DashboardHeader({
-  userName,
   sidebarState,
   onToggleSidebar,
   onHomeClick,
   onSignOut,
 }: DashboardHeaderProps) {
-  const firstName = getFirstName(userName);
 
   return (
     <Flex
@@ -58,46 +47,30 @@ export function DashboardHeader({
       justify="space-between"
       boxShadow={customShadows.whiteGlow.sm}
     >
-      {/* Brand e Saudação */}
+      {/* Brand */}
       <Flex align="center" gap={3} minW={0}>
         {/* Controles móveis */}
         <MobileHeaderControls
           sidebarState={sidebarState}
           onToggleSidebar={onToggleSidebar}
-          onHomeClick={onHomeClick}
-          showHomeButton={true}
         />
 
-        {/* Branding */}
-        <VStack align="flex-start" gap={0} minW={0}>
-          <Text
-            fontSize={{ base: '2xl', md: '3xl' }}
-            fontWeight="extrabold"
-            color="var(--primary-foreground)"
-            fontFamily="'Playfair Display SC', serif"
-            lineHeight="shorter"
-          >
-            BFIN
-          </Text>
-
-          {/* Saudação mobile */}
-          <Text
-            color="var(--primary-foreground)"
-            fontSize="xs"
-            display={{ base: 'block', md: 'none' }}
-            lineClamp={1}
-          >
-            Olá, {firstName}
-          </Text>
-        </VStack>
-
-        {/* Saudação desktop */}
+        {/* Branding - Home Button */}
         <Text
+          as="button"
+          fontSize={{ base: '2xl', md: '3xl' }}
+          fontWeight="extrabold"
           color="var(--primary-foreground)"
-          fontSize="sm"
-          display={{ base: 'none', md: 'block' }}
+          fontFamily="'Playfair Display SC', serif"
+          lineHeight="shorter"
+          cursor="pointer"
+          _hover={{ opacity: 0.8, transform: 'scale(1.02)' }}
+          _active={{ transform: 'scale(0.98)' }}
+          transition="all 0.2s"
+          onClick={onHomeClick}
+          aria-label="Ir para home"
         >
-          - Olá, {firstName}
+          BFIN
         </Text>
       </Flex>
 

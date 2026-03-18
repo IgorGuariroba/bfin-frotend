@@ -50,7 +50,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
   // ==============================
   // HOOKS DE CONTEXTO
   // ==============================
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
 
   // ==============================
@@ -84,7 +84,6 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
     <Flex minH="100vh" bg="var(--primary)" direction="column">
       {/* Header */}
       <DashboardHeader
-        userName={user?.full_name}
         sidebarState={sidebar.sidebarState}
         onToggleSidebar={sidebar.handleToggleSidebar}
         onHomeClick={closeForm}
