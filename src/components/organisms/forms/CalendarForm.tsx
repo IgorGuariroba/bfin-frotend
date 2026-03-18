@@ -26,7 +26,7 @@ export function CalendarForm() {
         onEventClick={handleEventClick}
         showFilters={true}
         compact={false}
-        height="calc(100vh - 160px)"
+        height="calc(100vh - 120px)"
       />
     </Box>
   );
