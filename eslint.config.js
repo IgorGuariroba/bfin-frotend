@@ -3,7 +3,6 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import storybook from 'eslint-plugin-storybook';
 
 export default tseslint.config(
   // Ignores
@@ -15,7 +14,6 @@ export default tseslint.config(
       'coverage',
       'scripts/**/*.js',
       'eslint.config.js',
-      '.storybook/**',
       '*.min.js',
       '*.config.js',
       '*.config.ts',
@@ -72,6 +70,4 @@ export default tseslint.config(
     },
   },
 
-  // Storybook files
-  ...storybook.configs['flat/recommended'],
 );
