@@ -1,17 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAccounts } from './useAccounts';
 
-export interface Account {
-  id: string;
-  account_name: string;
-  available_balance: string;
-  is_default?: boolean;
-}
-
 export interface UseAccountSelectionReturn {
-  accounts: Account[] | undefined;
+  accounts: any[] | undefined; // Usar any para evitar conflitos de tipo
   selectedAccountId: string;
-  selectedAccount: Account | undefined;
+  selectedAccount: any | undefined;
   isLoadingAccounts: boolean;
   handleAccountSelect: (accountId: string) => void;
 }

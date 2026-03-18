@@ -2,11 +2,10 @@ import { Box, HStack, VStack, Text, Menu } from '@chakra-ui/react';
 import { ChevronDown, Check } from 'lucide-react';
 import { iconColors } from '../../theme';
 import { formatCurrency } from '../../utils/formatters';
-import type { Account } from '../../hooks/useAccountSelection';
 
 interface AccountSelectorProps {
-  accounts: Account[];
-  selectedAccount?: Account;
+  accounts: any[]; // Usar any para evitar conflitos de tipo
+  selectedAccount?: any;
   onSelectAccount: (accountId: string) => void;
 }
 
@@ -67,9 +66,9 @@ export function AccountSelector({
         >
           {accounts.map((account) => (
             <Menu.Item
-              key={account.id}
-              value={account.id}
-              onClick={() => onSelectAccount(account.id)}
+              key={account.id || ''}
+              value={account.id || ''}
+              onClick={() => account.id && onSelectAccount(account.id)}
               px={3}
               py={2}
               borderRadius="md"
