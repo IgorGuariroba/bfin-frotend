@@ -63,9 +63,5 @@ export default defineConfig({
     }
   },
   // Expor variáveis de ambiente para o cliente
-  envPrefix: 'VITE_',
-  test: {
-    environment: 'jsdom',
-    include: ['src/**/*.test.{ts,tsx}']
-  }
+  envPrefix: 'VITE_'
 });
