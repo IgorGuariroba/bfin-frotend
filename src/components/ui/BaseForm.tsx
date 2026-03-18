@@ -326,6 +326,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
                     loading={primaryAction.loading}
                     disabled={primaryAction.disabled}
                     type={formId ? 'submit' : 'button'}
+                    form={formId}
                   >
                     {primaryAction.label}
                   </Button>
@@ -406,6 +407,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
                   loading={primaryAction.loading}
                   disabled={primaryAction.disabled}
                   type={formId ? 'submit' : 'button'}
+                  form={formId}
                 >
                   {primaryAction.label}
                 </Button>
