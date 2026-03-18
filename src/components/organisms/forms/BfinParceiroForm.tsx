@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import axios from 'axios';
 import { HStack, VStack, Text, Box, Input, Field, Menu, chakra, Badge } from '@chakra-ui/react';
 import { BaseForm } from '../../ui/BaseForm';
 import { Button } from '../../atoms/Button';
@@ -11,6 +10,25 @@ import { useAddAccountMember } from '../../../hooks/useAccountMembers';
 import { Mail, Check, ChevronDown, UserCheck, Eye, Zap, Users } from 'lucide-react';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
+
+interface HttpError {
+  response?: {
+    data?: {
+      error?: string;
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
+const isHttpError = (error: unknown): error is HttpError => {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'response' in error &&
+    typeof (error as Record<string, unknown>).response === 'object'
+  );
+};
 
 const inviteSchema = z.object({
   accountId: z.string().min(1, 'Selecione uma conta'),
@@ -82,8 +100,8 @@ export function BfinParceiroForm({
       }
     } catch (error: unknown) {
       let errorMessage = 'Erro desconhecido';
-      if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.error || error.message;
+      if (isHttpError(error)) {
+        errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Erro desconhecido';
       }
       toast.error('Erro ao enviar convite', errorMessage);
     }
