@@ -123,18 +123,6 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
             </NumberInput.Root>
           ),
         }}
-        primaryAction={{
-          label: isFixed ? 'Criar Despesa Fixa' : 'Criar Despesa Variável',
-          loading: isSubmitting,
-          colorPalette: 'green',
-          onClick: () => {},
-        }}
-        actions={onCancel ? [{
-          label: 'Cancelar',
-          onClick: onCancel,
-          variant: 'ghost',
-          colorPalette: 'gray',
-        }] : []}
       >
         <Box px={{ base: 4, md: 6 }} py={4}>
           <VStack gap={6} align="stretch">
@@ -207,6 +195,29 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                 {isError && <ApiErrorBox error={error} />}
               </VStack>
             </Box>
+
+            {/* Botões de ação */}
+            <VStack gap={3} pb={24}>
+              <Button
+                type="submit"
+                form="expense-form"
+                colorPalette="green"
+                w="full"
+                loading={isSubmitting}
+              >
+                {isFixed ? 'Criar Despesa Fixa' : 'Criar Despesa Variável'}
+              </Button>
+              {onCancel && (
+                <Button
+                  variant="ghost"
+                  colorPalette="gray"
+                  w="full"
+                  onClick={onCancel}
+                >
+                  Cancelar
+                </Button>
+              )}
+            </VStack>
           </VStack>
         </Box>
       </BaseForm>
