@@ -9,3 +9,5 @@ export { DailyLimitForm } from './DailyLimitForm';
 export { TransferForm } from './TransferForm';
 export { LoanForm } from './LoanForm';
 export { CalendarForm } from './CalendarForm';
+export { ExtratoForm } from './ExtratoForm';
+export { AllTransactionsForm } from './AllTransactionsForm';

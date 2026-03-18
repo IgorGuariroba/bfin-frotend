@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Flex,
@@ -8,7 +7,6 @@ import {
   Icon,
   HStack,
   Link as ChakraLink,
-  IconButton,
   Center,
   Spinner,
 } from '@chakra-ui/react';
@@ -24,13 +22,14 @@ import {
   ArrowUpRight,
   Utensils,
   Zap,
-  ArrowLeft,
+  Receipt,
 } from 'lucide-react';
-import { useAccounts } from '../../hooks/useAccounts';
-import { useTransactions } from '../../hooks/useTransactions';
+import { BaseForm } from '../../ui/BaseForm';
+import { useAccounts } from '../../../hooks/useAccounts';
+import { useTransactions } from '../../../hooks/useTransactions';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { Transaction } from '../../types/transaction';
+import type { Transaction } from '../../../types/transaction';
 
 interface TransactionItemProps {
   title: string;
@@ -50,17 +49,17 @@ function TransactionItem({ title, date, amount, type, icon, isIncome }: Transact
   };
 
   return (
-    <Box bg="white" borderRadius="xl" p={4} shadow="sm">
+    <Box bg="var(--card)" borderRadius="xl" p={4} shadow="sm">
       <Flex align="center" justify="space-between">
         <HStack gap={4}>
           <Center bg="green.50" boxSize="12" borderRadius="xl">
             <Icon as={icon} color="green.500" boxSize={6} />
           </Center>
           <VStack align="flex-start" gap={0}>
-            <Text fontWeight="bold" color="gray.900" fontSize="md">
+            <Text fontWeight="bold" color="var(--foreground)" fontSize="md">
               {title}
             </Text>
-            <Text color="gray.500" fontSize="sm">
+            <Text color="var(--muted-foreground)" fontSize="sm">
               {date}
             </Text>
           </VStack>
@@ -69,13 +68,13 @@ function TransactionItem({ title, date, amount, type, icon, isIncome }: Transact
         <VStack align="flex-end" gap={0}>
           <Text
             fontWeight="bold"
-            color={isIncome ? 'green.500' : 'gray.900'}
+            color={isIncome ? 'green.500' : 'var(--foreground)'}
             fontSize="lg"
           >
             {isIncome ? '+ ' : '- '}
             {formatCurrency(Math.abs(amount))}
           </Text>
-          <Text color="gray.400" fontSize="xs">
+          <Text color="var(--muted-foreground)" fontSize="xs">
             {type}
           </Text>
         </VStack>
@@ -84,12 +83,13 @@ function TransactionItem({ title, date, amount, type, icon, isIncome }: Transact
   );
 }
 
-interface ExtratoProps {
+interface ExtratoFormProps {
   onBack?: () => void;
   onViewAll?: () => void;
+  onCancel?: () => void;
 }
 
-export function Extrato({ onBack, onViewAll }: ExtratoProps) {
+export function ExtratoForm({ onBack, onViewAll, onCancel }: ExtratoFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const { data: transactionsData, isLoading: loadingTransactions } = useTransactions({ limit: 10 });
   const [showBalance, setShowBalance] = useState(true);
@@ -144,94 +144,75 @@ export function Extrato({ onBack, onViewAll }: ExtratoProps) {
   const viewAllColor = onViewAll ? 'var(--primary)' : 'green.500';
 
   return (
-    <VStack gap={0} align="stretch" w="100%" minH="100vh" bg="gray.50">
-      {/* Green Header */}
-      <Box bg="var(--primary)" pt={6} pb={16} px={6}>
-        {onBack && (
-          <IconButton
-            aria-label="Voltar"
-            variant="ghost"
-            color="white"
-            onClick={onBack}
-            mb={2}
-            size="sm"
-            _hover={{ bg: 'whiteAlpha.200' }}
-          >
-            <ArrowLeft size={24} />
-          </IconButton>
-        )}
-        <VStack gap={2} align="center">
-          <Text color="whiteAlpha.900" fontSize="md" fontWeight="medium">
-            Saldo em Conta
-          </Text>
-          <HStack gap={4}>
-            <Text color="white" fontSize="4xl" fontWeight="bold">
-              {loadingAccounts ? '...' : formatCurrency(totals.availableBalance)}
-            </Text>
-            <IconButton
-              aria-label="Ver saldo"
-              variant="ghost"
-              color="white"
-              size="sm"
-              _hover={{ bg: 'whiteAlpha.200' }}
-              onClick={() => setShowBalance(!showBalance)}
-            >
-              <Icon as={showBalance ? Eye : EyeOff} boxSize={6} />
-            </IconButton>
-          </HStack>
-        </VStack>
-      </Box>
+    <BaseForm
+      variant="green-header"
+      title="Extrato da Conta"
+      icon={Receipt}
+      isLoading={loadingAccounts}
+      displayValue={{
+        value: loadingAccounts ? '...' : formatCurrency(totals.availableBalance),
+        label: 'Saldo em Conta',
+        editable: true,
+        onEdit: () => setShowBalance(!showBalance),
+      }}
+      headerContent={
+        <Icon
+          as={showBalance ? Eye : EyeOff}
+          boxSize={6}
+          color="var(--primary-foreground)"
+          cursor="pointer"
+          onClick={() => setShowBalance(!showBalance)}
+          _hover={{ opacity: 0.8 }}
+        />
+      }
+      onBack={onBack}
+      onCancel={onCancel}
+    >
 
       {/* Floating Action Card */}
-      <Box px={4} mt="-10">
-        <Box bg="white" borderRadius="2xl" p={6} shadow="xl">
+      <Box px={4} mt="-10" mb={6}>
+        <Box bg="var(--card)" borderRadius="2xl" p={6} shadow="xl">
           <Flex justify="space-between" align="center">
             <VStack gap={2} cursor="pointer">
               <Center bg="green.50" boxSize="14" borderRadius="2xl">
                 <Icon as={TrendingUp} color="green.500" boxSize={6} />
               </Center>
-              <Text fontSize="xs" fontWeight="bold" color="gray.700">Investimentos</Text>
+              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Investimentos</Text>
             </VStack>
 
             <VStack gap={2} cursor="pointer">
               <Center bg="green.50" boxSize="14" borderRadius="2xl">
                 <Icon as={ArrowLeftRight} color="green.500" boxSize={6} />
               </Center>
-              <Text fontSize="xs" fontWeight="bold" color="gray.700">Transferir</Text>
+              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Transferir</Text>
             </VStack>
 
             <VStack gap={2} cursor="pointer">
               <Center bg="green.50" boxSize="14" borderRadius="2xl">
                 <Icon as={Banknote} color="green.500" boxSize={6} />
               </Center>
-              <Text fontSize="xs" fontWeight="bold" color="gray.700">Pagar</Text>
+              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Pagar</Text>
             </VStack>
 
             <VStack gap={2} cursor="pointer">
               <Center bg="green.50" boxSize="14" borderRadius="2xl">
                 <Icon as={QrCode} color="green.500" boxSize={6} />
               </Center>
-              <Text fontSize="xs" fontWeight="bold" color="gray.700">Pix</Text>
+              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Pix</Text>
             </VStack>
           </Flex>
         </Box>
       </Box>
 
       {/* Recent Transactions Section */}
-      <VStack align="stretch" gap={4} p={6} pb={24}>
+      <VStack align="stretch" gap={4} px={6} pb={24}>
         <Flex justify="space-between" align="center">
-          <Text fontSize="xl" fontWeight="bold" color="gray.900">
+          <Text fontSize="xl" fontWeight="bold" color="var(--foreground)">
             Extrato Recente
           </Text>
-          {onViewAll ? (
+          {onViewAll && (
             <ChakraLink color={viewAllColor} fontWeight="bold" fontSize="sm" onClick={onViewAll}>
               Ver tudo
-            </ChakraLink>
-          ) : (
-            <ChakraLink asChild color={viewAllColor} fontWeight="bold" fontSize="sm">
-              <RouterLink to="/transactions">
-                Ver tudo
-              </RouterLink>
             </ChakraLink>
           )}
         </Flex>
@@ -255,11 +236,11 @@ export function Extrato({ onBack, onViewAll }: ExtratoProps) {
 
           {!loadingTransactions && transactionsData?.transactions.length === 0 && (
             <Center py={10}>
-              <Text color="gray.500">Nenhuma transação recente</Text>
+              <Text color="var(--muted-foreground)">Nenhuma transação recente</Text>
             </Center>
           )}
         </VStack>
       </VStack>
-    </VStack>
+    </BaseForm>
   );
 }

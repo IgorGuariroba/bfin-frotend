@@ -2,13 +2,26 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Stack, HStack, VStack, Center, Text, Box, Input, NativeSelect, Field, Menu, Checkbox, IconButton, Dialog } from '@chakra-ui/react';
+import {
+  VStack,
+  HStack,
+  Text,
+  Box,
+  Input,
+  NativeSelect,
+  Field,
+  Menu,
+  Checkbox,
+  IconButton,
+  Dialog,
+} from '@chakra-ui/react';
+import { BaseForm } from '../../ui/BaseForm';
 import { Button } from '../../atoms/Button';
 import { useCreateIncome } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useCategories } from '../../../hooks/useCategories';
 import type { CreateIncomeDTO } from '../../../types/transaction';
-import { Pencil, Tag, Calendar, Check, ChevronDown, Zap, Plus, CheckCircle2 } from 'lucide-react';
+import { Pencil, Tag, Calendar, Check, ChevronDown, Zap, Plus, CheckCircle2, TrendingUp } from 'lucide-react';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
 import { CreateCategoryDialog } from '../dialogs/CreateCategoryDialog';
@@ -52,6 +65,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [createdTransaction, setCreatedTransaction] = useState<CreatedTransactionData | null>(null);
   const [amountInput, setAmountInput] = useState('');
+  const [isEditingAmount, setIsEditingAmount] = useState(false);
 
   const {
     register,
@@ -71,13 +85,10 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
   const amount = watch('amount') || 0;
   const selectedAccountId = watch('accountId');
 
-  // Busca categorias apenas quando uma conta estiver selecionada
-  const { data: allCategories, isLoading: loadingCategories } = useCategories(selectedAccountId);
+  const { data: allCategories } = useCategories(selectedAccountId);
   const createIncome = useCreateIncome();
 
-  // Filtra apenas categorias do tipo 'income'
   const categories = allCategories?.filter((category) => category.type === 'income');
-  const [isEditingAmount, setIsEditingAmount] = useState(false);
 
   const selectedAccount = accounts?.find((acc) => acc.id === selectedAccountId);
 
@@ -95,82 +106,6 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
       setValue('categoryId', newCategory.id, { shouldValidate: true });
     }
   };
-
-  const onSubmit = async (data: IncomeFormData) => {
-    setButtonState('loading');
-
-    try {
-      const payload: CreateIncomeDTO = {
-        ...data,
-        amount: Number(data.amount),
-      };
-
-      const result = await createIncome.mutateAsync(payload);
-
-      // Forçar atualização dos dados de accounts
-      await refetchAccounts();
-
-      // Preparar dados para o modal de confirmação
-      setCreatedTransaction({
-        ...result,
-        amount: Number(data.amount),
-        description: data.description,
-        accountName: selectedAccount?.account_name,
-        categoryName: categories?.find(c => c.id === data.categoryId)?.name,
-        formattedAmount: formatCurrency(Number(data.amount)),
-      });
-
-      // Mudar estado do botão para sucesso
-      setButtonState('success');
-
-      // Mostrar modal de confirmação após uma pequena pausa
-      setTimeout(() => {
-        setShowConfirmationModal(true);
-      }, 800);
-
-      toast.success('Receita adicionada com sucesso!');
-
-    } catch (error) {
-      console.error('Error creating income:', error);
-      toast.error('Erro ao adicionar receita');
-      setButtonState('idle');
-    }
-  };
-
-  const handleConfirmationClose = () => {
-    setShowConfirmationModal(false);
-    setButtonState('idle');
-
-    // Reset suave do formulário
-    setValue('amount', 0);
-    setAmountInput('');
-    setValue('description', '');
-    setValue('categoryId', '');
-
-    // Chamar callback de sucesso
-    if (onSuccess) {
-      setTimeout(() => onSuccess(), 300);
-    }
-  };
-
-  if (loadingAccounts || loadingCategories) {
-    return (
-      <Center py={4}>
-        <Text>Carregando...</Text>
-      </Center>
-    );
-  }
-
-  if (!accounts || accounts.length === 0) {
-    return (
-      <Center py={4}>
-        <Stack gap={4} align="center">
-          <Text color="gray.600">Você precisa criar uma conta primeiro.</Text>
-          <Button onClick={onCancel}>Voltar</Button>
-        </Stack>
-      </Center>
-    );
-  }
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -198,28 +133,131 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
     return numeric / 100;
   };
 
+  const onSubmit = async (data: IncomeFormData) => {
+    setButtonState('loading');
+
+    try {
+      const payload: CreateIncomeDTO = {
+        ...data,
+        amount: Number(data.amount),
+      };
+
+      const result = await createIncome.mutateAsync(payload);
+
+      await refetchAccounts();
+
+      setCreatedTransaction({
+        ...result,
+        amount: Number(data.amount),
+        description: data.description,
+        accountName: selectedAccount?.account_name,
+        categoryName: categories?.find(c => c.id === data.categoryId)?.name,
+        formattedAmount: formatCurrency(Number(data.amount)),
+      });
+
+      setButtonState('success');
+
+      setTimeout(() => {
+        setShowConfirmationModal(true);
+      }, 800);
+
+      toast.success('Receita adicionada com sucesso!');
+
+    } catch (error) {
+      console.error('Error creating income:', error);
+      toast.error('Erro ao adicionar receita');
+      setButtonState('idle');
+    }
+  };
+
+  const handleConfirmationClose = () => {
+    setShowConfirmationModal(false);
+    setButtonState('idle');
+
+    setValue('amount', 0);
+    setAmountInput('');
+    setValue('description', '');
+    setValue('categoryId', '');
+
+    if (onSuccess) {
+      setTimeout(() => onSuccess(), 300);
+    }
+  };
+
+  if (!loadingAccounts && (!accounts || accounts.length === 0)) {
+    return (
+      <BaseForm
+        title="Adicionar Receita"
+        variant="green-header"
+        icon={TrendingUp}
+        onBack={onCancel}
+      >
+        <Box px={{ base: 4, md: 6 }} py={8}>
+          <VStack gap={4} align="center">
+            <Text color="var(--muted-foreground)" fontSize="sm" textAlign="center">
+              Você precisa criar uma conta primeiro.
+            </Text>
+            {onCancel && (
+              <Button size="sm" variant="outline" onClick={onCancel}>
+                Voltar
+              </Button>
+            )}
+          </VStack>
+        </Box>
+      </BaseForm>
+    );
+  }
+
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap={0} align="stretch" minH="100vh" pb={8}>
-          {/* Header - Valor */}
-          <Box mb={6}>
-            {isEditingAmount ? (
+      <BaseForm
+        title="Adicionar Receita"
+        subtitle="Registre uma nova entrada"
+        icon={TrendingUp}
+        variant="green-header"
+        onBack={onCancel}
+        isLoading={loadingAccounts}
+        formId="income-form"
+        onSubmit={handleSubmit(onSubmit)}
+        displayValue={{
+          value: formatCurrency(Number(amount)),
+          editable: !isEditingAmount,
+          onEdit: () => {
+            const digits = Math.round(Number(amount) * 100).toString();
+            setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
+            setIsEditingAmount(true);
+          },
+        }}
+        primaryAction={{
+          label: buttonState === 'success' ? 'Depósito Confirmado!' : 'Confirmar Depósito',
+          loading: buttonState === 'loading',
+          disabled: buttonState === 'success',
+          colorPalette: 'green',
+          onClick: () => {},
+        }}
+        actions={onCancel ? [{
+          label: 'Cancelar',
+          onClick: onCancel,
+          variant: 'ghost',
+          colorPalette: 'gray',
+        }] : []}
+        contentPb={24}
+      >
+        <Box px={{ base: 4, md: 6 }} py={4}>
+          <VStack gap={6} align="stretch">
+            {/* Input de edição do valor */}
+            {isEditingAmount && (
               <Input
                 type="text"
                 inputMode="decimal"
                 autoFocus
                 value={amountInput}
                 placeholder="0,00"
-                fontSize="4xl"
+                fontSize="xl"
                 fontWeight="bold"
-                color="var(--primary-foreground)"
-                bg="transparent"
-                border="none"
-                borderBottom="2px solid var(--primary-foreground)"
-                borderRadius="0"
-                p={0}
-                mb={4}
+                borderColor="var(--border)"
+                borderRadius="full"
+                _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
                 onChange={(e) => {
                   const nextDigits = normalizeDigits(e.target.value);
                   setValue('amount', toAmountFromDigits(nextDigits), { shouldValidate: true });
@@ -247,25 +285,24 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                   },
                 }}
               />
-            ) : (
-              <Text
-                fontSize="4xl"
-                fontWeight="bold"
-                color="var(--primary-foreground)"
-                mb={4}
-                cursor="pointer"
-                onClick={() => {
-                  const digits = Math.round(Number(amount) * 100).toString();
-                  setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
-                  setIsEditingAmount(true);
-                }}
-                _hover={{ opacity: 0.8 }}
-              >
-                {formatCurrency(Number(amount))}
-              </Text>
             )}
 
-            {/* Header - Conta */}
+            {/* Input oculto para o RHF */}
+            <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
+              <Input
+                type="number"
+                step="0.01"
+                {...register('amount', { valueAsNumber: true })}
+              />
+            </Box>
+
+            {errors.amount && (
+              <Box bg="red.50" borderWidth="1px" borderColor="red.200" borderRadius="lg" p={3}>
+                <Text fontSize="sm" color="red.600">{errors.amount.message}</Text>
+              </Box>
+            )}
+
+            {/* Seletor de Conta */}
             <Field.Root invalid={!!errors.accountId}>
               <input type="hidden" {...register('accountId')} />
               <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
@@ -280,312 +317,218 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                     py={3}
                     fontSize="md"
                     fontWeight="medium"
-                    color="primary.fg"
-                    bg="var(--primary)"
+                    color="var(--card-foreground)"
+                    bg="var(--card)"
                     borderWidth="1px"
-                    borderColor="primary.fg"
-                    borderRadius="full"
+                    borderColor="var(--border)"
+                    borderRadius="lg"
                     transition="all 0.2s"
-                    css={{
-                      '&:hover': {
-                        backgroundColor: iconColors.brandDark,
-                      },
-                      '&:focus': {
-                        outline: 'none',
-                        boxShadow: 'none',
-                      },
+                    _hover={{ borderColor: 'var(--primary)' }}
+                    _focus={{
+                      outline: 'none',
+                      borderColor: 'var(--primary)',
+                      boxShadow: '0 0 0 1px var(--primary)',
                     }}
                   >
-                    <Text color="primary.fg">
+                    <Text>
                       {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
                     </Text>
-                    <ChevronDown size={20} color={iconColors.primaryFg} />
+                    <ChevronDown size={20} />
                   </Box>
                 </Menu.Trigger>
                 <Menu.Positioner>
                   <Menu.Content
                     maxH="300px"
                     overflowY="auto"
-                    bg="var(--primary)"
+                    bg="var(--card)"
                     borderRadius="lg"
                     boxShadow="lg"
                     borderWidth="1px"
-                    borderColor="primary.fg"
-                    p={0}
-                    css={{
-                      zIndex: 'var(--z-dropdown)',
-                    }}
+                    borderColor="var(--border)"
+                    p={1}
+                    css={{ zIndex: 'var(--z-dropdown)' }}
                   >
-                    <Box
-                      px={3}
-                      py={2}
-                      bg="var(--primary)"
-                      borderTopRadius="lg"
-                      borderBottomWidth="1px"
-                      borderBottomColor="primary.fg"
-                    >
-                      <HStack gap={2}>
-                        <Check size={16} color={iconColors.primaryFg} />
-                        <Text fontSize="sm" fontWeight="bold" color="primary.fg">
-                          Selecione uma conta
-                        </Text>
-                      </HStack>
-                    </Box>
-
-                    <Box py={1}>
-                      {accounts?.map((account) => (
-                        <Menu.Item
-                          key={account.id ?? ''}
-                          value={account.id ?? ''}
-                          onClick={() => setValue('accountId', account.id ?? '', { shouldValidate: true })}
-                          css={{
-                            backgroundColor: selectedAccountId === account.id ? iconColors.brandDark : 'transparent',
-                            '&:hover': {
-                              backgroundColor: iconColors.brandDark,
-                            },
-                          }}
-                          px={3}
-                          py={2}
-                        >
-                          <Text fontSize="sm" color="var(--primary-foreground)">
+                    {accounts?.map((account) => (
+                      <Menu.Item
+                        key={account.id ?? ''}
+                        value={account.id ?? ''}
+                        onClick={() => setValue('accountId', account.id ?? '', { shouldValidate: true })}
+                        px={3}
+                        py={2}
+                        borderRadius="md"
+                        cursor="pointer"
+                        bg={selectedAccountId === account.id ? 'var(--muted)' : 'transparent'}
+                        _hover={{ bg: 'var(--muted)' }}
+                      >
+                        <HStack justify="space-between" w="full">
+                          <Text fontWeight="medium" color="var(--card-foreground)">
                             {account.account_name}
                           </Text>
-                        </Menu.Item>
-                      ))}
-                    </Box>
+                          {selectedAccountId === account.id && (
+                            <Check size={16} color={iconColors.success} />
+                          )}
+                        </HStack>
+                      </Menu.Item>
+                    ))}
                   </Menu.Content>
                 </Menu.Positioner>
               </Menu.Root>
               {errors.accountId && (
-                <Field.ErrorText color="var(--primary-foreground)" mt={2} fontSize="sm">
+                <Field.ErrorText mt={2} fontSize="sm">
                   {errors.accountId.message}
                 </Field.ErrorText>
               )}
             </Field.Root>
-          </Box>
 
-          {/* Card Branco */}
-          <Box
-            bg="var(--card)"
-            borderRadius="2xl"
-            p={6}
-            shadow="md"
-            mt={4}
-            mb={8}
-          >
-            <VStack gap={6} align="stretch">
-              {/* Descrição */}
-              <Field.Root invalid={!!errors.description}>
-                <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                  Descrição
-                </Field.Label>
-                <Box position="relative">
-                  <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
-                    <Pencil size={18} color="var(--muted-foreground)" />
-                  </Box>
-                  <Input
-                    {...register('description')}
-                    placeholder="Ex: Salário, Freelance..."
-                    pl={10}
-                    borderColor="var(--border)"
-                    borderRadius="full"
-                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                  />
-                </Box>
-                {errors.description && (
-                  <Field.ErrorText>{errors.description.message}</Field.ErrorText>
-                )}
-              </Field.Root>
-
-              {/* Categoria */}
-              <Field.Root invalid={!!errors.categoryId}>
-                <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                  Categoria
-                </Field.Label>
-                <HStack gap={2}>
-                  <Box position="relative" flex={1}>
+            {/* Card de campos */}
+            <Box bg="var(--card)" borderRadius="2xl" p={6} shadow="md">
+              <VStack gap={6} align="stretch">
+                {/* Descrição */}
+                <Field.Root invalid={!!errors.description}>
+                  <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                    Descrição
+                  </Field.Label>
+                  <Box position="relative">
                     <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
-                      <Tag size={18} color="var(--muted-foreground)" />
+                      <Pencil size={18} color="var(--muted-foreground)" />
                     </Box>
-                    <NativeSelect.Root>
-                      <NativeSelect.Field
-                        {...register('categoryId')}
-                        placeholder="Selecione uma categoria"
-                        pl={10}
-                        borderColor="var(--border)"
-                        borderRadius="full"
-                        _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                      >
-                        {categories?.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </NativeSelect.Field>
-                      <NativeSelect.Indicator />
-                    </NativeSelect.Root>
+                    <Input
+                      {...register('description')}
+                      placeholder="Ex: Salário, Freelance..."
+                      pl={10}
+                      borderColor="var(--border)"
+                      borderRadius="full"
+                      _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                    />
                   </Box>
-                  <IconButton
-                    aria-label="Nova Categoria"
-                    onClick={() => {
-                      if (!selectedAccountId) {
-                        toast.error('Selecione uma conta primeiro');
-                        return;
-                      }
-                      setIsCategoryDialogOpen(true);
-                    }}
-                    variant="outline"
-                    borderRadius="full"
-                    borderColor="var(--border)"
-                    disabled={!selectedAccountId}
-                  >
-                    <Plus size={18} />
-                  </IconButton>
-                </HStack>
-                {errors.categoryId && (
-                  <Field.ErrorText>{errors.categoryId.message}</Field.ErrorText>
-                )}
-              </Field.Root>
+                  {errors.description && (
+                    <Field.ErrorText>{errors.description.message}</Field.ErrorText>
+                  )}
+                </Field.Root>
 
-              {/* Data (Opcional) */}
-              <Field.Root>
-                <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                  Data de Recebimento (opcional)
-                </Field.Label>
-                <Box position="relative">
-                  <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
-                    <Calendar size={18} color="var(--muted-foreground)" />
+                {/* Categoria */}
+                <Field.Root invalid={!!errors.categoryId}>
+                  <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                    Categoria
+                  </Field.Label>
+                  <HStack gap={2}>
+                    <Box position="relative" flex={1}>
+                      <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                        <Tag size={18} color="var(--muted-foreground)" />
+                      </Box>
+                      <NativeSelect.Root>
+                        <NativeSelect.Field
+                          {...register('categoryId')}
+                          placeholder="Selecione uma categoria"
+                          pl={10}
+                          borderColor="var(--border)"
+                          borderRadius="full"
+                          _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                        >
+                          {categories?.map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </NativeSelect.Field>
+                        <NativeSelect.Indicator />
+                      </NativeSelect.Root>
+                    </Box>
+                    <IconButton
+                      aria-label="Nova Categoria"
+                      onClick={() => {
+                        if (!selectedAccountId) {
+                          toast.error('Selecione uma conta primeiro');
+                          return;
+                        }
+                        setIsCategoryDialogOpen(true);
+                      }}
+                      variant="outline"
+                      borderRadius="full"
+                      borderColor="var(--border)"
+                      disabled={!selectedAccountId}
+                    >
+                      <Plus size={18} />
+                    </IconButton>
+                  </HStack>
+                  {errors.categoryId && (
+                    <Field.ErrorText>{errors.categoryId.message}</Field.ErrorText>
+                  )}
+                </Field.Root>
+
+                {/* Data */}
+                <Field.Root>
+                  <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                    Data de Recebimento (opcional)
+                  </Field.Label>
+                  <Box position="relative">
+                    <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                      <Calendar size={18} color="var(--muted-foreground)" />
+                    </Box>
+                    <Input
+                      type="datetime-local"
+                      {...register('dueDate')}
+                      pl={10}
+                      borderColor="var(--border)"
+                      borderRadius="full"
+                      _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                    />
                   </Box>
-                  <Input
-                    type="datetime-local"
-                    {...register('dueDate')}
-                    pl={10}
-                    borderColor="var(--border)"
-                    borderRadius="full"
-                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                  />
-                </Box>
-              </Field.Root>
+                </Field.Root>
 
-              {/* Recorrente */}
-              <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
-                <Checkbox.Control />
-                <Checkbox.Label>Receita recorrente</Checkbox.Label>
-              </Checkbox.Root>
+                {/* Recorrente */}
+                <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
+                  <Checkbox.Control />
+                  <Checkbox.Label>Receita recorrente</Checkbox.Label>
+                </Checkbox.Root>
 
-              {/* Input oculto para Valor */}
-              <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
-                <Input
-                  type="number"
-                  step="0.01"
-                  {...register('amount', { valueAsNumber: true })}
-                />
-              </Box>
-
-              {errors.amount && (
+                {/* Info Box */}
                 <Box
-                  bg="red.50"
+                  bg="var(--card)"
                   borderWidth="1px"
-                  borderColor="red.200"
-                  borderRadius="lg"
-                  p={3}
-                  mt={-4}
-                >
-                  <Text fontSize="sm" color="red.600">{errors.amount.message}</Text>
-                </Box>
-              )}
-
-              {/* Info Box */}
-              <Box
-                bg={{ base: 'green.50', _dark: 'green.950' }}
-                borderWidth="1px"
-                borderColor={{ base: 'green.200', _dark: 'green.800' }}
-                borderRadius="lg"
-                p={4}
-                mt={2}
-              >
-                <HStack gap={2} mb={3}>
-                  <Zap size={18} color={iconColors.success} />
-                  <Text fontWeight="semibold" color={{ base: 'green.700', _dark: 'green.300' }} fontSize="sm">
-                    Dica Financeira:
-                  </Text>
-                </HStack>
-                <VStack gap={2} align="stretch" fontSize="sm" color="muted.fg">
-                  <HStack gap={2}>
-                    <Check size={16} color={iconColors.success} />
-                    <Text>Registre todas as suas entradas</Text>
-                  </HStack>
-                  <HStack gap={2}>
-                    <Check size={16} color={iconColors.success} />
-                    <Text>Separe uma parte para sua reserva</Text>
-                  </HStack>
-                </VStack>
-              </Box>
-
-              {/* Erro API */}
-              {createIncome.isError && (
-                <Box
-                  bg={{ base: 'red.50', _dark: 'red.950' }}
-                  borderWidth="1px"
-                  borderColor={{ base: 'red.200', _dark: 'red.800' }}
+                  borderColor="var(--success-border)"
                   borderRadius="lg"
                   p={4}
                 >
-                  <Text fontSize="sm" color={{ base: 'red.600', _dark: 'red.300' }}>
-                    {createIncome.error instanceof Error
-                      ? createIncome.error.message
-                      : 'Erro ao criar receita'}
-                  </Text>
-                </Box>
-              )}
-
-              {/* Botão Salvar */}
-              <Button
-                type="submit"
-                loading={buttonState === 'loading'}
-                disabled={buttonState === 'success'}
-                w="full"
-                size="lg"
-                bg={buttonState === 'success' ? 'green.500' : 'var(--primary)'}
-                color="var(--primary-foreground)"
-                borderRadius="full"
-                _hover={{
-                  opacity: buttonState === 'success' ? 1 : 0.9,
-                  transform: buttonState === 'success' ? 'scale(1.02)' : 'none'
-                }}
-                transition="all 0.3s ease"
-                mt={4}
-              >
-                {buttonState === 'success' ? (
-                  <HStack gap={2}>
-                    <CheckCircle2 size={18} />
-                    <Text>Depósito Confirmado!</Text>
+                  <HStack gap={2} mb={3}>
+                    <Zap size={18} color={iconColors.success} />
+                    <Text fontWeight="semibold" color="var(--success)" fontSize="sm">
+                      Dica Financeira:
+                    </Text>
                   </HStack>
-                ) : (
-                  'Confirmar Depósito'
-                )}
-              </Button>
+                  <VStack gap={2} align="stretch" fontSize="sm" color="var(--foreground)">
+                    <HStack gap={2}>
+                      <Check size={16} color={iconColors.success} />
+                      <Text>Registre todas as suas entradas</Text>
+                    </HStack>
+                    <HStack gap={2}>
+                      <Check size={16} color={iconColors.success} />
+                      <Text>Separe uma parte para sua reserva</Text>
+                    </HStack>
+                  </VStack>
+                </Box>
 
-              {/* Cancelar */}
-              {onCancel && (
-                <Text
-                  as="button"
-                  onClick={onCancel}
-                  textAlign="center"
-                  color={iconColors.brandDark}
-                  fontSize="sm"
-                  fontWeight="medium"
-                  _hover={{ textDecoration: 'underline' }}
-                  cursor="pointer"
-                  pb={4}
-                >
-                  Cancelar
-                </Text>
-              )}
-            </VStack>
-          </Box>
-        </VStack>
-      </form>
+                {/* Erro da API */}
+                {createIncome.isError && (
+                  <Box
+                    bg={{ base: 'red.50', _dark: 'red.950' }}
+                    borderWidth="1px"
+                    borderColor={{ base: 'red.200', _dark: 'red.800' }}
+                    borderRadius="lg"
+                    p={4}
+                  >
+                    <Text fontSize="sm" color={{ base: 'red.600', _dark: 'red.300' }}>
+                      {createIncome.error instanceof Error
+                        ? createIncome.error.message
+                        : 'Erro ao criar receita'}
+                    </Text>
+                  </Box>
+                )}
+              </VStack>
+            </Box>
+          </VStack>
+        </Box>
+      </BaseForm>
 
       <CreateCategoryDialog
         open={isCategoryDialogOpen}

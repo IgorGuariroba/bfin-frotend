@@ -5,14 +5,13 @@ import { z } from 'zod';
 import {
   HStack,
   VStack,
-  Center,
   Text,
   Box,
   Input,
   Field,
   Menu,
 } from '@chakra-ui/react';
-import { Button } from '../../atoms/Button';
+import { BaseForm } from '../../ui/BaseForm';
 import { useCreateTransfer } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
 import type { CreateTransferDTO } from '../../../types/transaction';
@@ -21,6 +20,7 @@ import {
   ChevronDown,
   Tag,
   Zap,
+  ArrowRightLeft,
 } from 'lucide-react';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
@@ -141,57 +141,63 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
     }
   };
 
-  if (loadingAccounts) {
-    return (
-      <Center py={4}>
-        <Text>Carregando...</Text>
-      </Center>
-    );
-  }
-
-  if (!accounts || accounts.length === 0) {
-    return (
-      <Center py={4}>
-        <VStack gap={4} align="center">
-          <Text color="gray.600">Você precisa criar uma conta primeiro.</Text>
-          <Button onClick={onCancel}>Voltar</Button>
-        </VStack>
-      </Center>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap={4} align="stretch" pb={8}>
-        {/* Valor */}
-        <Box px={6}>
-          {isEditingAmount ? (
+    <BaseForm
+      variant="green-header"
+      title="Transferir"
+      icon={ArrowRightLeft}
+      isLoading={loadingAccounts}
+      error={!accounts || accounts.length === 0 ? 'Você precisa criar uma conta primeiro.' : null}
+      displayValue={{
+        value: formatCurrency(Number(amount)),
+        editable: true,
+        onEdit: () => {
+          const digits = Math.round(Number(amount) * 100).toString();
+          setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
+          setIsEditingAmount(true);
+        },
+      }}
+      formId="transfer-form"
+      onSubmit={handleSubmit(onSubmit)}
+      primaryAction={{
+        label: 'Transferir',
+        onClick: () => {},
+        loading: isSubmitting,
+        disabled: !amount || amount <= 0 || !selectedSourceAccountId,
+      }}
+      onCancel={onCancel}
+    >
+      {/* Card Branco com conteúdo */}
+      {/* Modal/Overlay para edição de valor */}
+      {isEditingAmount && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          bg="blackAlpha.500"
+          zIndex={50}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          px={4}
+        >
+          <VStack gap={4} bg="white" borderRadius="lg" p={6} minW="300px">
+            <Text fontSize="lg" fontWeight="bold">Editar Valor</Text>
             <Input
               type="text"
               inputMode="decimal"
               autoFocus
               value={amountInput}
               placeholder="0,00"
-              fontSize="4xl"
+              fontSize="2xl"
               fontWeight="bold"
-              color="var(--primary-foreground)"
-              bg="transparent"
-              border="none"
-              borderBottom="2px solid var(--primary-foreground)"
-              borderRadius="0"
-              p={0}
-              mb={4}
+              textAlign="center"
               onChange={(e) => {
                 const nextDigits = normalizeDigits(e.target.value);
                 setValue('amount', toAmountFromDigits(nextDigits), { shouldValidate: true });
                 setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
-              }}
-              onBlur={(e) => {
-                const nextDigits = normalizeDigits(e.target.value);
-                const nextAmount = toAmountFromDigits(nextDigits);
-                setValue('amount', nextAmount, { shouldValidate: true });
-                setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
-                setIsEditingAmount(false);
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -201,33 +207,61 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
                   setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
                   setIsEditingAmount(false);
                 }
-              }}
-              css={{
-                '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': {
-                  display: 'none',
-                },
+                if (e.key === 'Escape') {
+                  setIsEditingAmount(false);
+                }
               }}
             />
-          ) : (
-            <Text
-              fontSize="4xl"
-              fontWeight="bold"
-              color="var(--primary-foreground)"
-              mb={4}
-              cursor="pointer"
-              onClick={() => {
-                const digits = Math.round(Number(amount) * 100).toString();
-                setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
-                setIsEditingAmount(true);
-              }}
-              _hover={{ opacity: 0.8 }}
-            >
-              {formatCurrency(Number(amount))}
-            </Text>
-          )}
+            <HStack gap={2}>
+              <button
+                onClick={() => setIsEditingAmount(false)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#f0f0f0',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  const nextDigits = normalizeDigits(amountInput);
+                  const nextAmount = toAmountFromDigits(nextDigits);
+                  setValue('amount', nextAmount, { shouldValidate: true });
+                  setIsEditingAmount(false);
+                }}
+                style={{
+                  padding: '8px 16px',
+                  background: 'var(--primary)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Confirmar
+              </button>
+            </HStack>
+          </VStack>
+        </Box>
+      )}
 
-          {/* Dropdown de Conta */}
+      <Box
+        bg="var(--card)"
+        borderRadius="2xl"
+        p={6}
+        shadow="md"
+        mx={6}
+        mt={4}
+      >
+        <VStack gap={6} align="stretch">
+          {/* Seleção de Conta de Origem */}
           <Field.Root invalid={!!errors.sourceAccountId}>
+            <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+              Conta de Origem
+            </Field.Label>
             <input type="hidden" {...register('sourceAccountId')} />
             <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
               <Menu.Trigger asChild>
@@ -241,39 +275,38 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
                   py={3}
                   fontSize="md"
                   fontWeight="medium"
-                  color="primary.fg"
-                  bg="transparent"
+                  color="var(--foreground)"
+                  bg="var(--background)"
                   borderWidth="1px"
-                  borderColor="primary.fg"
+                  borderColor="var(--border)"
                   borderRadius="full"
                   transition="all 0.2s"
-                  css={{
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    },
-                    '&:focus': {
-                      outline: 'none',
-                      boxShadow: 'none',
-                    },
+                  _hover={{
+                    borderColor: 'var(--primary)',
+                  }}
+                  _focus={{
+                    outline: 'none',
+                    borderColor: 'var(--primary)',
+                    boxShadow: '0 0 0 1px var(--primary)',
                   }}
                 >
-                  <Text color="primary.fg" truncate>
+                  <Text color="var(--foreground)" truncate>
                     {sourceAccount
                       ? sourceAccount.account_name
                       : 'Selecione uma conta'}
                   </Text>
-                  <ChevronDown size={20} color={iconColors.primaryFg} />
+                  <ChevronDown size={20} />
                 </Box>
               </Menu.Trigger>
               <Menu.Positioner>
                 <Menu.Content
                   maxH="300px"
                   overflowY="auto"
-                  bg="var(--primary)"
+                  bg="var(--card)"
                   borderRadius="lg"
                   boxShadow="lg"
                   borderWidth="1px"
-                  borderColor="primary.fg"
+                  borderColor="var(--border)"
                   p={0}
                   css={{
                     zIndex: 'var(--z-dropdown)',
@@ -282,14 +315,14 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
                   <Box
                     px={3}
                     py={2}
-                    bg="var(--primary)"
+                    bg="var(--card)"
                     borderTopRadius="lg"
                     borderBottomWidth="1px"
-                    borderBottomColor="primary.fg"
+                    borderBottomColor="var(--border)"
                   >
                     <HStack gap={2}>
-                      <Check size={16} color={iconColors.primaryFg} />
-                      <Text fontSize="sm" fontWeight="bold" color="primary.fg">
+                      <Check size={16} />
+                      <Text fontSize="sm" fontWeight="bold">
                         Selecione uma conta
                       </Text>
                     </HStack>
@@ -306,16 +339,16 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
                         css={{
                           backgroundColor:
                             selectedSourceAccountId === account.id
-                              ? 'rgba(255, 255, 255, 0.1)'
+                              ? 'var(--muted)'
                               : 'transparent',
                           '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            backgroundColor: 'var(--muted)',
                           },
                         }}
                         px={3}
                         py={2}
                       >
-                        <Text fontSize="sm" color="var(--primary-foreground)" truncate>
+                        <Text fontSize="sm" truncate>
                           {account.account_name}
                         </Text>
                       </Menu.Item>
@@ -325,31 +358,49 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
               </Menu.Positioner>
             </Menu.Root>
             {errors.sourceAccountId && (
-              <Field.ErrorText color="var(--primary-foreground)" mt={2} fontSize="sm">
-                {errors.sourceAccountId.message}
-              </Field.ErrorText>
+              <Field.ErrorText>{errors.sourceAccountId.message}</Field.ErrorText>
             )}
           </Field.Root>
-        </Box>
 
-        {/* Card Branco */}
-        <Box
-          bg="var(--card)"
-          borderRadius="2xl"
-          p={6}
-          shadow="md"
-          mx={6}
-          mt={4}
-        >
-          <VStack gap={6} align="stretch">
-            {/* ID da Conta de Destino */}
-            <Field.Root invalid={!!errors.destinationAccountId}>
-              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                ID da Conta de Destino
-              </Field.Label>
+          {/* ID da Conta de Destino */}
+          <Field.Root invalid={!!errors.destinationAccountId}>
+            <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+              ID da Conta de Destino
+            </Field.Label>
+            <Input
+              {...register('destinationAccountId')}
+              placeholder="Ex: 123e4567-e89b-12d3-a456-426614174000"
+              borderColor="var(--border)"
+              borderRadius="full"
+              _focus={{
+                borderColor: 'var(--primary)',
+                boxShadow: '0 0 0 1px var(--primary)',
+              }}
+            />
+            {errors.destinationAccountId && (
+              <Field.ErrorText>{errors.destinationAccountId.message}</Field.ErrorText>
+            )}
+          </Field.Root>
+
+          {/* Descrição */}
+          <Field.Root invalid={!!errors.description}>
+            <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+              Descrição
+            </Field.Label>
+            <Box position="relative">
+              <Box
+                position="absolute"
+                left={3}
+                top="50%"
+                transform="translateY(-50%)"
+                zIndex={1}
+              >
+                <Tag size={18} color="var(--muted-foreground)" />
+              </Box>
               <Input
-                {...register('destinationAccountId')}
-                placeholder="Ex: 123e4567-e89b-12d3-a456-426614174000"
+                {...register('description')}
+                placeholder="Ex: Pagamento jantar"
+                pl={10}
                 borderColor="var(--border)"
                 borderRadius="full"
                 _focus={{
@@ -357,143 +408,75 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
                   boxShadow: '0 0 0 1px var(--primary)',
                 }}
               />
-              {errors.destinationAccountId && (
-                <Field.ErrorText>{errors.destinationAccountId.message}</Field.ErrorText>
-              )}
-            </Field.Root>
-
-            {/* Descrição */}
-            <Field.Root invalid={!!errors.description}>
-              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                Descrição
-              </Field.Label>
-              <Box position="relative">
-                <Box
-                  position="absolute"
-                  left={3}
-                  top="50%"
-                  transform="translateY(-50%)"
-                  zIndex={1}
-                >
-                  <Tag size={18} color="var(--muted-foreground)" />
-                </Box>
-                <Input
-                  {...register('description')}
-                  placeholder="Ex: Pagamento jantar"
-                  pl={10}
-                  borderColor="var(--border)"
-                  borderRadius="full"
-                  _focus={{
-                    borderColor: 'var(--primary)',
-                    boxShadow: '0 0 0 1px var(--primary)',
-                  }}
-                />
-              </Box>
-              {errors.description && (
-                <Field.ErrorText>{errors.description.message}</Field.ErrorText>
-              )}
-            </Field.Root>
-
-            {/* Input oculto para Valor */}
-            <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
-              <Input type="number" step="0.01" {...register('amount', { valueAsNumber: true })} />
             </Box>
-
-            {errors.amount && (
-              <Box
-                bg="red.50"
-                borderWidth="1px"
-                borderColor="red.200"
-                borderRadius="lg"
-                p={3}
-              >
-                <Text fontSize="sm" color="red.600">
-                  {errors.amount.message}
-                </Text>
-              </Box>
+            {errors.description && (
+              <Field.ErrorText>{errors.description.message}</Field.ErrorText>
             )}
+          </Field.Root>
 
-            {/* Info Box */}
+          {/* Input oculto para Valor */}
+          <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
+            <Input type="number" step="0.01" {...register('amount', { valueAsNumber: true })} />
+          </Box>
+
+          {errors.amount && (
             <Box
-              bg={{ base: 'green.50', _dark: 'green.950' }}
+              bg="red.50"
               borderWidth="1px"
-              borderColor={{ base: 'green.200', _dark: 'green.800' }}
+              borderColor="red.200"
+              borderRadius="lg"
+              p={3}
+            >
+              <Text fontSize="sm" color="red.600">
+                {errors.amount.message}
+              </Text>
+            </Box>
+          )}
+
+          {/* Info Box */}
+          <Box
+            bg={{ base: 'green.50', _dark: 'green.950' }}
+            borderWidth="1px"
+            borderColor={{ base: 'green.200', _dark: 'green.800' }}
+            borderRadius="lg"
+            p={4}
+          >
+            <HStack gap={2} mb={3}>
+              <Zap size={18} color={iconColors.success} />
+              <Text fontWeight="semibold" color={{ base: 'green.700', _dark: 'green.300' }} fontSize="sm">
+                Como funciona:
+              </Text>
+            </HStack>
+            <VStack gap={2} align="stretch" fontSize="sm" color="muted.fg">
+              <HStack gap={2}>
+                <Check size={16} color={iconColors.success} />
+                <Text>O valor será transferido imediatamente</Text>
+              </HStack>
+              <HStack gap={2}>
+                <Check size={16} color={iconColors.success} />
+                <Text>Verifique o ID da conta de destino</Text>
+              </HStack>
+            </VStack>
+          </Box>
+
+          {/* Erro API */}
+          {createTransfer.isError && (
+            <Box
+              bg={{ base: 'red.50', _dark: 'red.950' }}
+              borderWidth="1px"
+              borderColor={{ base: 'red.200', _dark: 'red.800' }}
               borderRadius="lg"
               p={4}
             >
-              <HStack gap={2} mb={3}>
-                <Zap size={18} color={iconColors.success} />
-                <Text fontWeight="semibold" color={{ base: 'green.700', _dark: 'green.300' }} fontSize="sm">
-                  Como funciona:
-                </Text>
-              </HStack>
-              <VStack gap={2} align="stretch" fontSize="sm" color="muted.fg">
-                <HStack gap={2}>
-                  <Check size={16} color={iconColors.success} />
-                  <Text>O valor será transferido imediatamente</Text>
-                </HStack>
-                <HStack gap={2}>
-                  <Check size={16} color={iconColors.success} />
-                  <Text>Verifique o ID da conta de destino</Text>
-                </HStack>
-              </VStack>
-            </Box>
-
-            {/* Erro API */}
-            {createTransfer.isError && (
-              <Box
-                bg={{ base: 'red.50', _dark: 'red.950' }}
-                borderWidth="1px"
-                borderColor={{ base: 'red.200', _dark: 'red.800' }}
-                borderRadius="lg"
-                p={4}
-              >
-                <Text fontSize="sm" color={{ base: 'red.600', _dark: 'red.300' }}>
-                  {createTransfer.error instanceof Error
-                    ? createTransfer.error.message
-                    : 'Erro ao criar transferência'}
-                </Text>
-              </Box>
-            )}
-
-            {/* Botão Transferir */}
-            <Button
-              type="submit"
-              loading={isSubmitting}
-              w="full"
-              size="lg"
-              bg="var(--primary)"
-              color="var(--primary-foreground)"
-              borderRadius="full"
-              mt={4}
-            >
-              Transferir
-            </Button>
-
-            {/* Cancelar */}
-            {onCancel && (
-              <Text
-                as="button"
-                onClick={onCancel}
-                textAlign="center"
-                color="var(--primary)"
-                fontSize="sm"
-                fontWeight="medium"
-                _hover={{ textDecoration: 'underline' }}
-                cursor="pointer"
-                mt={2}
-                css={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                }}
-              >
-                Cancelar
+              <Text fontSize="sm" color={{ base: 'red.600', _dark: 'red.300' }}>
+                {createTransfer.error instanceof Error
+                  ? createTransfer.error.message
+                  : 'Erro ao criar transferência'}
               </Text>
-            )}
-          </VStack>
-        </Box>
-      </VStack>
-    </form>
+            </Box>
+          )}
+        </VStack>
+      </Box>
+    </BaseForm>
   );
 }

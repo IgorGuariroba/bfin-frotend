@@ -58,5 +58,10 @@
 
   "includeCoAuthoredBy": false,
 
-  "respectGitignore": true
+  "respectGitignore": true,
+
+  "disabledMcpjsonServers": [
+    "browsermcp",
+    "github"
+  ]
 }

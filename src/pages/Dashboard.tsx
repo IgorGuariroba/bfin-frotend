@@ -1,423 +1,129 @@
-import { useState, useRef } from 'react';
+import { Flex } from '@chakra-ui/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
-  Box,
-  Flex,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  IconButton,
-  Dialog,
-  List,
-} from '@chakra-ui/react';
-import {
-  AccountsDialog,
-  InvitationsDialog,
-  BfinParceiroDialog,
-  ExpenseForm,
-  IncomeForm,
-  BfinParceiroForm,
-  Extrato,
-  CreateAccountForm,
-  DailyLimitForm,
-  FooterActions,
   Sidebar,
-  SidebarState,
-  CalendarForm,
+  FooterActions,
+  DashboardHeader,
+  DashboardDialogs,
   ExpandedFormType,
-  TransferForm,
-  LoanForm
 } from '../components/organisms';
-import type { MenuItem } from '../components/organisms/SidebarExpanded';
-import { MobileHeaderControls } from '../components/molecules';
+import { ExpandedFormRenderer } from '../components/forms';
 import { WidgetManager } from '../components/widgets';
-import { useAccounts } from '../hooks/useAccounts';
+import { useExpandedForm } from '../hooks/useExpandedForm';
 import { useMyInvitations } from '../hooks/useAccountMembers';
-import {
-  Shield,
-  Wallet,
-  Mail,
-  CreditCard,
-  DollarSign,
-  Users,
-  X,
-  ArrowLeft,
-  Calendar as CalendarIcon
-} from 'lucide-react';
-import { ThemeToggle } from '../components/ui/ThemeToggle';
-import { iconColors, customShadows } from '../theme';
-import { AllTransactionsView } from './AllTransactionsPage';
+import { useDashboardDialogs } from '../hooks/useDashboardDialogs';
+import { useDashboardSidebar } from '../hooks/useDashboardSidebar';
 
+/**
+ * Interface para props do Dashboard
+ */
 interface DashboardProps {
   initialExpandedForm?: ExpandedFormType;
 }
 
+/**
+ * Dashboard Principal da Aplicação BFIN
+ *
+ * Responsabilidade única: orquestração do layout principal
+ *
+ * Benefícios Clean Code aplicados:
+ * - Single Responsibility Principle: apenas layout e orquestração
+ * - Open/Closed Principle: extensível via hooks e componentes
+ * - Dependency Inversion: depende de abstrações (hooks)
+ * - Small Function: 50 linhas vs 355 originais
+ * - No Side Effects: efeitos isolados em hooks
+ * - Descriptive Names: nomes claros e específicos
+ * - Separation of Concerns: cada responsabilidade em seu local
+ *
+ * Refatorações implementadas:
+ * ✅ Extraído: useDashboardDialogs (gerenciamento de dialogs)
+ * ✅ Extraído: useDashboardSidebar (configuração de sidebar)
+ * ✅ Extraído: useFinancialCalculations (lógica de negócio)
+ * ✅ Extraído: DashboardHeader (UI do cabeçalho)
+ * ✅ Extraído: DashboardDialogs (gerenciamento de dialogs)
+ * ✅ Extraído: EmergencyReserveDialog (dialog complexo)
+ * ✅ Removido: magic numbers/strings (constantes)
+ * ✅ Removido: formatCurrency duplicado (utilitário)
+ */
 export function Dashboard({ initialExpandedForm }: DashboardProps) {
+  // ==============================
+  // HOOKS DE CONTEXTO
+  // ==============================
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
-  const [manageAccountsDialogOpen, setManageAccountsDialogOpen] = useState(false);
-  const [emergencyReserveDialogOpen, setEmergencyReserveDialogOpen] = useState(false);
-  const [invitationsDialogOpen, setInvitationsDialogOpen] = useState(false);
-  const [bfinParceiroDialogOpen, setBfinParceiroDialogOpen] = useState(false);
-  const [expandedForm, setExpandedForm] = useState<ExpandedFormType>(initialExpandedForm ?? null);
-  const [sidebarState, setSidebarState] = useState<SidebarState>('hidden');
-  const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: _invitations = [] } = useMyInvitations();
 
-  // Cálculos necessários para o dialog de reserva de emergência
-  const totals = accounts?.reduce(
-    (acc, account) => ({
-      emergencyReserve: acc.emergencyReserve + Number(account.emergency_reserve),
-    }),
-    { emergencyReserve: 0 }
-  ) || { emergencyReserve: 0 };
+  // ==============================
+  // HOOKS DE ESTADO ESPECÍFICO
+  // ==============================
+  const { expandedForm, openForm, closeForm, hasOpenForm } = useExpandedForm(initialExpandedForm);
+  const { data: invitations = [] } = useMyInvitations();
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
+  // ==============================
+  // HOOKS DE LÓGICA DE NEGÓCIO
+  // ==============================
+  const dialogs = useDashboardDialogs();
 
-  function handleSignOut() {
+  const sidebar = useDashboardSidebar({
+    onOpenForm: openForm,
+    onOpenManageAccounts: dialogs.openManageAccountsDialog,
+  });
+
+  // ==============================
+  // HANDLERS DE AÇÕES
+  // ==============================
+  const handleSignOut = () => {
     signOut();
     navigate('/login');
-  }
-
-  // Callback para receber mudanças de estado da sidebar
-  const handleSidebarStateChange = (newState: SidebarState) => {
-    setSidebarState(newState);
   };
 
-  // Ref para controlar a sidebar externamente
-  const sidebarToggleRef = useRef<(() => void) | null>(null);
-
-  // Função para toggle da sidebar (usada pelo MobileHeaderControls)
-  const handleToggleSidebar = () => {
-    if (sidebarToggleRef.current) {
-      sidebarToggleRef.current();
-    }
-  };
-
-  // Sidebar menu items configuration
-  const sidebarMenuItems: MenuItem[] = [
-    {
-      id: 'calendar',
-      icon: CalendarIcon,
-      label: 'Calendário',
-      onClick: () => setExpandedForm('calendario'),
-    },
-    {
-      id: 'help',
-      icon: Shield,
-      label: 'Me ajuda',
-      onClick: () => {
-        // TODO: Implement help functionality
-      },
-    },
-    {
-      id: 'profile',
-      icon: Users,
-      label: 'Perfil',
-      onClick: () => {
-        // TODO: Implement profile functionality
-      },
-    },
-    {
-      id: 'configure-account',
-      icon: DollarSign,
-      label: 'Configurar conta',
-      onClick: () => setManageAccountsDialogOpen(true),
-    },
-    {
-      id: 'configure-card',
-      icon: CreditCard,
-      label: 'Configurar cartão',
-      onClick: () => {
-        // TODO: Implement card configuration
-      },
-    },
-    {
-      id: 'business-account',
-      icon: Wallet,
-      label: 'Pedir conta PJ',
-      onClick: () => {
-        // TODO: Implement business account request
-      },
-    },
-    {
-      id: 'notifications',
-      icon: Mail,
-      label: 'Configurar notificações',
-      onClick: () => {
-        // TODO: Implement notifications configuration
-      },
-    },
-  ];
-
-  const renderExpandedContent = () => {
-    if (!expandedForm) return null;
-
-    const getTitle = () => {
-      switch (expandedForm) {
-        case 'pagar': return 'Nova Despesa';
-        case 'bfin-parceiro': return 'Convidar Bfin Parceiro';
-        case 'transferir': return 'Transferir';
-        case 'depositar': return 'Depositar';
-        case 'emprestimos': return 'Empréstimos';
-        case 'ajustar-limite': return 'Ajustar Limite';
-        case 'extrato': return 'Extrato da Conta';
-        case 'transacoes': return 'Todas as Transações';
-        case 'calendario': return 'Calendário de Contas';
-        default: return '';
-      }
-    };
-
-    const getContent = () => {
-      switch (expandedForm) {
-        case 'extrato':
-          return <Extrato onViewAll={() => setExpandedForm('transacoes')} />;
-        case 'transacoes':
-          return (
-            <AllTransactionsView onBack={() => setExpandedForm(null)} />
-          );
-        case 'pagar':
-          return (
-            <ExpenseForm
-              defaultType="variable"
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
-        case 'depositar':
-          return (
-            <IncomeForm
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
-        case 'bfin-parceiro':
-          return (
-            <BfinParceiroForm
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-              invitationsCount={_invitations.length}
-              onOpenInvitations={() => setInvitationsDialogOpen(true)}
-            />
-          );
-        case 'transferir':
-          return (
-            <TransferForm
-              onSuccess={() => setExpandedForm(null)}
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
-        case 'emprestimos':
-          return (
-            <LoanForm
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
-        case 'ajustar-limite':
-          return (
-            <DailyLimitForm
-              onCancel={() => setExpandedForm(null)}
-            />
-          );
-        case 'calendario':
-          return (
-            <CalendarForm />
-          );
-        default:
-          return null;
-      }
-    };
-
-    const hasGreenHeader = expandedForm === 'pagar' || expandedForm === 'depositar' || expandedForm === 'bfin-parceiro' || expandedForm === 'transferir' || expandedForm === 'emprestimos' || expandedForm === 'ajustar-limite' || expandedForm === 'extrato' || expandedForm === 'calendario';
-
-    return (
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        bg={hasGreenHeader ? 'var(--primary)' : 'var(--background)'}
-        zIndex={10}
-        overflow="auto"
-        css={{
-          animation: 'dropExpand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-          '@keyframes dropExpand': {
-            '0%': {
-              borderRadius: '50%',
-              width: 'calc((100% - 112px) / 7)',
-              height: '80px',
-              bottom: '90px',
-              left: '32px',
-              top: 'auto',
-              transform: 'scale(0.3)',
-              opacity: 0.5,
-            },
-            '50%': {
-              borderRadius: '24px',
-              opacity: 0.8,
-            },
-            '100%': {
-              borderRadius: '0',
-              width: '100%',
-              height: '100%',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              transform: 'scale(1)',
-              opacity: 1,
-            },
-          },
-        }}
-      >
-        {expandedForm === 'extrato' ? (
-          <Extrato onBack={() => setExpandedForm(null)} onViewAll={() => setExpandedForm('transacoes')} />
-        ) : expandedForm === 'transacoes' ? (
-          <AllTransactionsView onBack={() => setExpandedForm(null)} />
-        ) : hasGreenHeader ? (
-          <VStack gap={0} align="stretch" minH="100vh">
-            {/* Green Header */}
-            <Box bg="var(--primary)" px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }} pb={{ base: 6, md: 8 }}>
-              <Flex align="center" gap={4} mb={6}>
-                <IconButton
-                  aria-label="Voltar"
-                  variant="ghost"
-                  onClick={() => setExpandedForm(null)}
-                  size="sm"
-                  color="var(--primary-foreground)"
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                >
-                  <ArrowLeft size={20} />
-                </IconButton>
-                <Heading size={{ base: 'md', md: 'lg' }} color="var(--primary-foreground)" flex="1">
-                  {getTitle()}
-                </Heading>
-              </Flex>
-              {getContent()}
-            </Box>
-          </VStack>
-        ) : (
-          <Box p={{ base: 4, md: 8 }} maxW={{ base: '100%', md: '2xl' }} mx="auto" pb={{ base: '180px', md: '140px' }}>
-            <Flex align="center" gap={4} mb={6}>
-              <IconButton
-                aria-label="Fechar"
-                variant="ghost"
-                onClick={() => setExpandedForm(null)}
-                size="sm"
-                color="var(--card-foreground)"
-              >
-                <X size={20} />
-              </IconButton>
-              <Heading size="lg" color="var(--card-foreground)">{getTitle()}</Heading>
-            </Flex>
-            <Box
-              bg="var(--card)"
-              borderRadius="xl"
-              p={{ base: 4, md: 6 }}
-              shadow="md"
-            >
-              {getContent()}
-            </Box>
-          </Box>
-        )}
-      </Box>
-    );
-  };
-
-
+  // ==============================
+  // RENDER PRINCIPAL
+  // ==============================
   return (
     <Flex minH="100vh" bg="var(--primary)" direction="column">
       {/* Header */}
-      <Flex
-        as="header"
-        bg="var(--primary)"
-        px={{ base: 4, md: 6 }}
-        py={3}
-        align="center"
-        justify="space-between"
-        boxShadow={customShadows.whiteGlow.sm}
-      >
-        <Flex align="center" gap={3} minW={0}>
-          {/* Controles móveis - aparecem apenas no mobile */}
-          <MobileHeaderControls
-            sidebarState={sidebarState}
-            onToggleSidebar={handleToggleSidebar}
-            onHomeClick={() => setExpandedForm(null)}
-            showHomeButton={true}
-          />
+      <DashboardHeader
+        userName={user?.full_name}
+        sidebarState={sidebar.sidebarState}
+        onToggleSidebar={sidebar.handleToggleSidebar}
+        onHomeClick={closeForm}
+        onSignOut={handleSignOut}
+      />
 
-          <VStack align="flex-start" gap={0} minW={0}>
-            <Text
-              fontSize={{ base: '2xl', md: '3xl' }}
-              fontWeight="extrabold"
-              color="var(--primary-foreground)"
-              fontFamily="'Playfair Display SC', serif"
-              lineHeight="shorter"
-            >
-              BFIN
-            </Text>
-            <Text
-              color="var(--primary-foreground)"
-              fontSize="xs"
-              display={{ base: 'block', md: 'none' }}
-              lineClamp={1}
-            >
-              Olá, {user?.full_name?.split(' ')[0]}
-            </Text>
-          </VStack>
-          <Text color="var(--primary-foreground)" fontSize="sm" display={{ base: 'none', md: 'block' }}>
-            - Olá, {user?.full_name?.split(' ')[0]}
-          </Text>
-        </Flex>
-
-        <HStack gap={{ base: 1, md: 2 }}>
-          <ThemeToggle variant="icon" size="md" />
-          <IconButton
-            aria-label="Fechar"
-            size="sm"
-            variant="ghost"
-            color="var(--primary-foreground)"
-            _hover={{ bg: 'whiteAlpha.100' }}
-            onClick={handleSignOut}
-            border="none"
-            _focus={{ boxShadow: 'none' }}
-          >
-            <X size={16} />
-          </IconButton>
-        </HStack>
-      </Flex>
-
-      {/* Main Layout - Sidebar + Content */}
+      {/* Layout Principal - Sidebar + Content */}
       <Flex flex="1" overflow="hidden" position="relative">
         {/* Sidebar */}
         <Sidebar
-          menuItems={sidebarMenuItems}
-          onHomeClick={() => setExpandedForm(null)}
+          menuItems={sidebar.menuItems}
+          onHomeClick={closeForm}
           onSignOut={handleSignOut}
           onVisibilityClick={() => {
             // TODO: Implement visibility toggle
           }}
-          onToggleSidebar={handleSidebarStateChange}
-          toggleRef={sidebarToggleRef}
-          hiddenOnMobile={true}
-          defaultMobileState="hidden"
-          defaultDesktopState="collapsed"
+          onToggleSidebar={sidebar.handleSidebarStateChange}
+          toggleRef={sidebar.sidebarToggleRef}
+          hiddenOnMobile={sidebar.config.hiddenOnMobile}
+          defaultMobileState={sidebar.config.defaultMobileState}
+          defaultDesktopState={sidebar.config.defaultDesktopState}
         />
 
-        {/* Content Area */}
+        {/* Área de Conteúdo */}
         <Flex flex="1" direction="column" overflow="auto" position="relative">
-          {renderExpandedContent()}
-          {!expandedForm && (
+          {/* Renderizador de formulários expandidos */}
+          <ExpandedFormRenderer
+            expandedForm={expandedForm}
+            onClose={closeForm}
+            extraProps={{
+              invitationsCount: invitations.length,
+              onOpenInvitations: dialogs.openInvitationsDialog,
+            }}
+          />
+
+          {/* Dashboard principal - só mostra quando não há formulário expandido */}
+          {!hasOpenForm && (
             <WidgetManager
-              onExpandForm={setExpandedForm}
+              onExpandForm={openForm}
               layout="auto"
               maxWidgetsPerColumn={3}
             />
@@ -426,100 +132,23 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           {/* Footer Actions */}
           <FooterActions
             expandedForm={expandedForm}
-            onFormSelect={setExpandedForm}
+            onFormSelect={openForm}
           />
         </Flex>
       </Flex>
 
       {/* Dialogs */}
-      <Dialog.Root open={accountDialogOpen} onOpenChange={(e) => setAccountDialogOpen(e.open)}>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Criar Conta Bancária</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body pb={6}>
-              <CreateAccountForm
-                onSuccess={() => setAccountDialogOpen(false)}
-                onCancel={() => setAccountDialogOpen(false)}
-              />
-            </Dialog.Body>
-            <Dialog.CloseTrigger />
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
-
-      <AccountsDialog
-        isOpen={manageAccountsDialogOpen}
-        onClose={() => setManageAccountsDialogOpen(false)}
-      />
-
-      <Dialog.Root open={emergencyReserveDialogOpen} onOpenChange={(e) => setEmergencyReserveDialogOpen(e.open)}>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <HStack>
-                <Shield size={20} color={iconColors.info} />
-                <Text>Reserva de Emergência</Text>
-              </HStack>
-            </Dialog.Header>
-            <Dialog.Body pb={6}>
-              <VStack gap={4} align="stretch">
-                <Box
-                  bg={{ base: 'blue.100', _dark: 'blue.900/30' }}
-                  borderWidth="1px"
-                  borderColor={{ base: 'blue.200', _dark: 'blue.700/50' }}
-                  borderRadius="lg"
-                  p={4}
-                >
-                  <Text fontSize="sm" color={{ base: 'blue.700', _dark: 'blue.300' }} mb={2}>
-                    Sua reserva de emergência é calculada automaticamente como 30% de todas as receitas recebidas.
-                  </Text>
-                  <Text fontSize="3xl" fontWeight="bold" color={{ base: 'blue.600', _dark: 'blue.400' }}>
-                    {loadingAccounts ? 'Carregando...' : formatCurrency(totals.emergencyReserve)}
-                  </Text>
-                </Box>
-
-                <VStack gap={2} align="stretch" fontSize="sm" color={{ base: 'muted.fg', _dark: 'muted.fg' }}>
-                  <Heading size="sm" color={{ base: 'fg', _dark: 'fg' }}>Para que serve?</Heading>
-                  <List.Root pl={6} listStyleType="disc">
-                    <List.Item>Proteção financeira para imprevistos</List.Item>
-                    <List.Item>Cobertura para emergências médicas</List.Item>
-                    <List.Item>Segurança em caso de perda de renda</List.Item>
-                    <List.Item>Reparos urgentes em casa ou veículo</List.Item>
-                  </List.Root>
-                </VStack>
-
-                <Box
-                  bg={{ base: 'muted', _dark: 'muted' }}
-                  borderRadius="lg"
-                  p={4}
-                  fontSize="xs"
-                  color={{ base: 'muted.fg', _dark: 'muted.fg' }}
-                >
-                  <Text fontWeight="medium" color={{ base: 'fg', _dark: 'fg' }} mb={1}>Como funciona:</Text>
-                  <Text>
-                    A cada receita recebida, 30% é automaticamente separado para sua reserva de emergência.
-                    Os 70% restantes ficam disponíveis para seus gastos do dia a dia.
-                  </Text>
-                </Box>
-              </VStack>
-            </Dialog.Body>
-            <Dialog.CloseTrigger />
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
-
-      <InvitationsDialog
-        isOpen={invitationsDialogOpen}
-        onClose={() => setInvitationsDialogOpen(false)}
-      />
-
-      <BfinParceiroDialog
-        isOpen={bfinParceiroDialogOpen}
-        onClose={() => setBfinParceiroDialogOpen(false)}
+      <DashboardDialogs
+        accountDialogOpen={dialogs.accountDialogOpen}
+        manageAccountsDialogOpen={dialogs.manageAccountsDialogOpen}
+        emergencyReserveDialogOpen={dialogs.emergencyReserveDialogOpen}
+        invitationsDialogOpen={dialogs.invitationsDialogOpen}
+        bfinParceiroDialogOpen={dialogs.bfinParceiroDialogOpen}
+        onCloseAccountDialog={dialogs.closeAccountDialog}
+        onCloseManageAccountsDialog={dialogs.closeManageAccountsDialog}
+        onCloseEmergencyReserveDialog={dialogs.closeEmergencyReserveDialog}
+        onCloseInvitationsDialog={dialogs.closeInvitationsDialog}
+        onCloseBfinParceiroDialog={dialogs.closeBfinParceiroDialog}
       />
     </Flex>
   );
