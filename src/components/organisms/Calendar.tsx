@@ -83,7 +83,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
   }
 
   return (
-    <VStack gap={4} align="center" h={height} w="100%">
+    <VStack gap={{ base: 2, md: 4 }} align="center" h={height} w="100%">
       {/* Cabeçalho */}
       <Box maxW={{ base: '100%', md: '500px', lg: '600px' }} w="100%">
         <CalendarHeader

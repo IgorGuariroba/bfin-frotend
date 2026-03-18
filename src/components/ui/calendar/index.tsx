@@ -99,12 +99,12 @@ export const ChakraCalendar = forwardRef<HTMLDivElement, ChakraCalendarProps>(
     return (
       <VStack
         ref={ref}
-        gap={2}
+        gap={{ base: 1, md: 2 }}
         opacity={opacity}
         pointerEvents={disabled ? 'none' : 'auto'}
         bg={bg || backgroundColor}
         borderRadius="md"
-        p={bg || backgroundColor ? 4 : 0}
+        p={bg || backgroundColor ? { base: 2, md: 4 } : 0}
         w="100%"
         maxW="100%"
         {...props}
