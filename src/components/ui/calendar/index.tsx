@@ -3,7 +3,7 @@
 import { forwardRef } from 'react'
 import { DayPicker, DayPickerProps } from 'react-day-picker'
 import { Box } from '@chakra-ui/react'
-import { useTheme } from 'next-themes'
+import { useColorMode } from '../useColorMode'
 import { ptBR } from 'date-fns/locale'
 import type { CalendarComponentProps } from '@/types/calendar'
 import { calendarStyles, getCalendarCSSVars } from './calendar-theme'
@@ -19,13 +19,13 @@ export interface ChakraCalendarProps extends
 
 export const ChakraCalendar = forwardRef<HTMLDivElement, ChakraCalendarProps>(
   ({ variant = 'default', size = 'md', className, compact, opacity, ...props }, ref) => {
-    const { resolvedTheme } = useTheme()
+    const { colorMode } = useColorMode()
 
     // Determinar tamanho baseado na prop compact ou size
     const finalSize = compact ? 'sm' : size
 
     // CSS variables para integração com React Day Picker
-    const cssVars = getCalendarCSSVars(finalSize, resolvedTheme as 'light' | 'dark')
+    const cssVars = getCalendarCSSVars(finalSize, colorMode)
 
     // Estilos do calendário baseado na variante
     const calendarStyle = {
