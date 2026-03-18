@@ -152,6 +152,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
           onMonthChange={() => {}} // Controlado pelo header
           variant={compact ? 'compact' : 'default'}
           size={compact ? 'sm' : 'md'}
+          bg="white"
           components={{
             Day: ({ date, ...props }) => (
               <CalendarDay

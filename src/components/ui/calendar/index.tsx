@@ -16,6 +16,8 @@ export interface ChakraCalendarProps extends CalendarComponentProps {
   onMonthChange?: (date: Date) => void
   disabled?: boolean
   opacity?: number | string
+  bg?: string
+  backgroundColor?: string
   components?: {
     Day?: React.ComponentType<{
       date: Date;
@@ -41,6 +43,8 @@ export const ChakraCalendar = forwardRef<HTMLDivElement, ChakraCalendarProps>(
     month = new Date(),
     disabled,
     opacity = 1,
+    bg,
+    backgroundColor,
     components,
     fixedWeeks = true,
     showOutsideDays = true,
@@ -98,6 +102,9 @@ export const ChakraCalendar = forwardRef<HTMLDivElement, ChakraCalendarProps>(
         gap={2}
         opacity={opacity}
         pointerEvents={disabled ? 'none' : 'auto'}
+        bg={bg || backgroundColor}
+        borderRadius="md"
+        p={bg || backgroundColor ? 4 : 0}
         {...props}
       >
         {/* Week headers */}
