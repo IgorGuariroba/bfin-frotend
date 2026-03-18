@@ -30,6 +30,7 @@ interface UseExpenseFormStateProps {
 export function useExpenseFormState({ defaultType, accounts }: UseExpenseFormStateProps) {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [expenseType, setExpenseType] = useState<'fixed' | 'variable'>(defaultType);
+  const [amountInputValue, setAmountInputValue] = useState('');
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
@@ -44,7 +45,6 @@ export function useExpenseFormState({ defaultType, accounts }: UseExpenseFormSta
 
   const { watch, setValue } = form;
 
-  const amount = watch('amount') || 0;
   const selectedAccountId = watch('accountId');
   const isRecurring = watch('isRecurring');
 
@@ -69,8 +69,9 @@ export function useExpenseFormState({ defaultType, accounts }: UseExpenseFormSta
     setValue('type', newType);
   };
 
-  const handleAmountChange = (value: number) => {
-    setValue('amount', value, { shouldValidate: true });
+  const handleAmountChange = (valueStr: string, valueAsNumber: number) => {
+    setAmountInputValue(valueStr);
+    setValue('amount', valueAsNumber, { shouldValidate: true });
   };
 
   return {
@@ -82,7 +83,7 @@ export function useExpenseFormState({ defaultType, accounts }: UseExpenseFormSta
     state: {
       isCategoryDialogOpen,
       expenseType,
-      amount,
+      amountInputValue,
       selectedAccountId,
       isRecurring,
     },

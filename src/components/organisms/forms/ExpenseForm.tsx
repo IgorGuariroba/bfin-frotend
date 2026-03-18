@@ -36,7 +36,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
     state: {
       isCategoryDialogOpen,
       expenseType,
-      amount,
+      amountInputValue,
       selectedAccountId,
       isRecurring
     },
@@ -101,8 +101,9 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         displayValue={{
           inputContent: (
             <NumberInput.Root
-              value={amount.toString()}
-              onValueChange={(details) => handleAmountChange(parseFloat(details.value) || 0)}
+              locale="pt-BR"
+              value={amountInputValue}
+              onValueChange={(details) => handleAmountChange(details.value, details.valueAsNumber)}
               formatOptions={{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol' }}
               allowMouseWheel
               step={0.01}
