@@ -131,7 +131,7 @@ export const Calendar: React.FC<CalendarComponentProps> = ({
       )}
 
       {/* Calendário */}
-      <Box position="relative" flex="1" maxW={{ base: '100%', md: '500px', lg: '600px' }} mx="auto">
+      <Box position="relative" flex="1" maxW={{ base: '100%', md: '500px', lg: '600px' }} mx="auto" w="100%">
         {isLoading && (
           <Skeleton
             height="300px"

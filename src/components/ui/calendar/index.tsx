@@ -105,6 +105,8 @@ export const ChakraCalendar = forwardRef<HTMLDivElement, ChakraCalendarProps>(
         bg={bg || backgroundColor}
         borderRadius="md"
         p={bg || backgroundColor ? 4 : 0}
+        w="100%"
+        maxW="100%"
         {...props}
       >
         {/* Week headers */}
