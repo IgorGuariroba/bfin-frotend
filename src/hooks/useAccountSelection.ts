@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useAccounts } from './useAccounts';
 
+// Interface que representa uma conta do SDK
+interface SDKAccount {
+  id?: string;
+  account_name: string;
+  available_balance: string;
+  is_default?: boolean;
+}
+
 export interface UseAccountSelectionReturn {
-  accounts: any[] | undefined; // Usar any para evitar conflitos de tipo
+  accounts: SDKAccount[] | undefined;
   selectedAccountId: string;
-  selectedAccount: any | undefined;
+  selectedAccount: SDKAccount | undefined;
   isLoadingAccounts: boolean;
   handleAccountSelect: (accountId: string) => void;
 }
@@ -34,9 +42,9 @@ export const useAccountSelection = (): UseAccountSelectionReturn => {
   };
 
   return {
-    accounts,
+    accounts: accounts as SDKAccount[] | undefined,
     selectedAccountId,
-    selectedAccount,
+    selectedAccount: selectedAccount as SDKAccount | undefined,
     isLoadingAccounts,
     handleAccountSelect,
   };

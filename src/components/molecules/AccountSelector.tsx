@@ -3,9 +3,17 @@ import { ChevronDown, Check } from 'lucide-react';
 import { iconColors } from '../../theme';
 import { formatCurrency } from '../../utils/formatters';
 
+// Interface que representa uma conta do SDK
+interface SDKAccount {
+  id?: string;
+  account_name: string;
+  available_balance: string;
+  is_default?: boolean;
+}
+
 interface AccountSelectorProps {
-  accounts: any[]; // Usar any para evitar conflitos de tipo
-  selectedAccount?: any;
+  accounts: SDKAccount[];
+  selectedAccount?: SDKAccount;
   onSelectAccount: (accountId: string) => void;
 }
 
