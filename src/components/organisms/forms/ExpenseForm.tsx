@@ -13,6 +13,7 @@ import {
   Menu,
   IconButton,
   Checkbox,
+  NumberInput,
 } from '@chakra-ui/react';
 import { BaseForm } from '../../ui/BaseForm';
 import { Button } from '../../atoms/Button';
@@ -123,24 +124,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
     }).format(value);
   };
 
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
 
-  const normalizeDigits = (value: string) => value.replace(/\D/g, '');
-
-  const formatMoneyFromDigits = (digitsValue: string) => {
-    const numeric = Number.parseInt(digitsValue || '0', 10);
-    return formatNumber(numeric / 100);
-  };
-
-  const toAmountFromDigits = (digitsValue: string) => {
-    const numeric = Number.parseInt(digitsValue || '0', 10);
-    return numeric / 100;
-  };
 
   const isFixed = expenseType === 'fixed';
 
@@ -238,34 +222,41 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
           <VStack gap={6} align="stretch">
             {/* Input de edição do valor */}
             {isEditingAmount && (
-              <Input
-                type="text"
-                inputMode="decimal"
-                autoFocus
-                value={amount ? formatMoneyFromDigits(Math.round(amount * 100).toString()) : ''}
-                placeholder="0,00"
-                fontSize="xl"
-                fontWeight="bold"
-                borderColor="var(--border)"
-                borderRadius="full"
-                _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                onChange={(e) => {
-                  const nextDigits = normalizeDigits(e.target.value);
-                  setValue('amount', toAmountFromDigits(nextDigits), { shouldValidate: true });
+              <NumberInput.Root
+                defaultValue={amount.toString()}
+                value={amount.toString()}
+                onValueChange={(details) => {
+                  const numericValue = parseFloat(details.value) || 0;
+                  setValue('amount', numericValue, { shouldValidate: true });
                 }}
-                onBlur={() => setIsEditingAmount(false)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    setIsEditingAmount(false);
-                  }
+                formatOptions={{
+                  style: "currency",
+                  currency: "BRL",
+                  currencyDisplay: "symbol",
                 }}
-                css={{
-                  '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': {
-                    display: 'none',
-                  },
-                }}
-              />
+                allowMouseWheel
+                step={0.01}
+                min={0}
+              >
+                <NumberInput.Control>
+                  <NumberInput.Input
+                    autoFocus
+                    placeholder="R$ 0,00"
+                    fontSize="xl"
+                    fontWeight="bold"
+                    borderColor="var(--border)"
+                    borderRadius="full"
+                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                    onBlur={() => setIsEditingAmount(false)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        setIsEditingAmount(false);
+                      }
+                    }}
+                  />
+                </NumberInput.Control>
+              </NumberInput.Root>
             )}
 
             {/* Input oculto para o RHF */}
