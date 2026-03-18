@@ -31,10 +31,11 @@ export interface BaseFormProps {
 
   // Value display (comum em formulários financeiros)
   displayValue?: {
-    value: string;
+    value?: string;
     label?: string;
     editable?: boolean;
     onEdit?: () => void;
+    inputContent?: React.ReactNode;
   };
 
   // Navigation
@@ -249,17 +250,21 @@ export const BaseForm: React.FC<BaseFormProps> = ({
                   {displayValue.label}
                 </Text>
               )}
-              <Text
-                fontSize="4xl"
-                fontWeight="bold"
-                color="var(--primary-foreground)"
-                textAlign="center"
-                cursor={displayValue.editable ? 'pointer' : 'default'}
-                onClick={displayValue.editable ? displayValue.onEdit : undefined}
-                _hover={displayValue.editable ? { opacity: 0.8 } : {}}
-              >
-                {displayValue.value}
-              </Text>
+              {displayValue.inputContent ? (
+                displayValue.inputContent
+              ) : (
+                <Text
+                  fontSize="4xl"
+                  fontWeight="bold"
+                  color="var(--primary-foreground)"
+                  textAlign="center"
+                  cursor={displayValue.editable ? 'pointer' : 'default'}
+                  onClick={displayValue.editable ? displayValue.onEdit : undefined}
+                  _hover={displayValue.editable ? { opacity: 0.8 } : {}}
+                >
+                  {displayValue.value}
+                </Text>
+              )}
             </Box>
           )}
         </Box>

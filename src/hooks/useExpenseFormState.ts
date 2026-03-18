@@ -30,7 +30,6 @@ interface UseExpenseFormStateProps {
 export function useExpenseFormState({ defaultType, accounts }: UseExpenseFormStateProps) {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [expenseType, setExpenseType] = useState<'fixed' | 'variable'>(defaultType);
-  const [isEditingAmount, setIsEditingAmount] = useState(false);
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
@@ -83,14 +82,12 @@ export function useExpenseFormState({ defaultType, accounts }: UseExpenseFormSta
     state: {
       isCategoryDialogOpen,
       expenseType,
-      isEditingAmount,
       amount,
       selectedAccountId,
       isRecurring,
     },
     actions: {
       setIsCategoryDialogOpen,
-      setIsEditingAmount,
       handleExpenseTypeChange,
       handleAmountChange,
     },

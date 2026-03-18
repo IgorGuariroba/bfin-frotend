@@ -1,4 +1,4 @@
-import { VStack, Box, Text } from '@chakra-ui/react';
+import { VStack, Box, Text, NumberInput } from '@chakra-ui/react';
 import { Receipt, Pencil } from 'lucide-react';
 
 import { BaseForm } from '../../ui/BaseForm';
@@ -9,9 +9,7 @@ import { CreateCategoryDialog } from '../dialogs/CreateCategoryDialog';
 
 import { useExpenseFormState } from '../../../hooks/useExpenseFormState';
 import { useExpenseSubmission } from '../../../hooks/useExpenseSubmission';
-import { formatCurrency } from '../../../utils/currency';
 
-import { AmountInput } from '../../molecules/AmountInput';
 import { ExpenseAccountSelector } from '../../molecules/ExpenseAccountSelector';
 import { FormInput } from '../../molecules/FormInput';
 import { ExpenseTypeToggle } from '../../molecules/ExpenseTypeToggle';
@@ -38,14 +36,12 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
     state: {
       isCategoryDialogOpen,
       expenseType,
-      isEditingAmount,
       amount,
       selectedAccountId,
       isRecurring
     },
     actions: {
       setIsCategoryDialogOpen,
-      setIsEditingAmount,
       handleExpenseTypeChange,
       handleAmountChange
     }
@@ -103,9 +99,28 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         formId="expense-form"
         onSubmit={handleSubmit(submitExpense)}
         displayValue={{
-          value: formatCurrency(amount),
-          editable: !isEditingAmount,
-          onEdit: () => setIsEditingAmount(true),
+          inputContent: (
+            <NumberInput.Root
+              value={amount.toString()}
+              onValueChange={(details) => handleAmountChange(parseFloat(details.value) || 0)}
+              formatOptions={{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol' }}
+              allowMouseWheel
+              step={0.01}
+              min={0}
+            >
+              <NumberInput.Input
+                placeholder="R$ 0,00"
+                fontSize="4xl"
+                fontWeight="bold"
+                color="var(--primary-foreground)"
+                textAlign="center"
+                border="none"
+                bg="transparent"
+                _focus={{ boxShadow: 'none' }}
+                _placeholder={{ color: 'whiteAlpha.700' }}
+              />
+            </NumberInput.Root>
+          ),
         }}
         primaryAction={{
           label: isFixed ? 'Criar Despesa Fixa' : 'Criar Despesa Variável',
@@ -123,15 +138,12 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
       >
         <Box px={{ base: 4, md: 6 }} py={4}>
           <VStack gap={6} align="stretch">
-            {/* Input de valor */}
-            <AmountInput
-              amount={amount}
-              isEditing={isEditingAmount}
-              onAmountChange={handleAmountChange}
-              onEditingChange={setIsEditingAmount}
-              register={register}
-              error={errors.amount?.message}
-            />
+            {/* Erro de valor */}
+            {errors.amount && (
+              <Box bg="red.50" borderWidth="1px" borderColor="red.200" borderRadius="lg" p={3}>
+                <Text fontSize="sm" color="red.600">{errors.amount.message}</Text>
+              </Box>
+            )}
 
             {/* Seletor de Conta */}
             <ExpenseAccountSelector
