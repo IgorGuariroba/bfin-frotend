@@ -132,6 +132,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
           <FooterActions
             expandedForm={expandedForm}
             onFormSelect={openForm}
+            onHomeClick={closeForm}
           />
         </Flex>
       </Flex>

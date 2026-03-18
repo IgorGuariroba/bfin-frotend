@@ -56,6 +56,9 @@ function FooterActionsWrapper() {
     <FooterActions
       expandedForm={expandedForm}
       onFormSelect={setExpandedForm}
+      onHomeClick={() => {
+        setExpandedForm(null);
+      }}
     />
   );
 }
