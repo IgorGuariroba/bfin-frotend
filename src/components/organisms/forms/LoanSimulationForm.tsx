@@ -1,10 +1,17 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HStack, VStack, Box, Input, Field } from '@chakra-ui/react';
+import { VStack, Box } from '@chakra-ui/react';
+import { Calculator, Calendar, Percent } from 'lucide-react';
+
+import { BaseForm } from '../../ui/BaseForm';
 import { Button } from '../../atoms/Button';
-import { createLoanSimulationSchema, type CreateLoanSimulationFormData, LOAN_SIMULATION_CONSTANTS } from '../../../types/loanSimulation';
-import { useCreateLoanSimulation } from '../../../hooks/useLoanSimulations';
+import { MonetaryValueInput } from '../../molecules/MonetaryValueInput';
+import { FormInput } from '../../molecules/FormInput';
+import { ApiErrorBox } from '../../molecules/ApiErrorBox';
 import { loanSimulationService } from '../../../services/loanSimulationService';
+
+import { useLoanSimulationFormState } from '../../../hooks/useLoanSimulationFormState';
+import { useLoanSimulationSubmission } from '../../../hooks/useLoanSimulationSubmission';
+
+import type { CreateLoanSimulationFormData } from '../../../types/loanSimulation';
 
 interface LoanSimulationFormProps {
   onSuccess?: () => void;
@@ -13,80 +20,117 @@ interface LoanSimulationFormProps {
 }
 
 export function LoanSimulationForm({ onSuccess, onCancel, initialData }: LoanSimulationFormProps) {
-  const createMutation = useCreateLoanSimulation();
-
   const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<CreateLoanSimulationFormData>({
-    resolver: zodResolver(createLoanSimulationSchema),
-    defaultValues: initialData || {
-      amount: 1000,
-      termMonths: 12,
-      interestRateMonthly: 2.5,
-    },
-  });
+    form: { register, handleSubmit, formState: { errors } },
+    state: { amountInputValue },
+    actions: { handleAmountChange },
+    constants,
+  } = useLoanSimulationFormState({ initialData });
 
-  const onSubmit = async (data: CreateLoanSimulationFormData) => {
-    try {
-      // Converter taxa de juros de porcentagem para decimal (ex: 2.5 -> 0.025)
-      const submitData = {
-        ...data,
-        interestRateMonthly: data.interestRateMonthly / 100,
-      };
-      await createMutation.mutateAsync(submitData);
-      onSuccess?.();
-    } catch {
-      // Erro já tratado no hook useCreateLoanSimulation
-    }
-  };
+  const { submitLoanSimulation, isSubmitting, error, isError } = useLoanSimulationSubmission({ onSuccess });
 
   return (
-    <Box as="form" onSubmit={handleSubmit(onSubmit)}>
-      <VStack gap={6} align="stretch">
-        <Field.Root invalid={!!errors.amount}>
-          <Field.Label>Valor do Empréstimo</Field.Label>
-          <Input 
-            {...register('amount', { valueAsNumber: true })} 
-            type="number" 
-            placeholder={`R$ ${LOAN_SIMULATION_CONSTANTS.MIN_AMOUNT} - R$ ${LOAN_SIMULATION_CONSTANTS.MAX_AMOUNT}`} 
+    <BaseForm
+      title="Simular Empréstimo"
+      subtitle="Use sua reserva de emergência como garantia"
+      icon={Calculator}
+      variant="green-header"
+      onBack={onCancel}
+      formId="loan-simulation-form"
+      onSubmit={handleSubmit(submitLoanSimulation)}
+      displayValue={{
+        inputContent: (
+          <MonetaryValueInput
+            value={amountInputValue}
+            onValueChange={handleAmountChange}
+            placeholder="R$ 0,00"
+            min={constants.MIN_AMOUNT}
           />
-          <Field.HelperText>Mínimo: {loanSimulationService.formatCurrency(LOAN_SIMULATION_CONSTANTS.MIN_AMOUNT)}</Field.HelperText>
-          <Field.ErrorText>{errors.amount?.message}</Field.ErrorText>
-        </Field.Root>
+        ),
+      }}
+    >
+      <Box px={{ base: 4, md: 6 }} py={4}>
+        <VStack gap={6} align="stretch">
+          {/* Erro de valor */}
+          {errors.amount && (
+            <Box bg="red.50" borderWidth="1px" borderColor="red.200" borderRadius="lg" p={3}>
+              <Box fontSize="sm" color="red.600">{errors.amount.message}</Box>
+            </Box>
+          )}
 
-        <Field.Root invalid={!!errors.termMonths}>
-          <Field.Label>Prazo (meses)</Field.Label>
-          <Input 
-            {...register('termMonths', { valueAsNumber: true })} 
-            type="number" 
-            placeholder={`${LOAN_SIMULATION_CONSTANTS.MIN_TERM_MONTHS} - ${LOAN_SIMULATION_CONSTANTS.MAX_TERM_MONTHS}`} 
-          />
-          <Field.HelperText>Entre {LOAN_SIMULATION_CONSTANTS.MIN_TERM_MONTHS} e {LOAN_SIMULATION_CONSTANTS.MAX_TERM_MONTHS} meses</Field.HelperText>
-          <Field.ErrorText>{errors.termMonths?.message}</Field.ErrorText>
-        </Field.Root>
+          {/* Card de campos */}
+          <Box bg="var(--card)" borderRadius="2xl" p={6} shadow="md">
+            <VStack gap={6} align="stretch">
+              {/* Prazo em meses */}
+              <FormInput
+                {...register('termMonths', { valueAsNumber: true })}
+                label="Prazo (meses)"
+                type="number"
+                placeholder={`${constants.MIN_TERM_MONTHS} - ${constants.MAX_TERM_MONTHS}`}
+                icon={<Calendar size={18} color="var(--muted-foreground)" />}
+                error={errors.termMonths?.message}
+              />
 
-        <Field.Root invalid={!!errors.interestRateMonthly}>
-          <Field.Label>Taxa de Juros Mensal (%)</Field.Label>
-          <Input 
-            {...register('interestRateMonthly', { valueAsNumber: true })} 
-            type="number" 
-            step="0.01" 
-            placeholder="Ex: 2.5" 
-          />
-          <Field.ErrorText>{errors.interestRateMonthly?.message}</Field.ErrorText>
-        </Field.Root>
+              {/* Taxa de juros mensal */}
+              <FormInput
+                {...register('interestRateMonthly', { valueAsNumber: true })}
+                label="Taxa de Juros Mensal (%)"
+                type="number"
+                step="0.01"
+                placeholder="Ex: 2.5"
+                icon={<Percent size={18} color="var(--muted-foreground)" />}
+                error={errors.interestRateMonthly?.message}
+              />
 
-        <HStack gap={4} justify="flex-end">
-          <Button variant="ghost" onClick={onCancel} disabled={isSubmitting}>
-            Cancelar
-          </Button>
-          <Button type="submit" loading={isSubmitting}>
-            Simular
-          </Button>
-        </HStack>
-      </VStack>
-    </Box>
+              {/* Input oculto para Valor */}
+              <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
+                <input type="number" step="0.01" {...register('amount', { valueAsNumber: true })} />
+              </Box>
+
+              {/* Informações auxiliares */}
+              <Box bg="blue.50" borderWidth="1px" borderColor="blue.200" borderRadius="lg" p={4}>
+                <VStack gap={2} align="stretch">
+                  <Box fontSize="sm" fontWeight="medium" color="blue.700">
+                    Informações sobre empréstimo
+                  </Box>
+                  <VStack gap={1} align="stretch" fontSize="xs" color="blue.600">
+                    <Box>• Valor entre {loanSimulationService.formatCurrency(constants.MIN_AMOUNT)} e {loanSimulationService.formatCurrency(constants.MAX_AMOUNT)}</Box>
+                    <Box>• Prazo entre {constants.MIN_TERM_MONTHS} e {constants.MAX_TERM_MONTHS} meses</Box>
+                    <Box>• Sistema de amortização PRICE</Box>
+                    <Box>• Garantia: até 70% da reserva de emergência</Box>
+                  </VStack>
+                </VStack>
+              </Box>
+
+              {/* Erro da API */}
+              {isError && <ApiErrorBox error={error} />}
+            </VStack>
+          </Box>
+
+          {/* Botões de ação */}
+          <VStack gap={3} pb={24}>
+            <Button
+              type="submit"
+              form="loan-simulation-form"
+              colorPalette="green"
+              w="full"
+              loading={isSubmitting}
+            >
+              Simular Empréstimo
+            </Button>
+            {onCancel && (
+              <Button
+                variant="ghost"
+                colorPalette="gray"
+                w="full"
+                onClick={onCancel}
+              >
+                Cancelar
+              </Button>
+            )}
+          </VStack>
+        </VStack>
+      </Box>
+    </BaseForm>
   );
 }
