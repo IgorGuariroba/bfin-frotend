@@ -39,3 +39,9 @@ storybook-static
 .npmrc
 .claude/settings.local.json
 .codex/
+
+# AI Tools and Editors
+.ai/
+.qwen/
+.cursor/
+QWEN.md
