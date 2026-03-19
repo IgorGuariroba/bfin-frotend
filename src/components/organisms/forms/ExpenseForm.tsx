@@ -10,7 +10,7 @@ import { CreateCategoryDialog } from '../dialogs/CreateCategoryDialog';
 import { useExpenseFormState } from '../../../hooks/useExpenseFormState';
 import { useExpenseSubmission } from '../../../hooks/useExpenseSubmission';
 
-import { ExpenseAccountSelector } from '../../molecules/ExpenseAccountSelector';
+import { AccountSelector } from '../../molecules/AccountSelector';
 import { FormInput } from '../../molecules/FormInput';
 import { MonetaryValueInput } from '../../molecules/MonetaryValueInput';
 import { ExpenseTypeToggle } from '../../molecules/ExpenseTypeToggle';
@@ -118,12 +118,13 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
             )}
 
             {/* Seletor de Conta */}
-            <ExpenseAccountSelector
+            <AccountSelector
               accounts={accounts}
               selectedAccountId={selectedAccountId}
               onAccountSelect={handleAccountSelect}
               register={register}
               error={errors.accountId?.message}
+              fieldName="accountId"
             />
 
             {/* Card de campos */}

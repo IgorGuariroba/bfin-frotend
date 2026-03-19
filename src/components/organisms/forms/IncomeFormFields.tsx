@@ -6,12 +6,12 @@ import {
   Field,
   Input,
   NativeSelect,
-  Menu,
   Checkbox,
   IconButton,
 } from '@chakra-ui/react';
-import { Pencil, Tag, Calendar, Check, ChevronDown, Plus, Zap } from 'lucide-react';
-import type { UseFormRegister, FieldErrors, UseFormSetValue } from 'react-hook-form';
+import { Pencil, Tag, Calendar, Check, Plus, Zap } from 'lucide-react';
+import { AccountSelector } from '../../molecules/AccountSelector';
+import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 import type { Account, Category } from '@igorguariroba/bfin-sdk/client';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
@@ -20,11 +20,10 @@ import type { IncomeFormData } from '../../../hooks/useIncomeFormLogic';
 interface IncomeFormFieldsProps {
   register: UseFormRegister<IncomeFormData>;
   errors: FieldErrors<IncomeFormData>;
-  setValue: UseFormSetValue<IncomeFormData>;
   accounts?: Account[];
   categories?: Category[];
-  selectedAccount?: Account;
   selectedAccountId: string;
+  onAccountSelect: (accountId: string) => void;
   onCategoryDialogOpen: () => void;
   createIncomeError?: Error | null;
 }
@@ -32,11 +31,10 @@ interface IncomeFormFieldsProps {
 export function IncomeFormFields({
   register,
   errors,
-  setValue,
   accounts,
   categories,
-  selectedAccount,
   selectedAccountId,
+  onAccountSelect,
   onCategoryDialogOpen,
   createIncomeError,
 }: IncomeFormFieldsProps) {
@@ -50,82 +48,14 @@ export function IncomeFormFields({
       )}
 
       {/* Seletor de Conta */}
-      <Field.Root invalid={!!errors.accountId}>
-        <input type="hidden" {...register('accountId')} />
-        <Menu.Root positioning={{ placement: 'bottom-start', sameWidth: true }}>
-          <Menu.Trigger asChild>
-            <Box
-              as="button"
-              w="full"
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              px={4}
-              py={3}
-              fontSize="md"
-              fontWeight="medium"
-              color="var(--card-foreground)"
-              bg="var(--card)"
-              borderWidth="1px"
-              borderColor="var(--border)"
-              borderRadius="lg"
-              transition="all 0.2s"
-              _hover={{ borderColor: 'var(--primary)' }}
-              _focus={{
-                outline: 'none',
-                borderColor: 'var(--primary)',
-                boxShadow: '0 0 0 1px var(--primary)',
-              }}
-            >
-              <Text>
-                {selectedAccount ? selectedAccount.account_name : 'Selecione uma conta'}
-              </Text>
-              <ChevronDown size={20} />
-            </Box>
-          </Menu.Trigger>
-          <Menu.Positioner>
-            <Menu.Content
-              maxH="300px"
-              overflowY="auto"
-              bg="var(--card)"
-              borderRadius="lg"
-              boxShadow="lg"
-              borderWidth="1px"
-              borderColor="var(--border)"
-              p={1}
-              css={{ zIndex: 'var(--z-dropdown)' }}
-            >
-              {accounts?.map((account) => (
-                <Menu.Item
-                  key={account.id ?? ''}
-                  value={account.id ?? ''}
-                  onClick={() => setValue('accountId', account.id ?? '', { shouldValidate: true })}
-                  px={3}
-                  py={2}
-                  borderRadius="md"
-                  cursor="pointer"
-                  bg={selectedAccountId === account.id ? 'var(--muted)' : 'transparent'}
-                  _hover={{ bg: 'var(--muted)' }}
-                >
-                  <HStack justify="space-between" w="full">
-                    <Text fontWeight="medium" color="var(--card-foreground)">
-                      {account.account_name}
-                    </Text>
-                    {selectedAccountId === account.id && (
-                      <Check size={16} color={iconColors.success} />
-                    )}
-                  </HStack>
-                </Menu.Item>
-              ))}
-            </Menu.Content>
-          </Menu.Positioner>
-        </Menu.Root>
-        {errors.accountId && (
-          <Field.ErrorText mt={2} fontSize="sm">
-            {errors.accountId.message}
-          </Field.ErrorText>
-        )}
-      </Field.Root>
+      <AccountSelector
+        accounts={accounts}
+        selectedAccountId={selectedAccountId}
+        onAccountSelect={onAccountSelect}
+        register={register}
+        error={errors.accountId?.message}
+        fieldName="accountId"
+      />
 
       {/* Card de campos */}
       <Box bg="var(--card)" borderRadius="2xl" p={6} shadow="md">

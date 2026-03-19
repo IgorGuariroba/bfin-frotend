@@ -5,7 +5,7 @@ import { Button } from '../../atoms/Button';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { MonetaryValueInput } from '../../molecules/MonetaryValueInput';
 import { FormInput } from '../../molecules/FormInput';
-import { TransferAccountSelector } from '../../molecules/TransferAccountSelector';
+import { AccountSelector } from '../../molecules/AccountSelector';
 import { DestinationAccountInput } from '../../molecules/DestinationAccountInput';
 import { TransferInfoBox } from '../../molecules/TransferInfoBox';
 import { ApiErrorBox } from '../../molecules/ApiErrorBox';
@@ -97,12 +97,14 @@ export function TransferForm({ onSuccess, onCancel }: TransferFormProps) {
           )}
 
           {/* Seleção de Conta de Origem */}
-          <TransferAccountSelector
+          <AccountSelector
             accounts={accounts}
             selectedAccountId={selectedSourceAccountId}
             onAccountSelect={handleAccountSelect}
             register={register}
             error={errors.sourceAccountId?.message}
+            fieldName="sourceAccountId"
+            placeholder="Selecione a conta de origem"
           />
 
           {/* Card de campos */}

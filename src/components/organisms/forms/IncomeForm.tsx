@@ -73,11 +73,10 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
             <IncomeFormFields
               register={logic.form.register}
               errors={logic.form.errors}
-              setValue={logic.form.setValue}
               accounts={logic.accounts}
               categories={logic.categories}
-              selectedAccount={logic.selectedAccount}
               selectedAccountId={logic.selectedAccountId}
+              onAccountSelect={(accountId) => logic.form.setValue('accountId', accountId, { shouldValidate: true })}
               onCategoryDialogOpen={() => formState.actions.setIsCategoryDialogOpen(true)}
               createIncomeError={logic.createIncome.error}
             />
