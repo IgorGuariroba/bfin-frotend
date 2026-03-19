@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { BaseForm } from '../../ui/BaseForm';
 import { Button } from '../../atoms/Button';
+import { MonetaryValueInput } from '../../molecules/MonetaryValueInput';
 import { useCreateIncome } from '../../../hooks/useTransactions';
 import { useAccounts } from '../../../hooks/useAccounts';
 import { useCategories } from '../../../hooks/useCategories';
@@ -64,8 +65,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
   const [buttonState, setButtonState] = useState<'idle' | 'loading' | 'success'>('idle');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [createdTransaction, setCreatedTransaction] = useState<CreatedTransactionData | null>(null);
-  const [amountInput, setAmountInput] = useState('');
-  const [isEditingAmount, setIsEditingAmount] = useState(false);
+  const [amountInputValue, setAmountInputValue] = useState('');
 
   const {
     register,
@@ -82,7 +82,6 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
     },
   });
 
-  const amount = watch('amount') || 0;
   const selectedAccountId = watch('accountId');
 
   const { data: allCategories } = useCategories(selectedAccountId);
@@ -107,31 +106,11 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
+  const handleAmountChange = (value: string, valueAsNumber: number) => {
+    setAmountInputValue(value);
+    setValue('amount', valueAsNumber, { shouldValidate: true });
   };
 
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
-
-  const normalizeDigits = (value: string) => value.replace(/\D/g, '');
-
-  const formatMoneyFromDigits = (digitsValue: string) => {
-    const numeric = Number.parseInt(digitsValue || '0', 10);
-    return formatNumber(numeric / 100);
-  };
-
-  const toAmountFromDigits = (digitsValue: string) => {
-    const numeric = Number.parseInt(digitsValue || '0', 10);
-    return numeric / 100;
-  };
 
   const onSubmit = async (data: IncomeFormData) => {
     setButtonState('loading');
@@ -152,7 +131,10 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
         description: data.description,
         accountName: selectedAccount?.account_name,
         categoryName: categories?.find(c => c.id === data.categoryId)?.name,
-        formattedAmount: formatCurrency(Number(data.amount)),
+        formattedAmount: new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(Number(data.amount)),
       });
 
       setButtonState('success');
@@ -175,7 +157,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
     setButtonState('idle');
 
     setValue('amount', 0);
-    setAmountInput('');
+    setAmountInputValue('');
     setValue('description', '');
     setValue('categoryId', '');
 
@@ -220,13 +202,12 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
         formId="income-form"
         onSubmit={handleSubmit(onSubmit)}
         displayValue={{
-          value: formatCurrency(Number(amount)),
-          editable: !isEditingAmount,
-          onEdit: () => {
-            const digits = Math.round(Number(amount) * 100).toString();
-            setAmountInput(amount ? formatMoneyFromDigits(digits) : '');
-            setIsEditingAmount(true);
-          },
+          inputContent: (
+            <MonetaryValueInput
+              value={amountInputValue}
+              onValueChange={handleAmountChange}
+            />
+          ),
         }}
         primaryAction={{
           label: buttonState === 'success' ? 'Depósito Confirmado!' : 'Confirmar Depósito',
@@ -245,62 +226,13 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
       >
         <Box px={{ base: 4, md: 6 }} py={4}>
           <VStack gap={6} align="stretch">
-            {/* Input de edição do valor */}
-            {isEditingAmount && (
-              <Input
-                type="text"
-                inputMode="decimal"
-                autoFocus
-                value={amountInput}
-                placeholder="0,00"
-                fontSize="xl"
-                fontWeight="bold"
-                borderColor="var(--border)"
-                borderRadius="full"
-                _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                onChange={(e) => {
-                  const nextDigits = normalizeDigits(e.target.value);
-                  setValue('amount', toAmountFromDigits(nextDigits), { shouldValidate: true });
-                  setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
-                }}
-                onBlur={(e) => {
-                  const nextDigits = normalizeDigits(e.target.value);
-                  const nextAmount = toAmountFromDigits(nextDigits);
-                  setValue('amount', nextAmount, { shouldValidate: true });
-                  setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
-                  setIsEditingAmount(false);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const nextDigits = normalizeDigits((e.target as HTMLInputElement).value);
-                    const nextAmount = toAmountFromDigits(nextDigits);
-                    setValue('amount', nextAmount, { shouldValidate: true });
-                    setAmountInput(nextDigits ? formatMoneyFromDigits(nextDigits) : '');
-                    setIsEditingAmount(false);
-                  }
-                }}
-                css={{
-                  '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': {
-                    display: 'none',
-                  },
-                }}
-              />
-            )}
-
-            {/* Input oculto para o RHF */}
-            <Box position="absolute" opacity={0} pointerEvents="none" height={0} overflow="hidden">
-              <Input
-                type="number"
-                step="0.01"
-                {...register('amount', { valueAsNumber: true })}
-              />
-            </Box>
-
+            {/* Erro de valor */}
             {errors.amount && (
               <Box bg="red.50" borderWidth="1px" borderColor="red.200" borderRadius="lg" p={3}>
                 <Text fontSize="sm" color="red.600">{errors.amount.message}</Text>
               </Box>
             )}
+
 
             {/* Seletor de Conta */}
             <Field.Root invalid={!!errors.accountId}>
