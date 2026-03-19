@@ -27,10 +27,9 @@ export function useLoanSimulationFormState({
 
   const amount = form.watch('amount') || 0;
 
-  const handleAmountChange = (value: string) => {
-    setAmountInputValue(value);
-    const numericValue = parseFloat(value.replace(',', '.')) || 0;
-    form.setValue('amount', numericValue, { shouldValidate: true });
+  const handleAmountChange = (valueStr: string, valueAsNumber: number) => {
+    setAmountInputValue(valueStr);
+    form.setValue('amount', valueAsNumber, { shouldValidate: true });
   };
 
   return {
