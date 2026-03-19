@@ -113,12 +113,12 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                 placeholder="R$ 0,00"
                 fontSize="4xl"
                 fontWeight="bold"
-                color="var(--primary-foreground)"
+                color={{ _light: 'white', _dark: 'gray.900' }}
                 textAlign="center"
                 border="none"
                 bg="transparent"
-                _focus={{ boxShadow: 'none' }}
-                _placeholder={{ color: 'whiteAlpha.700' }}
+                _focus={{ boxShadow: 'none', border: 'none', outline: 'none' }}
+                _placeholder={{ color: { _light: 'whiteAlpha.700', _dark: 'gray.600' } }}
               />
             </NumberInput.Root>
           ),
