@@ -1,7 +1,7 @@
-import { Button as ChakraButton, ButtonProps as ChakraButtonProps } from '@chakra-ui/react';
+import { Button as ChakraButton, type ButtonProps as ChakraButtonProps } from '@chakra-ui/react';
 
 export type ButtonProps = ChakraButtonProps;
 
-export function Button(props: ButtonProps) {
-  return <ChakraButton colorPalette="brand" {...props} />;
+export function Button({ colorPalette = 'brand', ...props }: ButtonProps) {
+  return <ChakraButton colorPalette={colorPalette} {...props} />;
 }
