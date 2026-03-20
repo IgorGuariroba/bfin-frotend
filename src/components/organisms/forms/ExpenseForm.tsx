@@ -33,7 +33,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
   const { data: allCategories } = useCategories();
 
   const {
-    form: { register, handleSubmit, setValue, watch, formState: { errors } },
+    form: { register, handleSubmit, setValue, watch, control, formState: { errors } },
     state: {
       isCategoryDialogOpen,
       expenseType,
@@ -150,7 +150,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                   categories={categories}
                   selectedAccountId={selectedAccountId}
                   onNewCategoryClick={() => setIsCategoryDialogOpen(true)}
-                  register={register}
+                  control={control}
                   error={errors.categoryId?.message}
                 />
 
