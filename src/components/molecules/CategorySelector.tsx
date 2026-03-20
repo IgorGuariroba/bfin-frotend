@@ -61,11 +61,14 @@ export function CategorySelector({
                 onValueChange={({ value }) => field.onChange(value[0] ?? '')}
                 onInteractOutside={() => field.onBlur()}
                 positioning={{ sameWidth: true }}
+                width="full"
               >
                 <Select.HiddenSelect />
-                <Select.Control>
+                <Select.Control width="full">
                   <Select.Trigger
                     pl={10}
+                    width="full"
+                    minWidth="230px"
                     borderColor="var(--border)"
                     borderRadius="full"
                     _focus={{
