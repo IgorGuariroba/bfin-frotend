@@ -194,8 +194,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
               </Button>
               {onCancel && (
                 <Button
-                  variant="ghost"
-                  colorPalette="gray"
+                  variant="outline"
                   w="full"
                   onClick={onCancel}
                 >
