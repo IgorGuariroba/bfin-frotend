@@ -38,7 +38,7 @@ export const BfincontaWidget = ({
       isLoading={loadingAccounts}
       variant={variant}
       primaryAction={{
-        label: 'ACESSAR',
+        label: 'Acessar',
         onClick: onAccessClick,
         colorPalette: 'brand'
       }}

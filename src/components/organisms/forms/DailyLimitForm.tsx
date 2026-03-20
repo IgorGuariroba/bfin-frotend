@@ -42,8 +42,9 @@ export function DailyLimitForm({ onCancel }: DailyLimitFormProps) {
       <VStack gap={4} px={{ base: 4, md: 6 }}>
         <AccountSelector
           accounts={accounts}
-          selectedAccount={selectedAccount}
-          onSelectAccount={handleAccountSelect}
+          selectedAccountId={selectedAccount?.id || ''}
+          onAccountSelect={handleAccountSelect}
+          showBalance={true}
         />
 
         <LimitInfoCard calculations={calculations} />

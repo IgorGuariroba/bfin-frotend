@@ -1,4 +1,4 @@
-import { VStack, Box, Text, NumberInput } from '@chakra-ui/react';
+import { VStack, Box, Text } from '@chakra-ui/react';
 import { Receipt, Pencil } from 'lucide-react';
 
 import { BaseForm } from '../../ui/BaseForm';
@@ -10,8 +10,9 @@ import { CreateCategoryDialog } from '../dialogs/CreateCategoryDialog';
 import { useExpenseFormState } from '../../../hooks/useExpenseFormState';
 import { useExpenseSubmission } from '../../../hooks/useExpenseSubmission';
 
-import { ExpenseAccountSelector } from '../../molecules/ExpenseAccountSelector';
+import { AccountSelector } from '../../molecules/AccountSelector';
 import { FormInput } from '../../molecules/FormInput';
+import { MonetaryValueInput } from '../../molecules/MonetaryValueInput';
 import { ExpenseTypeToggle } from '../../molecules/ExpenseTypeToggle';
 import { CategorySelector } from '../../molecules/CategorySelector';
 import { DueDateFields } from '../../molecules/DueDateFields';
@@ -100,27 +101,10 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         onSubmit={handleSubmit(submitExpense)}
         displayValue={{
           inputContent: (
-            <NumberInput.Root
-              locale="pt-BR"
+            <MonetaryValueInput
               value={amountInputValue}
-              onValueChange={(details) => handleAmountChange(details.value, details.valueAsNumber)}
-              formatOptions={{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol' }}
-              allowMouseWheel
-              step={0.01}
-              min={0}
-            >
-              <NumberInput.Input
-                placeholder="R$ 0,00"
-                fontSize="4xl"
-                fontWeight="bold"
-                color="var(--primary-foreground)"
-                textAlign="center"
-                border="none"
-                bg="transparent"
-                _focus={{ boxShadow: 'none' }}
-                _placeholder={{ color: 'whiteAlpha.700' }}
-              />
-            </NumberInput.Root>
+              onValueChange={handleAmountChange}
+            />
           ),
         }}
       >
@@ -134,12 +118,13 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
             )}
 
             {/* Seletor de Conta */}
-            <ExpenseAccountSelector
+            <AccountSelector
               accounts={accounts}
               selectedAccountId={selectedAccountId}
               onAccountSelect={handleAccountSelect}
               register={register}
               error={errors.accountId?.message}
+              fieldName="accountId"
             />
 
             {/* Card de campos */}

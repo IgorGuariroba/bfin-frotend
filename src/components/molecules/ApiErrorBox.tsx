@@ -14,7 +14,7 @@ export function ApiErrorBox({ error }: ApiErrorBoxProps) {
       p={4}
     >
       <Text fontSize="sm" color={{ base: 'red.600', _dark: 'red.300' }}>
-        {error instanceof Error ? error.message : 'Erro ao criar despesa'}
+        {error instanceof Error ? error.message : 'Erro na operação'}
       </Text>
     </Box>
   );
