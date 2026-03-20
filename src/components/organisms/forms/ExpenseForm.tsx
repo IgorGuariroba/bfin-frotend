@@ -30,10 +30,9 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: ExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: allCategories } = useCategories();
 
   const {
-    form: { register, handleSubmit, setValue, watch, formState: { errors } },
+    form: { register, handleSubmit, setValue, watch, control, formState: { errors } },
     state: {
       isCategoryDialogOpen,
       expenseType,
@@ -50,6 +49,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
 
   const { submitExpense, isSubmitting, error, isError } = useExpenseSubmission({ onSuccess });
 
+  const { data: allCategories } = useCategories(selectedAccountId);
   const categories = allCategories?.filter((category) => category.type === 'expense');
 
   const handleCategoryCreated = (newCategory: Category) => {
@@ -150,7 +150,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                   categories={categories}
                   selectedAccountId={selectedAccountId}
                   onNewCategoryClick={() => setIsCategoryDialogOpen(true)}
-                  register={register}
+                  control={control}
                   error={errors.categoryId?.message}
                 />
 
@@ -194,8 +194,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
               </Button>
               {onCancel && (
                 <Button
-                  variant="ghost"
-                  colorPalette="gray"
+                  variant="outline"
                   w="full"
                   onClick={onCancel}
                 >

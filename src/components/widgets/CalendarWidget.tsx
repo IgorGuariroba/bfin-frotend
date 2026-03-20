@@ -5,8 +5,8 @@ import {
   HStack,
   Text,
   Badge,
-  Button,
 } from '@chakra-ui/react';
+import { Button } from '@/components/atoms/Button';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { format, addDays, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

@@ -10,7 +10,74 @@
  * TYPOGRAPHY: Figtree (sans-serif)
  */
 
-import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
+import { createSystem, defaultConfig, defineConfig, defineRecipe } from '@chakra-ui/react';
+
+/**
+ * Button Recipe
+ *
+ * Estende o recipe padrão do Chakra UI com o design BFIN:
+ * - Pill shape (borderRadius full)
+ * - Glow no foco (ring verde neon)
+ * - Animação de pressão (scale)
+ * - Solid: fundo verde primário
+ * - Outline: fundo neutro com borda
+ */
+const buttonRecipe = defineRecipe({
+  base: {
+    borderRadius: 'full',
+    fontWeight: 'semibold',
+    transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+    _focusVisible: {
+      outline: 'none',
+      boxShadow: '0 0 0 2px var(--ring), 0 0 15px var(--primary-300)',
+    },
+    _active: {
+      transform: 'scale(0.95)',
+    },
+  },
+  variants: {
+    variant: {
+      solid: {
+        bg: 'var(--primary)',
+        color: 'var(--primary-foreground)',
+        boxShadow: 'var(--shadow-green-md)',
+        _hover: { bg: 'var(--primary-600)' },
+        _active: {
+          bg: 'var(--primary-700)',
+          transform: 'scale(0.95)',
+        },
+        _disabled: {
+          bg: 'var(--accent)',
+          color: 'var(--muted-foreground)',
+          boxShadow: 'none',
+          cursor: 'not-allowed',
+        },
+      },
+      outline: {
+        bg: 'var(--secondary)',
+        color: 'var(--foreground)',
+        borderWidth: '1px',
+        borderColor: 'var(--border)',
+        boxShadow: 'none',
+        _hover: { bg: 'var(--accent)' },
+        _active: {
+          bg: 'var(--secondary)',
+          transform: 'scale(0.95)',
+        },
+        _disabled: {
+          bg: 'var(--accent)',
+          color: 'var(--muted-foreground)',
+          borderColor: 'var(--border)',
+          boxShadow: 'none',
+          cursor: 'not-allowed',
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    variant: 'solid',
+  },
+});
 
 /**
  * Chakra UI v3 System Configuration
@@ -21,6 +88,10 @@ import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 
 const config = defineConfig({
   theme: {
+    recipes: {
+      button: buttonRecipe,
+    },
+
     // Breakpoints (Media Queries)
     // Mobile-first approach: base é o padrão, outros são min-width
     breakpoints: {

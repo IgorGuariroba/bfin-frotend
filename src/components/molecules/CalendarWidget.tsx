@@ -4,10 +4,10 @@ import {
   VStack,
   HStack,
   Text,
-  Button,
   Badge,
   Skeleton,
 } from '@chakra-ui/react'
+import { Button } from '@/components/atoms/Button'
 import { Calendar as CalendarIcon, ChevronRight, Eye } from 'lucide-react'
 import { format, addDays, startOfDay, endOfDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -133,37 +133,6 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
     }).format(value)
   }
 
-  const secondaryButtonStyles = {
-    bg: 'var(--secondary)',
-    color: 'var(--foreground)',
-    border: '1px solid var(--border)',
-    _hover: { bg: 'var(--accent)' },
-    _active: { bg: 'var(--secondary)' },
-    _focusVisible: { boxShadow: '0 0 0 2px var(--ring)' },
-    _disabled: {
-      bg: 'var(--accent)',
-      color: 'var(--muted-foreground)',
-      borderColor: 'var(--border)',
-      boxShadow: 'none',
-      cursor: 'not-allowed',
-    },
-  }
-
-  const primaryButtonStyles = {
-    bg: 'var(--primary)',
-    color: 'var(--primary-foreground)',
-    boxShadow: 'var(--shadow-green-md)',
-    _hover: { bg: 'var(--primary-600)' },
-    _active: { bg: 'var(--primary-700)' },
-    _focusVisible: { boxShadow: '0 0 0 2px var(--ring)' },
-    _disabled: {
-      bg: 'var(--accent)',
-      color: 'var(--muted-foreground)',
-      boxShadow: 'none',
-      cursor: 'not-allowed',
-    },
-  }
-
   const handleViewFullCalendar = () => {
     if (onViewFullCalendar) {
       onViewFullCalendar()
@@ -187,8 +156,8 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
             </Text>
             <Button
               size={{ base: 'sm', md: 'md' }}
+              variant="outline"
               onClick={() => setShowFullCalendar(false)}
-              {...secondaryButtonStyles}
             >
               Compacto
             </Button>
@@ -231,8 +200,8 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
             >
               <Button
                 size={{ base: 'sm', md: 'md' }}
+                variant="outline"
                 onClick={() => setShowFullCalendar(true)}
-                {...secondaryButtonStyles}
               >
                 <Eye size={14} style={{ marginRight: '8px' }} />
                 Expandir
@@ -240,7 +209,6 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
               <Button
                 size={{ base: 'sm', md: 'md' }}
                 onClick={handleViewFullCalendar}
-                {...primaryButtonStyles}
               >
                 VER TUDO
                 <ChevronRight size={14} style={{ marginLeft: '8px' }} />
