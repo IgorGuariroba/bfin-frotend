@@ -30,7 +30,6 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: ExpenseFormProps) {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
-  const { data: allCategories } = useCategories();
 
   const {
     form: { register, handleSubmit, setValue, watch, control, formState: { errors } },
@@ -50,6 +49,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
 
   const { submitExpense, isSubmitting, error, isError } = useExpenseSubmission({ onSuccess });
 
+  const { data: allCategories } = useCategories(selectedAccountId);
   const categories = allCategories?.filter((category) => category.type === 'expense');
 
   const handleCategoryCreated = (newCategory: Category) => {
