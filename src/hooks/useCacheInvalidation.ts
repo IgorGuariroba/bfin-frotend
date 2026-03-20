@@ -95,7 +95,25 @@ export function useCacheInvalidation() {
    * Deve ser chamado após criar, editar ou deletar categorias
    */
   const invalidateCategoryRelatedQueries = async () => {
-    await queryClient.invalidateQueries({ queryKey: ['categories'] });
+    // Invalidação robusta para categories do SDK (query key inclui params)
+    await queryClient.invalidateQueries({
+      predicate: (query) => {
+        const key = query.queryKey;
+        if (!Array.isArray(key)) return false;
+
+        const keyString = key.map(k => String(k).toLowerCase()).join('|');
+
+        const categoryPatterns = [
+          'categories',
+          'api/v1/categories',
+          'getapiv1categories',
+          '/categories',
+          'v1/categories',
+        ];
+
+        return categoryPatterns.some(pattern => keyString.includes(pattern));
+      }
+    });
     // Transações também podem ser afetadas por mudanças em categorias
     await queryClient.invalidateQueries({ queryKey: ['transactions'] });
   };
