@@ -137,16 +137,18 @@ export function LoanForm({ onCancel }: LoanFormProps) {
         </Box>
 
         {/* Lista de Simulações */}
-        <LoanSimulationsList
-          simulations={simulations}
-          onViewSimulation={simulationActions.actions.handleViewSimulation}
-          onApproveSimulation={simulationActions.actions.handleApproveSimulation}
-          onWithdrawSimulation={simulationActions.actions.handleWithdrawSimulation}
-          onDeleteSimulation={simulationActions.actions.handleDeleteSimulation}
-          isApproving={simulationActions.mutations.approveMutation.isPending}
-          isWithdrawing={simulationActions.mutations.withdrawMutation.isPending}
-          isDeleting={simulationActions.mutations.deleteMutation.isPending}
-        />
+        <Box pb={32}>
+          <LoanSimulationsList
+            simulations={simulations}
+            onViewSimulation={simulationActions.actions.handleViewSimulation}
+            onApproveSimulation={simulationActions.actions.handleApproveSimulation}
+            onWithdrawSimulation={simulationActions.actions.handleWithdrawSimulation}
+            onDeleteSimulation={simulationActions.actions.handleDeleteSimulation}
+            isApproving={simulationActions.mutations.approveMutation.isPending}
+            isWithdrawing={simulationActions.mutations.withdrawMutation.isPending}
+            isDeleting={simulationActions.mutations.deleteMutation.isPending}
+          />
+        </Box>
       </BaseForm>
 
       <LoanSimulationDetailsDialog
