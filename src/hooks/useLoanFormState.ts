@@ -7,13 +7,13 @@ import {
 } from '../types/loanSimulation';
 
 export function useLoanFormState() {
-  const [amountInputValue, setAmountInputValue] = useState<string>('1000');
+  const [amountInputValue, setAmountInputValue] = useState<string>('500');
 
   // Form setup
   const form = useForm<CreateLoanSimulationFormData>({
     resolver: zodResolver(createLoanSimulationSchema),
     defaultValues: {
-      amount: 1000,
+      amount: 500,
       termMonths: 12,
       interestRateMonthly: 2.5,
     },
