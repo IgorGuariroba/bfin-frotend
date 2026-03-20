@@ -9,6 +9,12 @@ export interface BaseWidgetAction {
   variant?: 'solid' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   colorPalette?: 'brand' | 'gray' | 'green' | 'blue' | 'yellow' | 'red';
+  borderColor?: string;
+  color?: string;
+  _hover?: {
+    borderColor?: string;
+    color?: string;
+  };
 }
 
 // Mapeamento de cores do sistema
@@ -200,6 +206,9 @@ export const BaseWidget: React.FC<BaseWidgetProps> = ({
                 size={action.size || (variant === 'compact' ? 'sm' : 'md')}
                 variant={action.variant || 'outline'}
                 colorPalette={action.colorPalette || 'gray'}
+                borderColor={action.borderColor}
+                color={action.color}
+                _hover={action._hover}
                 onClick={action.onClick}
               >
                 {action.label}

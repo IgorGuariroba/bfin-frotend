@@ -184,11 +184,17 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
             onClick: () => setShowFullCalendar(true),
             variant: 'outline',
             size: 'sm',
-            colorPalette: 'gray'
+            colorPalette: 'green',
+            borderColor: 'green.500',
+            color: 'green.500',
+            _hover: {
+              borderColor: 'green.600',
+              color: 'green.600'
+            }
           }
         ]}
         primaryAction={{
-          label: 'VER TUDO',
+          label: 'Ver tudo',
           onClick: handleViewFullCalendar,
           size: 'sm',
           colorPalette: 'brand'
