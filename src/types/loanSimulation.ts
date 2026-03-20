@@ -254,7 +254,6 @@ export interface LoanSimulationSortOptions {
 // ============================================================================
 
 export const LOAN_SIMULATION_CONSTANTS = {
-  MIN_AMOUNT: 500,
   MAX_AMOUNT: 100000,
   MIN_TERM_MONTHS: 6,
   MAX_TERM_MONTHS: 60,
@@ -326,7 +325,6 @@ export const createLoanSimulationSchema = z.object({
       required_error: 'Valor é obrigatório',
       invalid_type_error: 'Valor deve ser um número',
     })
-    .min(LOAN_SIMULATION_CONSTANTS.MIN_AMOUNT, `Valor mínimo é R$ ${LOAN_SIMULATION_CONSTANTS.MIN_AMOUNT.toLocaleString()}`)
     .max(LOAN_SIMULATION_CONSTANTS.MAX_AMOUNT, `Valor máximo é R$ ${LOAN_SIMULATION_CONSTANTS.MAX_AMOUNT.toLocaleString()}`)
     .positive('Valor deve ser positivo'),
 
@@ -402,7 +400,7 @@ export const installmentPlanSchema = z.object({
 export const loanSimulationSchema = z.object({
   id: z.string().uuid('ID deve ser um UUID válido'),
   createdAt: z.string().datetime('Data de criação inválida'),
-  amount: z.number().min(LOAN_SIMULATION_CONSTANTS.MIN_AMOUNT).max(LOAN_SIMULATION_CONSTANTS.MAX_AMOUNT),
+  amount: z.number().max(LOAN_SIMULATION_CONSTANTS.MAX_AMOUNT),
   termMonths: z.number().int().min(LOAN_SIMULATION_CONSTANTS.MIN_TERM_MONTHS).max(LOAN_SIMULATION_CONSTANTS.MAX_TERM_MONTHS),
   interestRateMonthly: z.number().min(0).max(10),
   amortizationType: z.literal('PRICE'),
