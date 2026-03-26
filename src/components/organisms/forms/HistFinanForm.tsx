@@ -10,167 +10,78 @@ import {
   Badge,
   Center,
 } from '@chakra-ui/react';
-import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, AlertCircle } from 'lucide-react';
 import { BaseForm } from '../../ui/BaseForm';
 import { CalendarHeader } from '../../molecules/CalendarHeader';
 import { formatCurrency } from '../../../utils';
-
-// Constants to avoid stringly-typed code
-const TRANSACTION_TYPES = {
-  INCOME: 'income',
-  EXPENSE: 'expense',
-  BALANCE: 'balance'
-} as const;
-
-type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];
+import { useAccountSelection } from '../../../hooks/useAccountSelection';
+import { useMonthlyCashFlow } from '../../../hooks/useMonthlyCashFlow';
+import type { DailyCashFlow } from '../../../types/cashflow';
 
 interface HistFinanFormProps {
   onBack?: () => void;
   onCancel?: () => void;
 }
 
-interface DailyBalance {
-  day: number;
-  type: TransactionType;
-  amount: number;
-  balance: number;
-}
-
-// Memoized type display configurations to avoid recreating objects
-const TYPE_DISPLAY_CONFIG = {
-  [TRANSACTION_TYPES.INCOME]: {
-    icon: <TrendingUp size={14} />,
-    label: 'Entrada',
-    color: 'green',
-  },
-  [TRANSACTION_TYPES.EXPENSE]: {
-    icon: <TrendingDown size={14} />,
-    label: 'Saída',
-    color: 'red',
-  },
-  [TRANSACTION_TYPES.BALANCE]: {
-    icon: null,
-    label: 'Saldo',
-    color: 'gray',
-  },
-} as const;
-
-// Mock data para demonstração - será substituído por dados reais da API
-const generateMockData = (month: number, year: number): DailyBalance[] => {
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const data: DailyBalance[] = [];
-  let runningBalance = 1500; // Saldo inicial fictício
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    // Simula algumas transações aleatórias
-    const hasTransaction = Math.random() > 0.6;
-    if (hasTransaction) {
-      const isIncome = Math.random() > 0.4;
-      const amount = Math.floor(Math.random() * 500) + 50;
-
-      if (isIncome) {
-        runningBalance += amount;
-        data.push({
-          day,
-          type: TRANSACTION_TYPES.INCOME,
-          amount,
-          balance: runningBalance,
-        });
-      } else {
-        runningBalance -= amount;
-        data.push({
-          day,
-          type: TRANSACTION_TYPES.EXPENSE,
-          amount,
-          balance: runningBalance,
-        });
-      }
-    }
-  }
-
-  return data;
-};
 
 export function HistFinanForm({ onBack, onCancel }: HistFinanFormProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [isLoading, setIsLoading] = useState(false);
+  const { selectedAccountId } = useAccountSelection();
 
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
-  // Memoize expensive data generation to avoid recalculation on every render
-  const dailyBalances = useMemo(() =>
-    generateMockData(currentMonth, currentYear),
-    [currentMonth, currentYear]
-  );
+  // Buscar dados do cash flow mensal da API
+  const {
+    data: cashFlowData,
+    isLoading,
+    error
+  } = useMonthlyCashFlow({
+    accountId: selectedAccountId,
+    year: currentYear,
+    month: currentMonth
+  });
 
-  // Navegação entre meses usando date-fns para maior robustez
+  // Navegação entre meses
   const handlePrevMonth = useCallback(() => {
-    setIsLoading(true);
     const newDate = new Date(currentDate);
     newDate.setMonth(newDate.getMonth() - 1);
     setCurrentDate(newDate);
-
-    // Simula loading
-    setTimeout(() => setIsLoading(false), 300);
   }, [currentDate]);
 
   const handleNextMonth = useCallback(() => {
-    setIsLoading(true);
     const newDate = new Date(currentDate);
     newDate.setMonth(newDate.getMonth() + 1);
     setCurrentDate(newDate);
-
-    // Simula loading
-    setTimeout(() => setIsLoading(false), 300);
   }, [currentDate]);
 
   const handleToday = useCallback(() => {
-    setIsLoading(true);
     setCurrentDate(new Date());
-
-    // Simula loading
-    setTimeout(() => setIsLoading(false), 300);
   }, []);
 
-  // Simplified type display function using pre-defined config
-  const getTypeDisplay = useCallback((type: DailyBalance['type']) => {
-    return TYPE_DISPLAY_CONFIG[type];
-  }, []);
-
-  // Memoized table row component to prevent unnecessary re-renders
-  const TableRow = React.memo(({ item, index }: { item: DailyBalance; index: number }) => {
-    const typeInfo = getTypeDisplay(item.type);
-
-    // Memoize color calculations
-    const amountColor = useMemo(() => {
-      if (item.type === TRANSACTION_TYPES.INCOME) return 'var(--success)';
-      if (item.type === TRANSACTION_TYPES.EXPENSE) return 'var(--destructive)';
-      return 'var(--muted-foreground)';
-    }, [item.type]);
+  // Componente de linha da tabela atualizado para dados da API
+  const TableRow = React.memo(({ dayData, index }: { dayData: DailyCashFlow; index: number }) => {
+    const date = new Date(dayData.date);
+    const day = date.getDate();
+    const hasMovement = dayData.dailyIncome > 0 || dayData.dailyExpenses > 0 || dayData.floatingDebtPayment > 0;
 
     const balanceColor = useMemo(() =>
-      item.balance >= 0 ? 'var(--success)' : 'var(--destructive)',
-      [item.balance]
+      dayData.balance >= 0 ? 'var(--success)' : 'var(--destructive)',
+      [dayData.balance]
     );
 
     const formattedDay = useMemo(() =>
-      item.day.toString().padStart(2, '0'),
-      [item.day]
-    );
-
-    const formattedAmount = useMemo(() =>
-      item.type !== TRANSACTION_TYPES.BALANCE ? formatCurrency(Math.abs(item.amount)) : '',
-      [item.type, item.amount]
+      day.toString().padStart(2, '0'),
+      [day]
     );
 
     const formattedBalance = useMemo(() =>
-      formatCurrency(item.balance),
-      [item.balance]
+      formatCurrency(dayData.balance),
+      [dayData.balance]
     );
 
     return (
-      <Table.Row key={index} _hover={{ bg: 'var(--muted)' }}>
+      <Table.Row key={index} _hover={{ bg: 'var(--muted)' }} opacity={hasMovement ? 1 : 0.6}>
         <Table.Cell py={4}>
           <Text fontWeight="medium" color="var(--foreground)">
             {formattedDay}
@@ -178,38 +89,66 @@ export function HistFinanForm({ onBack, onCancel }: HistFinanFormProps) {
         </Table.Cell>
 
         <Table.Cell py={4}>
-          <HStack gap={2}>
-            {typeInfo.icon}
-            <Badge
-              colorPalette={typeInfo.color}
-              variant="subtle"
-              size="sm"
-            >
-              {typeInfo.label}
-            </Badge>
-            <Text
-              fontSize="sm"
-              color={amountColor}
-              fontWeight="medium"
-            >
-              {item.type !== TRANSACTION_TYPES.BALANCE && (
-                <>
-                  {item.type === TRANSACTION_TYPES.INCOME ? '+' : '-'}
-                  {formattedAmount}
-                </>
-              )}
-            </Text>
-          </HStack>
+          <VStack gap={1} align="start">
+            {/* Receitas do dia */}
+            {dayData.dailyIncome > 0 && (
+              <HStack gap={2}>
+                <TrendingUp size={14} color="var(--success)" />
+                <Badge colorPalette="green" variant="subtle" size="sm">
+                  Entrada
+                </Badge>
+                <Text fontSize="sm" color="var(--success)" fontWeight="medium">
+                  +{formatCurrency(dayData.dailyIncome)}
+                </Text>
+              </HStack>
+            )}
+
+            {/* Despesas do dia */}
+            {dayData.dailyExpenses > 0 && (
+              <HStack gap={2}>
+                <TrendingDown size={14} color="var(--destructive)" />
+                <Badge colorPalette="red" variant="subtle" size="sm">
+                  Saída
+                </Badge>
+                <Text fontSize="sm" color="var(--destructive)" fontWeight="medium">
+                  -{formatCurrency(dayData.dailyExpenses)}
+                </Text>
+              </HStack>
+            )}
+
+            {/* Pagamento de dívida flutuante */}
+            {dayData.floatingDebtPayment > 0 && (
+              <HStack gap={2}>
+                <AlertCircle size={14} color="var(--warning)" />
+                <Badge colorPalette="orange" variant="subtle" size="sm">
+                  Dívida
+                </Badge>
+                <Text fontSize="sm" color="var(--warning)" fontWeight="medium">
+                  -{formatCurrency(dayData.floatingDebtPayment)}
+                </Text>
+              </HStack>
+            )}
+
+            {/* Se não há movimento */}
+            {!hasMovement && (
+              <Text fontSize="sm" color="var(--muted-foreground)">
+                Sem movimentação
+              </Text>
+            )}
+          </VStack>
         </Table.Cell>
 
         <Table.Cell py={4} textAlign="right">
-          <Text
-            fontWeight="bold"
-            color={balanceColor}
-            fontSize="md"
-          >
-            {formattedBalance}
-          </Text>
+          <VStack gap={1} align="end">
+            <Text fontWeight="bold" color={balanceColor} fontSize="md">
+              {formattedBalance}
+            </Text>
+            {dayData.remainingFloatingDebt > 0 && (
+              <Text fontSize="xs" color="var(--muted-foreground)">
+                Dívida: {formatCurrency(dayData.remainingFloatingDebt)}
+              </Text>
+            )}
+          </VStack>
         </Table.Cell>
       </Table.Row>
     );
@@ -241,19 +180,96 @@ export function HistFinanForm({ onBack, onCancel }: HistFinanFormProps) {
               isLoading={isLoading}
             />
 
+            {/* Resumo Mensal */}
+            {cashFlowData && (
+              <VStack gap={4} mb={6}>
+                <HStack justify="space-between" w="full">
+                  <Box>
+                    <Text fontSize="sm" color="var(--muted-foreground)" mb={1}>
+                      Saldo Inicial
+                    </Text>
+                    <Text fontWeight="bold" fontSize="lg">
+                      {formatCurrency(cashFlowData.startBalance)}
+                    </Text>
+                  </Box>
+                  <Box textAlign="center">
+                    <Text fontSize="sm" color="var(--muted-foreground)" mb={1}>
+                      {cashFlowData.isHistorical ? 'Histórico' : 'Projeção'}
+                    </Text>
+                    <Badge colorPalette={cashFlowData.isHistorical ? 'blue' : 'orange'} variant="subtle">
+                      {cashFlowData.isHistorical ? 'Real' : 'Simulado'}
+                    </Badge>
+                  </Box>
+                  <Box textAlign="right">
+                    <Text fontSize="sm" color="var(--muted-foreground)" mb={1}>
+                      Saldo Final
+                    </Text>
+                    <Text
+                      fontWeight="bold"
+                      fontSize="lg"
+                      color={cashFlowData.endBalance >= 0 ? 'var(--success)' : 'var(--destructive)'}
+                    >
+                      {formatCurrency(cashFlowData.endBalance)}
+                    </Text>
+                  </Box>
+                </HStack>
+
+                {/* Informações sobre dívidas flutuantes */}
+                {cashFlowData.totalFloatingDebt > 0 && (
+                  <Box p={4} bg="var(--warning-subtle)" borderRadius="lg" w="full">
+                    <HStack justify="space-between">
+                      <VStack align="start" gap={1}>
+                        <Text fontSize="sm" fontWeight="semibold" color="var(--warning)">
+                          Dívidas Flutuantes
+                        </Text>
+                        <Text fontSize="xs" color="var(--muted-foreground)">
+                          Total: {formatCurrency(cashFlowData.totalFloatingDebt)}
+                        </Text>
+                      </VStack>
+                      <VStack align="end" gap={1}>
+                        <Text fontSize="sm" fontWeight="semibold" color="var(--warning)">
+                          Restante no Final
+                        </Text>
+                        <Text fontSize="xs" color="var(--muted-foreground)">
+                          {formatCurrency(cashFlowData.remainingFloatingDebtAtEnd)}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                    {cashFlowData.debtFreeDate && (
+                      <Text fontSize="xs" color="var(--success)" mt={2}>
+                        📅 Quitação prevista: {new Date(cashFlowData.debtFreeDate).toLocaleDateString('pt-BR')}
+                      </Text>
+                    )}
+                  </Box>
+                )}
+              </VStack>
+            )}
+
             {/* Tabela de Histórico */}
             {isLoading ? (
               <VStack gap={2}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} height="48px" borderRadius="md" />
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <Skeleton key={i} height="60px" borderRadius="md" />
                 ))}
               </VStack>
-            ) : dailyBalances.length === 0 ? (
+            ) : error ? (
+              <Center py={12}>
+                <VStack gap={3}>
+                  <AlertCircle size={48} color="var(--destructive)" />
+                  <Text color="var(--destructive)" fontSize="sm" textAlign="center">
+                    Erro ao carregar histórico financeiro
+                  </Text>
+                  <Text color="var(--muted-foreground)" fontSize="xs" textAlign="center">
+                    {selectedAccountId ? 'Tente novamente em alguns instantes' : 'Selecione uma conta primeiro'}
+                  </Text>
+                </VStack>
+              </Center>
+            ) : !cashFlowData?.days.length ? (
               <Center py={12}>
                 <VStack gap={3}>
                   <Calendar size={48} color="var(--muted-foreground)" />
                   <Text color="var(--muted-foreground)" fontSize="sm">
-                    Nenhuma movimentação encontrada neste mês
+                    Nenhum dado encontrado para este mês
                   </Text>
                 </VStack>
               </Center>
@@ -268,6 +284,7 @@ export function HistFinanForm({ onBack, onCancel }: HistFinanFormProps) {
                         textTransform="uppercase"
                         letterSpacing="wide"
                         py={3}
+                        minW="60px"
                       >
                         Dia
                       </Table.ColumnHeader>
@@ -278,7 +295,7 @@ export function HistFinanForm({ onBack, onCancel }: HistFinanFormProps) {
                         letterSpacing="wide"
                         py={3}
                       >
-                        Tipo
+                        Movimentações
                       </Table.ColumnHeader>
                       <Table.ColumnHeader
                         color="var(--muted-foreground)"
@@ -287,14 +304,15 @@ export function HistFinanForm({ onBack, onCancel }: HistFinanFormProps) {
                         letterSpacing="wide"
                         py={3}
                         textAlign="right"
+                        minW="120px"
                       >
                         Saldo do Dia
                       </Table.ColumnHeader>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {dailyBalances.map((item, index) => (
-                      <TableRow key={index} item={item} index={index} />
+                    {cashFlowData.days.map((dayData, index) => (
+                      <TableRow key={dayData.date} dayData={dayData} index={index} />
                     ))}
                   </Table.Body>
                 </Table.Root>
