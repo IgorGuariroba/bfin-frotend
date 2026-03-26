@@ -1,0 +1,122 @@
+import { test, expect } from '@playwright/test';
+import { TEST_CONFIG, ERROR_MESSAGES } from '../utils/test-config';
+import { login, logout, isAuthenticated, clearAuthState } from '../utils/auth-helpers';
+
+/**
+ * Testes E2E para funcionalidade de Login
+ */
+
+test.describe('Login', () => {
+  test.beforeEach(async ({ page }) => {
+    // Limpa estado de autenticação antes de cada teste
+    await clearAuthState(page);
+  });
+
+  test('deve realizar login com credenciais válidas', async ({ page }) => {
+    // Navega para a página de login
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+
+    // Verifica se está na página de login
+    await expect(page).toHaveURL(TEST_CONFIG.LOGIN_URL);
+    await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
+
+    // Preenche o formulário de login
+    await page.fill('[data-testid="email-input"]', TEST_CONFIG.TEST_USER.email);
+    await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
+
+    // Clica no botão de login
+    await page.click('[data-testid="login-button"]');
+
+    // Verifica redirecionamento para dashboard
+    await expect(page).toHaveURL(TEST_CONFIG.DASHBOARD_URL);
+    await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
+  });
+
+  test('deve exibir erro com credenciais inválidas', async ({ page }) => {
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+
+    // Tenta login com credenciais inválidas
+    await page.fill('[data-testid="email-input"]', 'email@invalido.com');
+    await page.fill('[data-testid="password-input"]', 'senhaerrada');
+    await page.click('[data-testid="login-button"]');
+
+    // Verifica se permanece na página de login e exibe erro
+    await expect(page).toHaveURL(TEST_CONFIG.LOGIN_URL);
+    await expect(page.locator(TEST_CONFIG.SELECTORS.errorMessage)).toBeVisible();
+  });
+
+  test('deve validar campos obrigatórios', async ({ page }) => {
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+
+    // Tenta submeter formulário vazio
+    await page.click('[data-testid="login-button"]');
+
+    // Verifica validação dos campos
+    await expect(page.locator('[data-testid="email-error"]')).toContainText(ERROR_MESSAGES.REQUIRED_FIELD);
+    await expect(page.locator('[data-testid="password-error"]')).toContainText(ERROR_MESSAGES.REQUIRED_FIELD);
+  });
+
+  test('deve validar formato de email', async ({ page }) => {
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+
+    // Preenche email inválido
+    await page.fill('[data-testid="email-input"]', 'email-invalido');
+    await page.fill('[data-testid="password-input"]', 'senha123');
+    await page.click('[data-testid="login-button"]');
+
+    // Verifica validação de email
+    await expect(page.locator('[data-testid="email-error"]')).toContainText(ERROR_MESSAGES.INVALID_EMAIL);
+  });
+
+  test('deve realizar logout com sucesso', async ({ page }) => {
+    // Faz login primeiro
+    await login(page);
+
+    // Verifica que está autenticado
+    expect(await isAuthenticated(page)).toBe(true);
+
+    // Faz logout
+    await logout(page);
+
+    // Verifica redirecionamento para login
+    await expect(page).toHaveURL(TEST_CONFIG.LOGIN_URL);
+  });
+
+  test('deve lembrar estado de login após refresh', async ({ page }) => {
+    // Faz login
+    await login(page);
+
+    // Faz refresh da página
+    await page.reload();
+
+    // Verifica que continua autenticado
+    await expect(page).toHaveURL(TEST_CONFIG.DASHBOARD_URL);
+    await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
+  });
+
+  test('deve redirecionar usuário autenticado para dashboard', async ({ page }) => {
+    // Faz login primeiro
+    await login(page);
+
+    // Tenta acessar página de login novamente
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+
+    // Verifica redirecionamento automático para dashboard
+    await expect(page).toHaveURL(TEST_CONFIG.DASHBOARD_URL);
+  });
+
+  test('deve exibir indicador de carregamento durante login', async ({ page }) => {
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+
+    // Preenche credenciais
+    await page.fill('[data-testid="email-input"]', TEST_CONFIG.TEST_USER.email);
+    await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
+
+    // Clica no botão de login
+    await page.click('[data-testid="login-button"]');
+
+    // Verifica se o botão mostra estado de carregamento
+    await expect(page.locator('[data-testid="login-button"]')).toHaveAttribute('disabled');
+    await expect(page.locator('[data-testid="login-loading"]')).toBeVisible();
+  });
+});
