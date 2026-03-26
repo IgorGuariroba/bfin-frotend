@@ -11,3 +11,4 @@ export { LoanForm } from './LoanForm';
 export { CalendarForm } from './CalendarForm';
 export { ExtratoForm } from './ExtratoForm';
 export { AllTransactionsForm } from './AllTransactionsForm';
+export { HistFinanForm } from './HistFinanForm';

@@ -13,6 +13,7 @@ import {
   TransferForm,
   BfinParceiroForm,
   CalendarForm,
+  HistFinanForm,
 } from '../organisms';
 
 /**
@@ -96,6 +97,10 @@ export const FORM_REGISTRY: Record<string, FormConfig> = {
   [EXPANDED_FORMS.CALENDARIO]: {
     component: CalendarForm,
     customWrapper: CalendarWrapper,
+  },
+
+  [EXPANDED_FORMS.HIST_FINAN]: {
+    component: HistFinanForm,
   },
 };
 
