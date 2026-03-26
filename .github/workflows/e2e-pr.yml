@@ -1,0 +1,255 @@
+name: E2E Tests (PR)
+
+# Workflow otimizado para Pull Requests
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    # Executa apenas quando há mudanças relevantes
+    paths:
+      - 'src/**'
+      - 'e2e/**'
+      - 'package*.json'
+      - 'playwright.config.ts'
+      - 'vite.config.ts'
+      - '.github/workflows/e2e*.yml'
+
+# Cancela workflows anteriores da mesma PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  # Testes críticos (smoke tests) - execução rápida
+  e2e-smoke:
+    name: 🚀 Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 🔐 Setup NPM Authentication
+        run: |
+          echo "@igorguariroba:registry=https://npm.pkg.github.com" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright (Chromium only)
+        run: npx playwright install --with-deps chromium
+
+      - name: 🏗️ Build Application
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: http://localhost:3001
+
+      - name: 🚀 Run Smoke Tests
+        run: npx playwright test --project=chromium --grep="fluxo completo|login|dashboard"
+        env:
+          CI: true
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+
+      - name: 📊 Upload Smoke Test Results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: smoke-test-results
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 3
+
+  # Testes completos apenas se smoke tests passarem
+  e2e-full:
+    name: 🧪 Full E2E Tests
+    runs-on: ubuntu-latest
+    needs: e2e-smoke
+    timeout-minutes: 30
+    # Só executa se não for um draft PR
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 🔐 Setup NPM Authentication
+        run: |
+          echo "@igorguariroba:registry=https://npm.pkg.github.com" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: 🏗️ Build Application
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: http://localhost:3001
+
+      - name: 🧪 Run Full E2E Tests
+        run: npx playwright test --project=chromium
+        env:
+          CI: true
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+
+      - name: 📊 Upload Full Test Results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: full-e2e-results
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+
+      - name: 📝 Comment PR with Results
+        uses: actions/github-script@v7
+        if: failure()
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Tenta ler o relatório do Playwright
+            let reportContent = '';
+            try {
+              const reportPath = path.join(process.env.GITHUB_WORKSPACE, 'playwright-report/index.html');
+              if (fs.existsSync(reportPath)) {
+                reportContent = '📊 Relatório detalhado disponível nos artifacts';
+              }
+            } catch (error) {
+              console.log('Não foi possível ler o relatório:', error);
+            }
+
+            const comment = `## 🚨 E2E Tests Failed
+
+            Os testes End-to-End falharam nesta PR.
+
+            ### 🔍 O que verificar:
+            - Mudanças na UI podem ter afetado os seletores
+            - Novas funcionalidades precisam de novos testes
+            - Mudanças na API podem ter afetado os fluxos
+
+            ### 📋 Próximos passos:
+            1. Baixe os artifacts para ver screenshots/videos
+            2. Execute os testes localmente: \`npm run test:e2e\`
+            3. Atualize os testes se necessário
+
+            ${reportContent}
+
+            **Commit:** \`${context.sha.substr(0, 7)}\`
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Job de análise de mudanças
+  analyze-changes:
+    name: 🔍 Analyze Changes
+    runs-on: ubuntu-latest
+    outputs:
+      has-e2e-changes: ${{ steps.changes.outputs.e2e }}
+      has-src-changes: ${{ steps.changes.outputs.src }}
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Detect changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            e2e:
+              - 'e2e/**'
+              - 'playwright.config.ts'
+            src:
+              - 'src/**'
+              - 'package*.json'
+              - 'vite.config.ts'
+
+      - name: 📊 Report changes
+        run: |
+          echo "E2E changes: ${{ steps.changes.outputs.e2e }}" >> $GITHUB_STEP_SUMMARY
+          echo "Source changes: ${{ steps.changes.outputs.src }}" >> $GITHUB_STEP_SUMMARY
+
+  # Summary do PR
+  pr-summary:
+    name: 📋 PR E2E Summary
+    runs-on: ubuntu-latest
+    needs: [e2e-smoke, e2e-full, analyze-changes]
+    if: always()
+
+    steps:
+      - name: 📊 Generate PR Summary
+        run: |
+          echo "# 🎭 E2E Tests Summary (PR)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Status dos jobs
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Type | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Smoke Tests | ${{ needs.e2e-smoke.result }} | ~5min |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.e2e-full.result }}" != "skipped" ]; then
+            echo "| Full E2E Tests | ${{ needs.e2e-full.result }} | ~15min |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Full E2E Tests | ⏭️ Skipped (Draft PR) | - |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Análise de mudanças
+          echo "## Changes Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- **E2E Test Changes:** ${{ needs.analyze-changes.outputs.has-e2e-changes }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source Code Changes:** ${{ needs.analyze-changes.outputs.has-src-changes }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Recomendações baseadas nos resultados
+          if [ "${{ needs.e2e-smoke.result }}" = "success" ] && [ "${{ needs.e2e-full.result }}" = "success" ]; then
+            echo "## ✅ Recommendations" >> $GITHUB_STEP_SUMMARY
+            echo "- E2E tests are passing! 🎉" >> $GITHUB_STEP_SUMMARY
+            echo "- Ready for review and merge" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.e2e-smoke.result }}" = "failure" ]; then
+            echo "## 🚨 Action Required" >> $GITHUB_STEP_SUMMARY
+            echo "- Smoke tests failed - critical functionality affected" >> $GITHUB_STEP_SUMMARY
+            echo "- Fix issues before proceeding with review" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.e2e-full.result }}" = "failure" ]; then
+            echo "## ⚠️ Attention Needed" >> $GITHUB_STEP_SUMMARY
+            echo "- Core tests passed but some features have issues" >> $GITHUB_STEP_SUMMARY
+            echo "- Review test failures and update if needed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**PR:** #${{ github.event.number }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Author:** @${{ github.event.pull_request.user.login }}" >> $GITHUB_STEP_SUMMARY

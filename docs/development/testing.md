@@ -88,6 +88,18 @@ e2e/
 Utilizamos o `@storybook/addon-vitest` para executar testes diretamente nas histórias dos componentes, garantindo que o que é visto na documentação é o que está sendo testado.
 
 ## CI/CD
-Os testes E2E são executados automaticamente no pipeline de deploy para garantir que todas as funcionalidades estão funcionando antes da produção.
 
-Para mais detalhes sobre testes E2E, consulte: [e2e/README.md](../../e2e/README.md)
+### Workflows Configurados
+- **CI Pipeline**: Testes E2E básicos em PRs e pushes
+- **E2E Comprehensive**: Testes completos em múltiplos browsers
+- **E2E for PR**: Testes otimizados com feedback rápido
+
+### Execução Automática
+- ✅ Pull requests → Smoke tests + Full tests
+- ✅ Push para main/develop → Testes básicos no CI
+- ✅ Releases → Testes completos em todos os browsers
+- ✅ Schedule diário → Testes de regressão
+
+Para mais detalhes:
+- **Testes E2E**: [e2e/README.md](../../e2e/README.md)
+- **Workflows CI/CD**: [e2e-workflows.md](./e2e-workflows.md)
