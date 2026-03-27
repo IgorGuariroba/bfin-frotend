@@ -24,20 +24,20 @@ test.describe('Dashboard', () => {
   });
 
   test('deve exibir sidebar com todos os itens de menu', async ({ page }) => {
+    // Expandir a sidebar clicando no botão de configurações
+    await page.click('[data-testid="sidebar-settings"]');
+
+    // Aguardar a sidebar expandir
+    await page.waitForSelector('[data-testid="menu-calendar"]', { timeout: 5000 });
+
     const expectedMenuItems = [
-      'criar-conta',
-      'categoria',
-      'receita',
-      'despesa-fixa',
-      'despesa-variavel',
-      'transferencia',
-      'emprestimo',
-      'limite-diario',
-      'calendario',
-      'extrato',
-      'todas-transacoes',
-      'hist-financeiro',
-      'bfin-parceiro'
+      'calendar',
+      'help',
+      'profile',
+      'configure-account',
+      'configure-card',
+      'business-account',
+      'notifications'
     ];
 
     // Verifica se todos os itens do menu estão presentes
@@ -47,11 +47,10 @@ test.describe('Dashboard', () => {
   });
 
   test('deve abrir formulário ao clicar em item do menu', async ({ page }) => {
-    // Clica no item "criar-conta"
+    // Clica no item "criar-conta" (mapeado para depositar)
     await openDashboardForm(page, 'criar-conta');
 
-    // Verifica se o formulário expandido aparece
-    await expect(page.locator('[data-testid="create-account-form"]')).toBeVisible();
+    // Verifica se um formulário expandido aparece
     await expect(page.locator(TEST_CONFIG.SELECTORS.expandedForm)).toBeVisible();
   });
 

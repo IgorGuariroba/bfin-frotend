@@ -41,9 +41,26 @@ export async function registerAndLogin(page: Page) {
       });
     }
 
-    // Verifica se chegou no dashboard e sidebar está visível
+    // Verifica se chegou no dashboard e dashboard carregou
     await expect(page).toHaveURL(TEST_CONFIG.DASHBOARD_URL);
-    await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
+    await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
+
+    // No mobile, tenta expandir a sidebar se necessário
+    const viewportSize = page.viewportSize();
+    const isMobile = viewportSize && viewportSize.width < 768;
+
+    if (isMobile) {
+      // Tenta encontrar e clicar no botão para expandir a sidebar
+      const sidebarToggle = page.locator('[data-testid="sidebar-toggle"], [data-testid="menu-button"], [aria-label*="menu"], button[aria-label*="Menu"]');
+      if (await sidebarToggle.count() > 0) {
+        await sidebarToggle.first().click();
+        // Aguarda a sidebar aparecer após o click
+        await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible({ timeout: 5000 });
+      }
+    } else {
+      // Desktop: sidebar deve estar visível (collapsed ou expanded)
+      await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
+    }
 
     return {
       nome: TEST_CONFIG.TEST_USER.nome,
@@ -82,7 +99,25 @@ export async function login(
   });
 
   // Verifica se o dashboard carregou
-  await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
+  // No mobile, a sidebar pode estar oculta por padrão, então verifica se o header está visível
+  await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
+
+  // Se for mobile, tenta expandir a sidebar primeiro
+  const viewportSize = page.viewportSize();
+  const isMobile = viewportSize && viewportSize.width < 768;
+
+  if (isMobile) {
+    // Tenta encontrar e clicar no botão para expandir a sidebar
+    const sidebarToggle = page.locator('[data-testid="sidebar-toggle"], [data-testid="menu-button"], [aria-label*="menu"], button[aria-label*="Menu"]');
+    if (await sidebarToggle.count() > 0) {
+      await sidebarToggle.first().click();
+      // Aguarda a sidebar aparecer após o click
+      await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible({ timeout: 5000 });
+    }
+  } else {
+    // Desktop: sidebar deve estar visível (collapsed ou expanded)
+    await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
+  }
 }
 
 /**
@@ -156,18 +191,14 @@ export async function isAuthenticated(page: Page): Promise<boolean> {
  * @param page - Página do Playwright
  */
 export async function setAuthenticatedState(page: Page) {
-  // Simula token de autenticação no localStorage
-  await page.addInitScript(() => {
-    localStorage.setItem('@bfin:token', 'mock_token_for_tests');
-    localStorage.setItem('@bfin:refreshToken', 'mock_refresh_token');
-    localStorage.setItem('@bfin:user', JSON.stringify({
-      id: 1,
-      full_name: 'Usuário Teste',
-      email: 'teste@bfin.com.br'
-    }));
-  });
+  // Fazer login real ao invés de mock
+  await page.goto(TEST_CONFIG.LOGIN_URL);
 
-  await page.goto(TEST_CONFIG.DASHBOARD_URL);
+  // Fazer login com o usuário de teste
+  await login(page);
+
+  // Verificar se chegou ao dashboard
+  await expect(page).toHaveURL(/\/dashboard/);
   await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
 }
 

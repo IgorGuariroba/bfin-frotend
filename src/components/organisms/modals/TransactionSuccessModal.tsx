@@ -53,6 +53,7 @@ export function TransactionSuccessModal({
           maxW="md"
           w="90%"
           mx={4}
+          data-testid="success-message"
           css={{
             animation: 'slideInScale 0.3s ease-out',
             '@keyframes slideInScale': {

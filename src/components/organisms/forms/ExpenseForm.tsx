@@ -137,6 +137,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                   placeholder="Ex: Supermercado, Aluguel..."
                   icon={<Pencil size={18} color="var(--muted-foreground)" />}
                   error={errors.description?.message}
+                  data-testid="field-descricao"
                 />
 
                 {/* Toggle Despesa Fixa */}
@@ -189,6 +190,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                 colorPalette="green"
                 w="full"
                 loading={isSubmitting}
+                data-testid="submit-button"
               >
                 {isFixed ? 'Criar Despesa Fixa' : 'Criar Despesa Variável'}
               </Button>
@@ -197,6 +199,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
                   variant="outline"
                   w="full"
                   onClick={onCancel}
+                  data-testid="cancel-button"
                 >
                   Cancelar
                 </Button>

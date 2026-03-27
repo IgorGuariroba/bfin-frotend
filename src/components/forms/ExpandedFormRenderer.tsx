@@ -18,6 +18,7 @@ function ExpandedContainer({ children }: { children: React.ReactNode }) {
       bg="var(--primary)"
       zIndex={10}
       overflow="auto"
+      data-testid="expanded-form"
       css={{
         animation: 'dropExpand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         '@keyframes dropExpand': {

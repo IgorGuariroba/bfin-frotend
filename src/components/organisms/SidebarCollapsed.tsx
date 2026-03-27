@@ -55,6 +55,7 @@ export function SidebarCollapsed({
           <Tooltip.Trigger asChild>
             <IconButton
               aria-label={ariaLabel}
+              data-testid={`sidebar-${key}`}
               variant="ghost"
               color="var(--primary-foreground)"
               _hover={{ bg: 'whiteAlpha.100' }}

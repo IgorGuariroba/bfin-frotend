@@ -119,6 +119,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
                 colorPalette="green"
                 w="full"
                 loading={isSubmitting}
+                data-testid="submit-button"
               >
                 Simular Empréstimo
               </Button>
@@ -128,6 +129,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
                   colorPalette="gray"
                   w="full"
                   onClick={onCancel}
+                  data-testid="cancel-button"
                 >
                   Cancelar
                 </Button>

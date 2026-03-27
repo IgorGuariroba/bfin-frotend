@@ -90,6 +90,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                 w="full"
                 loading={formState.buttonState === 'loading'}
                 disabled={formState.buttonState === 'success'}
+                data-testid="submit-button"
               >
                 {formState.buttonState === 'success' ? 'Depósito Confirmado!' : 'Confirmar Depósito'}
               </Button>
@@ -99,6 +100,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                   colorPalette="gray"
                   w="full"
                   onClick={onCancel}
+                  data-testid="cancel-button"
                 >
                   Cancelar
                 </Button>

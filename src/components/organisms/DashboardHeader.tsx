@@ -46,6 +46,7 @@ export function DashboardHeader({
       align="center"
       justify="space-between"
       boxShadow={customShadows.whiteGlow.sm}
+      data-testid="dashboard-header"
     >
       {/* Brand */}
       <Flex align="center" gap={3} minW={0}>
