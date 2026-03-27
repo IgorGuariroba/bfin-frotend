@@ -42,29 +42,33 @@ export function Login() {
     setPasswordError('');
   }
 
-  function validateFields() {
-    let isValid = true;
-
-    // Limpar erros anteriores
-    setEmailError('');
-    setPasswordError('');
-
-    // Validar email
-    if (!email) {
+  function validateEmail(value: string) {
+    if (!value) {
       setEmailError('Campo obrigatório');
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      return false;
+    } else if (!/\S+@\S+\.\S+/.test(value)) {
       setEmailError('Email inválido');
-      isValid = false;
+      return false;
+    } else {
+      setEmailError('');
+      return true;
     }
+  }
 
-    // Validar senha
-    if (!password) {
+  function validatePassword(value: string) {
+    if (!value) {
       setPasswordError('Campo obrigatório');
-      isValid = false;
+      return false;
+    } else {
+      setPasswordError('');
+      return true;
     }
+  }
 
-    return isValid;
+  function validateFields() {
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    return isEmailValid && isPasswordValid;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -80,7 +84,8 @@ export function Login() {
 
     try {
       await signIn(email, password);
-      navigate('/dashboard');
+      // Redirecionamento será feito automaticamente pelo PublicRoute
+      // pois o usuário agora está autenticado
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao fazer login';
       setError(errorMessage);
@@ -167,6 +172,7 @@ export function Login() {
                   placeholder="Digite seu email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={(e) => validateEmail(e.target.value)}
                   color="var(--primary-foreground)"
                   fontSize="xl"
                   fontWeight="bold"
@@ -243,6 +249,7 @@ export function Login() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onBlur={(e) => validatePassword(e.target.value)}
                     size="lg"
                     bg="var(--input)"
                     borderColor="var(--border)"
@@ -272,23 +279,31 @@ export function Login() {
                 </Box>
 
                 {/* Botão Entrar */}
-                <Button
-                  type="submit"
-                  bg="var(--primary)"
-                  color="var(--primary-foreground)"
-                  _hover={{ opacity: 0.9 }}
-                  size="lg"
-                  fontSize="sm"
-                  fontWeight="bold"
-                  letterSpacing="wide"
-                  loading={isLoading}
-                  loadingText="Entrando..."
-                  data-testid="login-button"
-                  disabled={isLoading}
-                >
-                  {isLoading && <Box data-testid="login-loading" />}
-                  ENTRAR
-                </Button>
+                <VStack gap="3" align="stretch">
+                  {isLoading && (
+                    <Box data-testid="login-loading" textAlign="center">
+                      <Text color="var(--muted-foreground)" fontSize="sm">
+                        Entrando...
+                      </Text>
+                    </Box>
+                  )}
+                  <Button
+                    type="submit"
+                    bg="var(--primary)"
+                    color="var(--primary-foreground)"
+                    _hover={{ opacity: 0.9 }}
+                    size="lg"
+                    fontSize="sm"
+                    fontWeight="bold"
+                    letterSpacing="wide"
+                    loading={isLoading}
+                    loadingText="Entrando..."
+                    data-testid="login-button"
+                    disabled={isLoading}
+                  >
+                    ENTRAR
+                  </Button>
+                </VStack>
 
                 {/* Separador */}
                 <Flex align="center" gap="4" my="2">
@@ -313,6 +328,7 @@ export function Login() {
                     color: "var(--primary-foreground)",
                   }}
                   onClick={() => navigate('/register')}
+                  data-testid="register-link"
                 >
                   REGISTRE-SE
                 </Button>

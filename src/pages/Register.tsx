@@ -7,6 +7,7 @@ import {
   VStack,
   Text,
   Flex,
+  Alert,
 } from '@chakra-ui/react';
 import { useAuth } from '../contexts/AuthContext';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -17,7 +18,12 @@ export function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -29,17 +35,69 @@ export function Register() {
     banco: '260 - BFIN Pagamentos S.A.',
   };
 
+  function validateName(value: string) {
+    if (!value.trim()) {
+      setNameError('Campo obrigatório');
+      return false;
+    } else {
+      setNameError('');
+      return true;
+    }
+  }
+
+  function validateEmail(value: string) {
+    if (!value.trim()) {
+      setEmailError('Campo obrigatório');
+      return false;
+    } else if (!/\S+@\S+\.\S+/.test(value)) {
+      setEmailError('Email inválido');
+      return false;
+    } else {
+      setEmailError('');
+      return true;
+    }
+  }
+
+  function validatePassword(value: string) {
+    if (!value) {
+      setPasswordError('Campo obrigatório');
+      return false;
+    } else if (value.length < 6) {
+      setPasswordError('A senha deve ter no mínimo de 6 caracteres');
+      return false;
+    } else {
+      setPasswordError('');
+      return true;
+    }
+  }
+
+  function validateConfirmPassword(value: string) {
+    if (!value) {
+      setConfirmPasswordError('Campo obrigatório');
+      return false;
+    } else if (value !== password) {
+      setConfirmPasswordError('Senhas não coincidem');
+      return false;
+    } else {
+      setConfirmPasswordError('');
+      return true;
+    }
+  }
+
+  function validateAllFields() {
+    const isNameValid = validateName(fullName);
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    const isConfirmPasswordValid = validateConfirmPassword(confirmPassword);
+    return isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
 
-    if (password.length < 6) {
-      setError('A senha deve ter no mínimo 6 caracteres');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('As senhas não conferem');
+    // Validar todos os campos
+    if (!validateAllFields()) {
       return;
     }
 
@@ -47,7 +105,12 @@ export function Register() {
 
     try {
       await signUp(email, password, fullName);
-      navigate('/dashboard');
+
+      // Mostrar mensagem de sucesso - o PublicRoute redirecionará automaticamente
+      setShowSuccess(true);
+
+      // Redirecionamento será feito automaticamente pelo PublicRoute
+      // pois o usuário agora está autenticado
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta';
       setError(errorMessage);
@@ -157,9 +220,20 @@ export function Register() {
                     color="var(--destructive-foreground)"
                     borderRadius="lg"
                     fontSize="sm"
+                    data-testid="error-message"
                   >
                     {error}
                   </Box>
+                )}
+
+                {showSuccess && (
+                  <Alert.Root status="success" borderRadius="lg" variant="subtle" data-testid="success-message">
+                    <Alert.Indicator />
+                    <Alert.Title>Conta criada com sucesso</Alert.Title>
+                    <Alert.Description>
+                      Redirecionando para o dashboard...
+                    </Alert.Description>
+                  </Alert.Root>
                 )}
 
                 {/* Campo Nome Completo */}
@@ -176,6 +250,7 @@ export function Register() {
                     placeholder="João Silva"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
+                    onBlur={(e) => validateName(e.target.value)}
                     size="lg"
                     bg="var(--background)"
                     borderColor="var(--border)"
@@ -188,6 +263,16 @@ export function Register() {
                     autoComplete="name"
                     data-testid="name-input"
                   />
+                  {nameError && (
+                    <Text
+                      color="red.400"
+                      fontSize="xs"
+                      mt="1"
+                      data-testid="name-error"
+                    >
+                      {nameError}
+                    </Text>
+                  )}
                 </VStack>
 
                 {/* Campo E-mail */}
@@ -204,6 +289,7 @@ export function Register() {
                     placeholder="joao.silva@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onBlur={(e) => validateEmail(e.target.value)}
                     size="lg"
                     bg="var(--background)"
                     borderColor="var(--border)"
@@ -216,6 +302,16 @@ export function Register() {
                     autoComplete="email"
                     data-testid="email-input"
                   />
+                  {emailError && (
+                    <Text
+                      color="red.400"
+                      fontSize="xs"
+                      mt="1"
+                      data-testid="email-error"
+                    >
+                      {emailError}
+                    </Text>
+                  )}
                 </VStack>
 
                 {/* Campo Senha */}
@@ -232,6 +328,7 @@ export function Register() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onBlur={(e) => validatePassword(e.target.value)}
                     size="lg"
                     bg="var(--background)"
                     borderColor="var(--border)"
@@ -244,6 +341,16 @@ export function Register() {
                     autoComplete="new-password"
                     data-testid="password-input"
                   />
+                  {passwordError && (
+                    <Text
+                      color="red.400"
+                      fontSize="xs"
+                      mt="1"
+                      data-testid="password-error"
+                    >
+                      {passwordError}
+                    </Text>
+                  )}
                 </VStack>
 
                 {/* Campo Confirmar Senha */}
@@ -260,6 +367,7 @@ export function Register() {
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    onBlur={(e) => validateConfirmPassword(e.target.value)}
                     size="lg"
                     bg="var(--background)"
                     borderColor="var(--border)"
@@ -272,26 +380,61 @@ export function Register() {
                     autoComplete="new-password"
                     data-testid="confirm-password-input"
                   />
+                  {confirmPasswordError && (
+                    <Text
+                      color="red.400"
+                      fontSize="xs"
+                      mt="1"
+                      data-testid="confirm-password-error"
+                    >
+                      {confirmPasswordError}
+                    </Text>
+                  )}
                 </VStack>
 
                 {/* Botão Cadastrar */}
-                <Button
-                  type="submit"
-                  bg="var(--primary)"
-                  color="var(--primary-foreground)"
-                  _hover={{ opacity: 0.9 }}
-                  size="lg"
-                  fontSize="md"
-                  fontWeight="bold"
-                  letterSpacing="wide"
-                  loading={isLoading}
-                  loadingText="CADASTRANDO..."
-                  mt="2"
-                  w="full"
-                  data-testid="register-button"
-                >
-                  CADASTRAR
-                </Button>
+                <VStack gap="3" align="stretch">
+                  {isLoading && (
+                    <Box data-testid="register-loading" textAlign="center">
+                      <Text color="var(--muted-foreground)" fontSize="sm">
+                        Cadastrando...
+                      </Text>
+                    </Box>
+                  )}
+                  <Button
+                    type="submit"
+                    bg="var(--primary)"
+                    color="var(--primary-foreground)"
+                    _hover={{ opacity: 0.9 }}
+                    size="lg"
+                    fontSize="md"
+                    fontWeight="bold"
+                    letterSpacing="wide"
+                    loading={isLoading}
+                    loadingText="CADASTRANDO..."
+                    disabled={isLoading}
+                    mt="2"
+                    w="full"
+                    data-testid="register-button"
+                  >
+                    CADASTRAR
+                  </Button>
+
+                  {/* Link para Login */}
+                  <Text textAlign="center" color="var(--muted-foreground)" fontSize="sm">
+                    Já tem uma conta?{' '}
+                    <Text
+                      as="span"
+                      color="var(--primary)"
+                      cursor="pointer"
+                      textDecoration="underline"
+                      onClick={() => navigate('/login')}
+                      data-testid="login-link"
+                    >
+                      Faça login
+                    </Text>
+                  </Text>
+                </VStack>
               </VStack>
             </form>
           </Box>

@@ -130,7 +130,7 @@ test.describe('Login', () => {
     await page.click('[data-testid="login-button"]');
 
     // Verifica se o botão mostra estado de carregamento
-    await expect(page.locator('[data-testid="login-button"]')).toHaveAttribute('disabled');
+    await expect(page.locator('[data-testid="login-button"]')).toBeDisabled();
     await expect(page.locator('[data-testid="login-loading"]')).toBeVisible();
   });
 });

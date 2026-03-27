@@ -133,7 +133,7 @@ test.describe('Registro', () => {
     await page.click('[data-testid="register-button"]');
 
     // Verifica estado de carregamento
-    await expect(page.locator('[data-testid="register-button"]')).toHaveAttribute('disabled');
+    await expect(page.locator('[data-testid="register-button"]')).toBeDisabled();
     await expect(page.locator('[data-testid="register-loading"]')).toBeVisible();
   });
 
