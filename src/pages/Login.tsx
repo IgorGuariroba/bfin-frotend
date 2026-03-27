@@ -20,6 +20,8 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { signIn } = useAuth();
@@ -36,11 +38,44 @@ export function Login() {
     setEmail('');
     setPassword('');
     setError('');
+    setEmailError('');
+    setPasswordError('');
+  }
+
+  function validateFields() {
+    let isValid = true;
+
+    // Limpar erros anteriores
+    setEmailError('');
+    setPasswordError('');
+
+    // Validar email
+    if (!email) {
+      setEmailError('Campo obrigatório');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Email inválido');
+      isValid = false;
+    }
+
+    // Validar senha
+    if (!password) {
+      setPasswordError('Campo obrigatório');
+      isValid = false;
+    }
+
+    return isValid;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+
+    // Validar campos
+    if (!validateFields()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -68,7 +103,7 @@ export function Login() {
       </Box>
 
       <Container maxW="md" py={{ base: "8", md: "16" }} px={{ base: "4", sm: "8" }}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} data-testid="login-form" noValidate>
           <VStack gap="0" w="full">
           {/* Card Superior - Informações da Conta e Logo */}
           <Box
@@ -123,42 +158,54 @@ export function Login() {
             </Flex>
 
             {/* Nome do Usuário / Email */}
-            <Flex justify="space-between" align="center">
-              <Input
-                type="email"
-                name="email"
-                id="email"
-                placeholder="Digite seu email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                color="var(--primary-foreground)"
-                fontSize="xl"
-                fontWeight="bold"
-                letterSpacing="wide"
-                bg="transparent"
-                border="none"
-                p="0"
-                _placeholder={{ color: "var(--primary-foreground)", opacity: 0.6 }}
-                _focus={{
-                  border: "none",
-                  boxShadow: "none",
-                  outline: "none"
-                }}
-                autoComplete="username email"
-                required
-              />
-              <Link
-                color="var(--primary-foreground)"
-                fontSize="xs"
-                fontWeight="medium"
-                textDecoration="underline"
-                _hover={{ opacity: 0.8 }}
-                cursor="pointer"
-                onClick={handleTrocarUsuario}
-              >
-                TROCAR DE USUÁRIO
-              </Link>
-            </Flex>
+            <Box>
+              <Flex justify="space-between" align="center">
+                <Input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Digite seu email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  color="var(--primary-foreground)"
+                  fontSize="xl"
+                  fontWeight="bold"
+                  letterSpacing="wide"
+                  bg="transparent"
+                  border="none"
+                  p="0"
+                  _placeholder={{ color: "var(--primary-foreground)", opacity: 0.6 }}
+                  _focus={{
+                    border: "none",
+                    boxShadow: "none",
+                    outline: "none"
+                  }}
+                  autoComplete="username email"
+                  data-testid="email-input"
+                />
+                <Link
+                  color="var(--primary-foreground)"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  textDecoration="underline"
+                  _hover={{ opacity: 0.8 }}
+                  cursor="pointer"
+                  onClick={handleTrocarUsuario}
+                >
+                  TROCAR DE USUÁRIO
+                </Link>
+              </Flex>
+              {emailError && (
+                <Text
+                  color="red.400"
+                  fontSize="xs"
+                  mt="1"
+                  data-testid="email-error"
+                >
+                  {emailError}
+                </Text>
+              )}
+            </Box>
           </Box>
 
           {/* Card Inferior - Login */}
@@ -171,7 +218,7 @@ export function Login() {
           >
             <VStack gap="6" align="stretch">
                 {error && (
-                  <Alert.Root status="error" borderRadius="lg" variant="subtle">
+                  <Alert.Root status="error" borderRadius="lg" variant="subtle" data-testid="error-message">
                     <Alert.Indicator />
                     <Alert.Title>{error}</Alert.Title>
                   </Alert.Root>
@@ -209,8 +256,19 @@ export function Login() {
                       boxShadow: "0 0 0 1px var(--accent)"
                     }}
                     autoComplete="current-password"
-                    required
+                    data-testid="password-input"
                   />
+                  {passwordError && (
+                    <Text
+                      color="red.400"
+                      fontSize="xs"
+                      mt="1"
+                      textAlign="center"
+                      data-testid="password-error"
+                    >
+                      {passwordError}
+                    </Text>
+                  )}
                 </Box>
 
                 {/* Botão Entrar */}
@@ -225,7 +283,10 @@ export function Login() {
                   letterSpacing="wide"
                   loading={isLoading}
                   loadingText="Entrando..."
+                  data-testid="login-button"
+                  disabled={isLoading}
                 >
+                  {isLoading && <Box data-testid="login-loading" />}
                   ENTRAR
                 </Button>
 

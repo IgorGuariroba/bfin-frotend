@@ -15,6 +15,7 @@ export function Register() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,6 +35,11 @@ export function Register() {
 
     if (password.length < 6) {
       setError('A senha deve ter no mínimo 6 caracteres');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('As senhas não conferem');
       return;
     }
 
@@ -132,7 +138,7 @@ export function Register() {
             p={{ base: "6", sm: "8" }}
             boxShadow={{ base: "none", sm: "2xl" }}
           >
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} data-testid="register-form" noValidate>
               <VStack gap="6" align="stretch">
                 {/* Título */}
                 <Text
@@ -180,7 +186,7 @@ export function Register() {
                       boxShadow: "0 0 0 1px var(--primary)"
                     }}
                     autoComplete="name"
-                    required
+                    data-testid="name-input"
                   />
                 </VStack>
 
@@ -208,7 +214,7 @@ export function Register() {
                       boxShadow: "0 0 0 1px var(--primary)"
                     }}
                     autoComplete="email"
-                    required
+                    data-testid="email-input"
                   />
                 </VStack>
 
@@ -236,7 +242,35 @@ export function Register() {
                       boxShadow: "0 0 0 1px var(--primary)"
                     }}
                     autoComplete="new-password"
-                    required
+                    data-testid="password-input"
+                  />
+                </VStack>
+
+                {/* Campo Confirmar Senha */}
+                <VStack align="stretch" gap="2">
+                  <Text
+                    color="var(--muted-foreground)"
+                    fontSize="sm"
+                    fontWeight="medium"
+                  >
+                    Confirmar Senha
+                  </Text>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    size="lg"
+                    bg="var(--background)"
+                    borderColor="var(--border)"
+                    color="var(--card-foreground)"
+                    _placeholder={{ color: "var(--muted-foreground)", opacity: 0.6 }}
+                    _focus={{
+                      borderColor: "var(--primary)",
+                      boxShadow: "0 0 0 1px var(--primary)"
+                    }}
+                    autoComplete="new-password"
+                    data-testid="confirm-password-input"
                   />
                 </VStack>
 
@@ -254,6 +288,7 @@ export function Register() {
                   loadingText="CADASTRANDO..."
                   mt="2"
                   w="full"
+                  data-testid="register-button"
                 >
                   CADASTRAR
                 </Button>

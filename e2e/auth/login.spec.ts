@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { TEST_CONFIG, ERROR_MESSAGES } from '../utils/test-config';
-import { login, logout, isAuthenticated, clearAuthState } from '../utils/auth-helpers';
+import { logout, isAuthenticated, clearAuthState, registerAndLogin } from '../utils/auth-helpers';
 
 /**
  * Testes E2E para funcionalidade de Login
@@ -13,19 +13,33 @@ test.describe('Login', () => {
   });
 
   test('deve realizar login com credenciais válidas', async ({ page }) => {
-    // Navega para a página de login
-    await page.goto(TEST_CONFIG.LOGIN_URL);
+    // Gera email único para o teste
+    const uniqueEmail = `teste${Date.now()}@bfin.com.br`;
 
-    // Verifica se está na página de login
-    await expect(page).toHaveURL(TEST_CONFIG.LOGIN_URL);
-    await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
-
-    // Preenche o formulário de login
-    await page.fill('[data-testid="email-input"]', TEST_CONFIG.TEST_USER.email);
+    // Primeiro registra um usuário válido
+    await page.goto(TEST_CONFIG.REGISTER_URL);
+    await page.fill('[data-testid="name-input"]', TEST_CONFIG.TEST_USER.nome);
+    await page.fill('[data-testid="email-input"]', uniqueEmail);
     await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
+    await page.fill('[data-testid="confirm-password-input"]', TEST_CONFIG.TEST_USER.password);
+    await page.click('[data-testid="register-button"]');
 
-    // Clica no botão de login
-    await page.click('[data-testid="login-button"]');
+    // Se redirecionado para login, ou se já está no dashboard, continua
+    if (page.url().includes('/login')) {
+      // Navega para a página de login
+      await page.goto(TEST_CONFIG.LOGIN_URL);
+
+      // Verifica se está na página de login
+      await expect(page).toHaveURL(TEST_CONFIG.LOGIN_URL);
+      await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
+
+      // Preenche o formulário de login com as credenciais do usuário registrado
+      await page.fill('[data-testid="email-input"]', uniqueEmail);
+      await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
+
+      // Clica no botão de login
+      await page.click('[data-testid="login-button"]');
+    }
 
     // Verifica redirecionamento para dashboard
     await expect(page).toHaveURL(TEST_CONFIG.DASHBOARD_URL);
@@ -69,8 +83,8 @@ test.describe('Login', () => {
   });
 
   test('deve realizar logout com sucesso', async ({ page }) => {
-    // Faz login primeiro
-    await login(page);
+    // Registra e faz login primeiro
+    await registerAndLogin(page);
 
     // Verifica que está autenticado
     expect(await isAuthenticated(page)).toBe(true);
@@ -83,8 +97,8 @@ test.describe('Login', () => {
   });
 
   test('deve lembrar estado de login após refresh', async ({ page }) => {
-    // Faz login
-    await login(page);
+    // Registra e faz login
+    await registerAndLogin(page);
 
     // Faz refresh da página
     await page.reload();
@@ -95,8 +109,8 @@ test.describe('Login', () => {
   });
 
   test('deve redirecionar usuário autenticado para dashboard', async ({ page }) => {
-    // Faz login primeiro
-    await login(page);
+    // Registra e faz login primeiro
+    await registerAndLogin(page);
 
     // Tenta acessar página de login novamente
     await page.goto(TEST_CONFIG.LOGIN_URL);
