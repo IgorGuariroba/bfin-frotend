@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { TEST_CONFIG } from '../utils/test-config';
-import { login, logout } from '../utils/auth-helpers';
+import { registerAndLogin, logout } from '../utils/auth-helpers';
 import {
   openDashboardForm,
   fillAccountForm,
@@ -18,7 +18,7 @@ import {
 test.describe('Fluxo Completo - Usuário Real', () => {
   test('teste simples: um formulário funcionando', async ({ page }) => {
     // 1. AUTENTICAÇÃO
-    await login(page);
+    await registerAndLogin(page);
     await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
 
     // 2. TESTAR UM FORMULÁRIO APENAS
@@ -28,12 +28,12 @@ test.describe('Fluxo Completo - Usuário Real', () => {
     await submitForm(page);
 
     // Sucesso!
-    console.log('✅ Formulário único funcionou!');
+    console.warn('✅ Formulário único funcionou!');
   });
 
   test('fluxo completo: login → criar conta → receitas → despesas → transferência → logout', async ({ page }) => {
     // 1. AUTENTICAÇÃO
-    await login(page);
+    await registerAndLogin(page);
     await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
 
     // 2. TESTAR RECEITA (DEPOSITAR)
@@ -46,39 +46,39 @@ test.describe('Fluxo Completo - Usuário Real', () => {
     await page.waitForTimeout(3000); // Aguarda processamento
 
     // Debug: Verificar estado atual
-    console.log('🔍 Verificando estado após primeiro formulário...');
+    console.warn('🔍 Verificando estado após primeiro formulário...');
     const expandedForm = page.locator('[data-testid="expanded-form"]');
     const isFormVisible = await expandedForm.isVisible();
-    console.log('📋 Formulário expandido visível?', isFormVisible);
+    console.warn('📋 Formulário expandido visível?', isFormVisible);
 
     // Se ainda há formulário aberto, força fechamento
     if (isFormVisible) {
-      console.log('🔧 Tentando fechar formulário...');
+      console.warn('🔧 Tentando fechar formulário...');
 
       // Tentativa 1: Botão de voltar/cancelar
       const backButton = page.locator('[aria-label="Voltar"], button:has-text("Voltar"), [data-testid="cancel-button"]');
       if (await backButton.count() > 0) {
-        console.log('📱 Clicando no botão Voltar...');
+        console.warn('📱 Clicando no botão Voltar...');
         await backButton.first().click();
         await page.waitForTimeout(1000);
       }
 
       // Tentativa 2: Pressionar Escape
-      console.log('⌨️ Pressionando Escape...');
+      console.warn('⌨️ Pressionando Escape...');
       await page.keyboard.press('Escape');
       await page.waitForTimeout(1000);
 
       // Tentativa 3: Clicar fora do formulário
-      console.log('👆 Clicando fora do formulário...');
+      console.warn('👆 Clicando fora do formulário...');
       await page.click('[data-testid="dashboard-content"]', { force: true });
       await page.waitForTimeout(2000);
 
       const stillVisible = await expandedForm.isVisible();
-      console.log('📋 Ainda visível após todas as tentativas?', stillVisible);
+      console.warn('📋 Ainda visível após todas as tentativas?', stillVisible);
 
       // Se ainda visível, força refresh da página
       if (stillVisible) {
-        console.log('🔄 Formulário teimoso! Vamos recarregar a página...');
+        console.warn('🔄 Formulário teimoso! Vamos recarregar a página...');
         await page.reload();
         await page.waitForTimeout(2000);
 
@@ -91,30 +91,30 @@ test.describe('Fluxo Completo - Usuário Real', () => {
     const depositarButton = page.locator('text=Depositar');
     const isDepositarVisible = await depositarButton.isVisible();
     const isDepositarEnabled = await depositarButton.isEnabled();
-    console.log('💰 Botão Depositar visível?', isDepositarVisible);
-    console.log('💰 Botão Depositar habilitado?', isDepositarEnabled);
+    console.warn('💰 Botão Depositar visível?', isDepositarVisible);
+    console.warn('💰 Botão Depositar habilitado?', isDepositarEnabled);
 
     // 4. TENTAR ADICIONAR SEGUNDA RECEITA
-    console.log('🚀 Tentando abrir segundo formulário...');
+    console.warn('🚀 Tentando abrir segundo formulário...');
     await openDashboardForm(page, 'depositar');
     await waitForDataLoad(page);
 
     // Debug: Verificar estado do segundo formulário
-    console.log('🔍 Verificando estado do segundo formulário...');
+    console.warn('🔍 Verificando estado do segundo formulário...');
     const noAccountsMessage = page.locator('text=Você precisa criar uma conta primeiro');
     const hasNoAccounts = await noAccountsMessage.isVisible();
-    console.log('🏦 Mensagem "sem contas"?', hasNoAccounts);
+    console.warn('🏦 Mensagem "sem contas"?', hasNoAccounts);
 
     const descriptionField = page.locator('[data-testid="field-descricao"]');
     const isFieldVisible = await descriptionField.isVisible();
-    console.log('📝 Campo descrição visível?', isFieldVisible);
+    console.warn('📝 Campo descrição visível?', isFieldVisible);
 
     if (hasNoAccounts) {
-      console.log('🏦 Segundo formulário sem contas! Vamos pular...');
+      console.warn('🏦 Segundo formulário sem contas! Vamos pular...');
       // Se não há contas, pode ser que a primeira transação não foi criada corretamente
       // Vamos voltar e tentar algo diferente
       await page.click('[data-testid="cancel-button"], button:has-text("Voltar")', { force: true });
-      console.log('✅ Teste encerrado - precisamos criar contas primeiro');
+      console.warn('✅ Teste encerrado - precisamos criar contas primeiro');
       return;
     }
 
@@ -170,7 +170,7 @@ test.describe('Fluxo Completo - Usuário Real', () => {
 
   test('fluxo de usuário com empréstimo e limite diário', async ({ page }) => {
     // 1. AUTENTICAÇÃO
-    await login(page);
+    await registerAndLogin(page);
 
     // 2. CRIAR EMPRÉSTIMO
     await openDashboardForm(page, 'emprestimo');
@@ -228,7 +228,7 @@ test.describe('Fluxo Completo - Usuário Real', () => {
   });
 
   test('fluxo de gestão de categorias e contas múltiplas', async ({ page }) => {
-    await login(page);
+    await registerAndLogin(page);
 
     // 1. CRIAR MÚLTIPLAS CATEGORIAS
     const categorias = [

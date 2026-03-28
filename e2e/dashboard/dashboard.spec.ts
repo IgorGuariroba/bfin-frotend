@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { TEST_CONFIG } from '../utils/test-config';
-import { setAuthenticatedState } from '../utils/auth-helpers';
+import { registerAndLogin } from '../utils/auth-helpers';
 import { openDashboardForm, closeDashboardForm } from '../utils/form-helpers';
 
 /**
@@ -9,8 +9,8 @@ import { openDashboardForm, closeDashboardForm } from '../utils/form-helpers';
 
 test.describe('Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    // Configura estado autenticado para todos os testes
-    await setAuthenticatedState(page);
+    // Configura estado autenticado para todos os testes usando login real
+    await registerAndLogin(page);
   });
 
   test('deve carregar dashboard corretamente', async ({ page }) => {
