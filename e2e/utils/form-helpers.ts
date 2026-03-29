@@ -58,7 +58,7 @@ export async function openDashboardForm(page: Page, formType: string) {
 
   // Mapeia o tipo se necessário
   const mappedFormType = formMapping[formType] || formType;
-  console.log(`📋 Mapeamento: "${formType}" → "${mappedFormType}"`);
+  console.warn(`📋 Mapeamento: "${formType}" → "${mappedFormType}"`);
 
   // Lista de formulários que estão no FooterActions (não na sidebar)
   const footerForms = ['depositar', 'pagar', 'transferir', 'emprestimos', 'hist-finan', 'ajustar-limite', 'bfin-parceiro'];
@@ -145,15 +145,15 @@ export async function fillField(page: Page, fieldName: string, value: string) {
   try {
     // Primeiro, verifica quantos campos existem com esse testid
     const elements = await page.locator(selector).count();
-    console.log(`🔍 Encontrados ${elements} campos com testid="${fieldName}"`);
+    console.warn(`🔍 Encontrados ${elements} campos com testid="${fieldName}"`);
 
     if (elements === 0) {
-      console.log(`⚠️ Campo "${fieldName}" não existe neste formulário. Pulando...`);
+      console.warn(`⚠️ Campo "${fieldName}" não existe neste formulário. Pulando...`);
       return; // Não falha, apenas pula o campo
     }
 
     if (elements > 1) {
-      console.log(`⚠️ Múltiplos campos encontrados! Tentando o visível...`);
+      console.warn(`⚠️ Múltiplos campos encontrados! Tentando o visível...`);
       // Se há múltiplos, tenta preencher o que está visível e interativo
       await page.locator(selector).nth(elements - 1).fill(value);
     } else {
@@ -161,7 +161,7 @@ export async function fillField(page: Page, fieldName: string, value: string) {
       await page.fill(selector, value);
     }
   } catch (error) {
-    console.log(`❌ Erro ao preencher ${fieldName}:`, error);
+    console.warn(`❌ Erro ao preencher ${fieldName}:`, error);
     throw error;
   }
 }
@@ -178,10 +178,10 @@ export async function selectOption(page: Page, fieldName: string, optionValue: s
   try {
     // Verifica se o campo existe
     const elements = await page.locator(fieldSelector).count();
-    console.log(`🔍 Select "${fieldName}": encontrados ${elements} campos`);
+    console.warn(`🔍 Select "${fieldName}": encontrados ${elements} campos`);
 
     if (elements === 0) {
-      console.log(`⚠️ Select "${fieldName}" não existe neste formulário. Pulando...`);
+      console.warn(`⚠️ Select "${fieldName}" não existe neste formulário. Pulando...`);
       return; // Não falha, apenas pula
     }
 
@@ -191,7 +191,7 @@ export async function selectOption(page: Page, fieldName: string, optionValue: s
     // Clica na opção desejada
     await page.click(SELECTOR_HELPERS.selectOption(optionValue));
   } catch (error) {
-    console.log(`❌ Erro ao selecionar ${fieldName}: ${optionValue}`, error);
+    console.warn(`❌ Erro ao selecionar ${fieldName}: ${optionValue}`, error);
     throw error;
   }
 }

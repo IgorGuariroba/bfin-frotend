@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, VStack, HStack, Text } from '@chakra-ui/react';
+import { Box, VStack, HStack } from '@chakra-ui/react';
 
 // Simple Menu implementation for the user dropdown
 interface MenuRootProps {
@@ -23,7 +23,9 @@ interface MenuItemProps {
   'data-testid'?: string;
 }
 
-interface MenuSeparatorProps {}
+interface MenuSeparatorProps {
+  className?: string;
+}
 
 const MenuContext = React.createContext<{
   isOpen: boolean;
@@ -102,7 +104,7 @@ const MenuContent: React.FC<MenuContentProps> = ({ children, 'data-testid': data
   );
 };
 
-const MenuItem: React.FC<MenuItemProps> = ({ value, onClick, children, 'data-testid': dataTestId }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ value: _value, onClick, children, 'data-testid': dataTestId }) => {
   const { setIsOpen } = React.useContext(MenuContext);
 
   const handleClick = () => {
@@ -127,8 +129,8 @@ const MenuItem: React.FC<MenuItemProps> = ({ value, onClick, children, 'data-tes
   );
 };
 
-const MenuSeparator: React.FC<MenuSeparatorProps> = () => {
-  return <Box h="1px" bg="var(--border)" mx={2} my={1} />;
+const MenuSeparator: React.FC<MenuSeparatorProps> = ({ className }) => {
+  return <Box h="1px" bg="var(--border)" mx={2} my={1} className={className} />;
 };
 
 export const Menu = {
