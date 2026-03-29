@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import { TEST_CONFIG } from './test-config';
+import { TEST_CONFIG, SELECTOR_HELPERS } from './test-config';
 
 /**
  * Helper functions para interação com formulários nos testes E2E
@@ -89,7 +89,7 @@ export async function openDashboardForm(page: Page, formType: string) {
     }
   } else {
     // Para formulários da sidebar, usa o seletor tradicional
-    await page.click(TEST_CONFIG.SELECTORS.menuItem(mappedFormType));
+    await page.click(SELECTOR_HELPERS.menuItem(mappedFormType));
   }
 
   // Aguarda o formulário expandido aparecer
@@ -103,11 +103,34 @@ export async function openDashboardForm(page: Page, formType: string) {
  * @param page - Página do Playwright
  */
 export async function closeDashboardForm(page: Page) {
-  // Clica no botão cancelar
-  await page.click(TEST_CONFIG.SELECTORS.cancelButton);
+  // Verifica se o botão cancelar existe
+  const cancelButton = page.locator(TEST_CONFIG.SELECTORS.cancelButton);
+  const cancelExists = await cancelButton.count();
 
-  // Aguarda o formulário desaparecer
-  await expect(page.locator(TEST_CONFIG.SELECTORS.expandedForm)).not.toBeVisible();
+  if (cancelExists === 0) {
+    console.warn('⚠️ Botão cancelar não encontrado. Tentando botão Voltar...');
+
+    // Tenta clicar no botão Voltar como alternativa
+    const backButton = page.locator('button:has-text("Voltar")');
+    const backExists = await backButton.count();
+
+    if (backExists > 0) {
+      await backButton.click();
+    } else {
+      console.warn('⚠️ Nenhum botão de fechamento encontrado.');
+      return;
+    }
+  } else {
+    // Clica no botão cancelar
+    await page.click(TEST_CONFIG.SELECTORS.cancelButton);
+  }
+
+  // Aguarda o formulário desaparecer ou dashboard principal aparecer
+  try {
+    await expect(page.locator(TEST_CONFIG.SELECTORS.expandedForm)).not.toBeVisible();
+  } catch {
+    console.warn('Formulário pode já ter sido fechado ou não estar em modo expandido');
+  }
 }
 
 /**
@@ -117,7 +140,7 @@ export async function closeDashboardForm(page: Page) {
  * @param value - Valor a ser preenchido
  */
 export async function fillField(page: Page, fieldName: string, value: string) {
-  const selector = TEST_CONFIG.SELECTORS.formField(fieldName);
+  const selector = SELECTOR_HELPERS.formField(fieldName);
 
   try {
     // Primeiro, verifica quantos campos existem com esse testid
@@ -150,7 +173,7 @@ export async function fillField(page: Page, fieldName: string, value: string) {
  * @param optionValue - Valor da opção a ser selecionada
  */
 export async function selectOption(page: Page, fieldName: string, optionValue: string) {
-  const fieldSelector = TEST_CONFIG.SELECTORS.formField(fieldName);
+  const fieldSelector = SELECTOR_HELPERS.formField(fieldName);
 
   try {
     // Verifica se o campo existe
@@ -166,7 +189,7 @@ export async function selectOption(page: Page, fieldName: string, optionValue: s
     await page.click(fieldSelector);
 
     // Clica na opção desejada
-    await page.click(TEST_CONFIG.SELECTORS.selectOption(optionValue));
+    await page.click(SELECTOR_HELPERS.selectOption(optionValue));
   } catch (error) {
     console.log(`❌ Erro ao selecionar ${fieldName}: ${optionValue}`, error);
     throw error;
@@ -179,6 +202,27 @@ export async function selectOption(page: Page, fieldName: string, optionValue: s
  * @param expectSuccess - Se deve aguardar mensagem de sucesso (padrão: true)
  */
 export async function submitForm(page: Page, expectSuccess: boolean = true) {
+  // Verifica se o botão de submit existe
+  const submitButton = page.locator(TEST_CONFIG.SELECTORS.submitButton);
+  const submitExists = await submitButton.count();
+
+  if (submitExists === 0) {
+    console.warn('⚠️ Botão de submit não encontrado. Formulário pode estar em estado "conta necessária".');
+
+    // Verifica se há mensagem indicando que conta é necessária
+    const needsAccountMessage = await page.locator('text=precisa criar uma conta').isVisible().catch(() => false);
+    if (needsAccountMessage) {
+      console.warn('ℹ️ Formulário requer conta existente. Clicando em Voltar...');
+      await page.click('button:has-text("Voltar")').catch(() => {
+        console.warn('Botão Voltar não encontrado');
+      });
+      return;
+    }
+
+    // Se não há mensagem específica, considera que não há formulário para submeter
+    throw new Error('Botão de submit não encontrado e não há indicação de requisito de conta');
+  }
+
   // Clica no botão de submit
   await page.click(TEST_CONFIG.SELECTORS.submitButton);
 

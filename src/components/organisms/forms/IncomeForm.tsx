@@ -31,6 +31,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
         variant="green-header"
         icon={TrendingUp}
         onBack={onCancel}
+        formId="income-form"
       >
         <Box px={{ base: 4, md: 6 }} py={8}>
           <VStack gap={4} align="center">

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TEST_CONFIG, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../utils/test-config';
+import { TEST_CONFIG, ERROR_MESSAGES, SUCCESS_MESSAGES, SELECTOR_HELPERS } from '../utils/test-config';
 import { setAuthenticatedState } from '../utils/auth-helpers';
 import {
   openDashboardForm,
@@ -82,13 +82,13 @@ test.describe('Formulário - Receita', () => {
     await fillField(page, 'valor', '5000');
 
     // Verifica se foi formatado automaticamente
-    const valorField = page.locator(TEST_CONFIG.SELECTORS.formField('valor'));
+    const valorField = page.locator(SELECTOR_HELPERS.formField('valor'));
     await expect(valorField).toHaveValue('R$ 5.000,00');
   });
 
   test('deve carregar lista de contas', async ({ page }) => {
     // Clica no campo de conta para abrir opções
-    await page.click(TEST_CONFIG.SELECTORS.formField('conta'));
+    await page.click(SELECTOR_HELPERS.formField('conta'));
 
     // Verifica se carregou opções
     await expect(page.locator('[data-testid="conta-option-0"]')).toBeVisible();
@@ -96,7 +96,7 @@ test.describe('Formulário - Receita', () => {
 
   test('deve carregar lista de categorias', async ({ page }) => {
     // Clica no campo de categoria para abrir opções
-    await page.click(TEST_CONFIG.SELECTORS.formField('categoria'));
+    await page.click(SELECTOR_HELPERS.formField('categoria'));
 
     // Verifica se carregou opções de categorias de receita
     await expect(page.locator('[data-testid="categoria-option-0"]')).toBeVisible();

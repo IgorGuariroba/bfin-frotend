@@ -3,11 +3,14 @@ import {
   Text,
   HStack,
   IconButton,
+  Box,
 } from '@chakra-ui/react';
-import { X } from 'lucide-react';
+import { X, User, Settings, LogOut } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { MobileHeaderControls } from '../molecules';
 import { customShadows } from '../../theme';
+import { useAuth } from '../../contexts/AuthContext';
+import { Menu } from '../ui/Menu';
 import type { SidebarState } from './index';
 
 /**
@@ -36,6 +39,7 @@ export function DashboardHeader({
   onHomeClick,
   onSignOut,
 }: DashboardHeaderProps) {
+  const { user } = useAuth();
 
   return (
     <Flex
@@ -79,6 +83,70 @@ export function DashboardHeader({
       <HStack gap={{ base: 1, md: 2 }}>
         <ThemeToggle variant="icon" size="md" />
 
+        {/* Menu do usuário */}
+        <Menu.Root>
+          <Menu.Trigger asChild>
+            <HStack
+              as="button"
+              gap={2}
+              cursor="pointer"
+              _hover={{ opacity: 0.8 }}
+              data-testid="user-menu"
+            >
+              <Box
+                w={8}
+                h={8}
+                borderRadius="full"
+                bg="var(--primary-foreground)"
+                color="var(--primary)"
+                display="flex"
+                align="center"
+                justify="center"
+                fontSize="sm"
+                fontWeight="bold"
+                data-testid="user-avatar"
+              >
+                {(user?.nome || 'U')[0]}
+              </Box>
+              <Box display={{ base: 'none', md: 'block' }}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color="var(--primary-foreground)"
+                  data-testid="user-name"
+                >
+                  {user?.nome || 'Usuário Teste'}
+                </Text>
+              </Box>
+            </HStack>
+          </Menu.Trigger>
+          <Menu.Content data-testid="user-menu-dropdown">
+            <Menu.Item
+              value="profile"
+              data-testid="profile-option"
+            >
+              <User size={16} />
+              <Text ml={2}>Perfil</Text>
+            </Menu.Item>
+            <Menu.Item
+              value="settings"
+              data-testid="settings-option"
+            >
+              <Settings size={16} />
+              <Text ml={2}>Configurações</Text>
+            </Menu.Item>
+            <Menu.Separator />
+            <Menu.Item
+              value="logout"
+              onClick={onSignOut}
+              data-testid="logout-option"
+            >
+              <LogOut size={16} />
+              <Text ml={2}>Sair</Text>
+            </Menu.Item>
+          </Menu.Content>
+        </Menu.Root>
+
         <IconButton
           aria-label="Sair da aplicação"
           size="sm"
@@ -88,6 +156,7 @@ export function DashboardHeader({
           onClick={onSignOut}
           border="none"
           _focus={{ boxShadow: 'none' }}
+          display={{ base: 'flex', md: 'none' }}
         >
           <X size={16} />
         </IconButton>

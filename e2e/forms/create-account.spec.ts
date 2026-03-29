@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { TEST_CONFIG, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../utils/test-config';
+import { TEST_CONFIG, ERROR_MESSAGES, SUCCESS_MESSAGES, SELECTOR_HELPERS } from '../utils/test-config';
 import { setAuthenticatedState } from '../utils/auth-helpers';
 import {
   openDashboardForm,
@@ -89,7 +89,7 @@ test.describe('Formulário - Criar Conta', () => {
     await fillField(page, 'saldo', '1000');
 
     // Verifica se foi formatado automaticamente
-    const saldeField = page.locator(TEST_CONFIG.SELECTORS.formField('saldo'));
+    const saldeField = page.locator(SELECTOR_HELPERS.formField('saldo'));
     await expect(saldeField).toHaveValue('R$ 1.000,00');
   });
 

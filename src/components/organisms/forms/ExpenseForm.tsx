@@ -63,6 +63,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
   };
 
   const isFixed = expenseType === 'fixed';
+  const formId = isFixed ? 'fixed-expense-form' : 'variable-expense-form';
 
   if (!loadingAccounts && (!accounts || accounts.length === 0)) {
     return (
@@ -71,6 +72,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         variant="green-header"
         icon={Receipt}
         onBack={onCancel}
+        formId={formId}
       >
         <Box px={{ base: 4, md: 6 }} py={8}>
           <VStack gap={4} align="center">
@@ -97,7 +99,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
         variant="green-header"
         onBack={onCancel}
         isLoading={loadingAccounts}
-        formId="expense-form"
+        formId={formId}
         onSubmit={handleSubmit(submitExpense)}
         displayValue={{
           inputContent: (
@@ -186,7 +188,7 @@ export function ExpenseForm({ onSuccess, onCancel, defaultType = 'variable' }: E
             <VStack gap={3} pb={24}>
               <Button
                 type="submit"
-                form="expense-form"
+                form={formId}
                 colorPalette="green"
                 w="full"
                 loading={isSubmitting}

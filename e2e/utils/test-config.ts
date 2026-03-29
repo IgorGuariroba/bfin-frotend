@@ -5,9 +5,9 @@
 export const TEST_CONFIG = {
   // URLs
   BASE_URL: 'http://localhost:5173',
-  LOGIN_URL: '/login',
-  REGISTER_URL: '/register',
-  DASHBOARD_URL: '/dashboard',
+  LOGIN_URL: 'http://localhost:5173/login',
+  REGISTER_URL: 'http://localhost:5173/register',
+  DASHBOARD_URL: 'http://localhost:5173/dashboard',
 
   // Timeouts
   DEFAULT_TIMEOUT: 30000,
@@ -16,9 +16,9 @@ export const TEST_CONFIG = {
 
   // Usuário de teste
   TEST_USER: {
-    email: 'teste@bfin.com.br',
-    password: 'senha123',
-    nome: 'Usuário Teste'
+    email: 'usertest@gmail.com',
+    password: '123456',
+    nome: 'usertest'
   },
 
   // Dados de teste para formulários
@@ -76,12 +76,7 @@ export const TEST_CONFIG = {
 
     // Dashboard
     sidebar: '[data-testid="sidebar"]',
-    menuItem: (item: string) => `[data-testid="menu-${item}"]`,
     expandedForm: '[data-testid="expanded-form"]',
-
-    // Formulários
-    formField: (field: string) => `[data-testid="field-${field}"]`,
-    selectOption: (value: string) => `[data-value="${value}"]`,
 
     // Modais
     modal: '[data-testid="modal"]',
@@ -89,9 +84,18 @@ export const TEST_CONFIG = {
 
     // Tabelas
     table: '[data-testid="table"]',
-    tableRow: '[data-testid="table-row"]',
-    tableCell: (row: number, col: number) => `[data-testid="table-cell-${row}-${col}"]`
+    tableRow: '[data-testid="table-row"]'
   }
+} as const;
+
+/**
+ * Funções auxiliares para seletores dinâmicos
+ */
+export const SELECTOR_HELPERS = {
+  menuItem: (item: string) => `[data-testid="menu-${item}"]`,
+  formField: (field: string) => `[data-testid="field-${field}"]`,
+  selectOption: (value: string) => `[data-value="${value}"]`,
+  tableCell: (row: number, col: number) => `[data-testid="table-cell-${row}-${col}"]`
 } as const;
 
 /**

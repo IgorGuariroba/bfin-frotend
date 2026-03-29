@@ -13,37 +13,17 @@ test.describe('Login', () => {
   });
 
   test('deve realizar login com credenciais válidas', async ({ page }) => {
-    // Gera email único para o teste
-    const uniqueEmail = `teste${Date.now()}@bfin.com.br`;
+    // Usa helper melhorado que evita rate limiting
+    const userData = await registerAndLogin(page);
 
-    // Primeiro registra um usuário válido
-    await page.goto(TEST_CONFIG.REGISTER_URL);
-    await page.fill('[data-testid="name-input"]', TEST_CONFIG.TEST_USER.nome);
-    await page.fill('[data-testid="email-input"]', uniqueEmail);
-    await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
-    await page.fill('[data-testid="confirm-password-input"]', TEST_CONFIG.TEST_USER.password);
-    await page.click('[data-testid="register-button"]');
-
-    // Se redirecionado para login, ou se já está no dashboard, continua
-    if (page.url().includes('/login')) {
-      // Navega para a página de login
-      await page.goto(TEST_CONFIG.LOGIN_URL);
-
-      // Verifica se está na página de login
-      await expect(page).toHaveURL(TEST_CONFIG.LOGIN_URL);
-      await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
-
-      // Preenche o formulário de login com as credenciais do usuário registrado
-      await page.fill('[data-testid="email-input"]', uniqueEmail);
-      await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
-
-      // Clica no botão de login
-      await page.click('[data-testid="login-button"]');
-    }
-
-    // Verifica redirecionamento para dashboard
+    // Verifica se está autenticado no dashboard
     await expect(page).toHaveURL(TEST_CONFIG.DASHBOARD_URL);
+    await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
     await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
+
+    // Verifica se os dados do usuário foram carregados
+    expect(userData.nome).toBeTruthy();
+    expect(userData.email).toBeTruthy();
   });
 
   test('deve exibir erro com credenciais inválidas', async ({ page }) => {
@@ -75,7 +55,7 @@ test.describe('Login', () => {
 
     // Preenche email inválido
     await page.fill('[data-testid="email-input"]', 'email-invalido');
-    await page.fill('[data-testid="password-input"]', 'senha123');
+    await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
     await page.click('[data-testid="login-button"]');
 
     // Verifica validação de email

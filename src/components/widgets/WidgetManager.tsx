@@ -2,6 +2,8 @@ import React from 'react';
 import { VStack, Grid } from '@chakra-ui/react';
 import { BfincontaWidget } from './BfincontaWidget';
 import { CalendarWidget } from './CalendarWidget';
+import { MonthlySummaryWidget } from './MonthlySummaryWidget';
+import { RecentTransactionsWidget } from './RecentTransactionsWidget';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface WidgetConfig {
@@ -43,6 +45,24 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
       order: 1,
     },
     {
+      id: 'monthly-summary',
+      component: MonthlySummaryWidget,
+      props: {},
+      priority: 'primary',
+      type: 'financial',
+      enabled: true,
+      order: 2,
+    },
+    {
+      id: 'recent-transactions',
+      component: RecentTransactionsWidget,
+      props: {},
+      priority: 'primary',
+      type: 'financial',
+      enabled: true,
+      order: 3,
+    },
+    {
       id: 'calendar',
       component: CalendarWidget,
       props: {
@@ -51,7 +71,7 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
       priority: 'secondary',
       type: 'informational',
       enabled: true,
-      order: 2,
+      order: 4,
     },
     // Espaço para novos widgets:
     // {

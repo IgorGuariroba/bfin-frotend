@@ -68,6 +68,7 @@ export interface BaseWidgetProps {
   headerContent?: React.ReactNode;
   footerContent?: React.ReactNode;
   className?: string;
+  'data-testid'?: string;
 }
 
 export const BaseWidget: React.FC<BaseWidgetProps> = ({
@@ -86,6 +87,7 @@ export const BaseWidget: React.FC<BaseWidgetProps> = ({
   headerContent,
   footerContent,
   className,
+  'data-testid': dataTestId,
 }) => {
   // Loading state
   if (isLoading) {
@@ -97,6 +99,7 @@ export const BaseWidget: React.FC<BaseWidgetProps> = ({
         shadow="md"
         minHeight={minHeight}
         className={className}
+        data-testid={dataTestId}
       >
         <VStack gap={4} align="stretch">
           <HStack>
@@ -120,6 +123,7 @@ export const BaseWidget: React.FC<BaseWidgetProps> = ({
         shadow="md"
         minHeight={minHeight}
         className={className}
+        data-testid={dataTestId}
       >
         <VStack gap={4} align="center" justify="center" minH="150px">
           <Text color="var(--destructive)" fontSize="sm">
@@ -148,6 +152,7 @@ export const BaseWidget: React.FC<BaseWidgetProps> = ({
       shadow="md"
       minHeight={minHeight}
       className={className}
+      data-testid={dataTestId}
     >
       <VStack gap={variant === 'compact' ? 3 : 4} align="stretch">
         {/* Header */}

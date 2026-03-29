@@ -14,6 +14,23 @@ export const BfincontaWidget = ({
 }: BfincontaWidgetProps) => {
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
 
+  // Show loading indicator for tests
+  if (loadingAccounts) {
+    return (
+      <BaseWidget
+        icon={DollarSign}
+        title="Bfinconta"
+        isLoading={true}
+        variant={variant}
+        data-testid="balance-widget"
+      >
+        <Box data-testid="balance-loading">
+          Carregando...
+        </Box>
+      </BaseWidget>
+    );
+  }
+
   const totals = accounts?.reduce(
     (acc, account) => ({
       totalBalance: acc.totalBalance + Number(account.total_balance),
@@ -42,6 +59,7 @@ export const BfincontaWidget = ({
         onClick: onAccessClick,
         colorPalette: 'brand'
       }}
+      data-testid="balance-widget"
     >
       <Box>
         <Text fontSize="xs" color="var(--muted-foreground)" mb={1}>
@@ -52,6 +70,7 @@ export const BfincontaWidget = ({
           fontWeight="bold"
           color="var(--foreground)"
           mb={2}
+          data-testid="balance-value"
         >
           {formatCurrency(totals.availableBalance)}
         </Text>
