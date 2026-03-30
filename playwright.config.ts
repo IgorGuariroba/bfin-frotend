@@ -22,6 +22,9 @@ export default defineConfig({
     /* URL base para usar em ações como `await page.goto('/')`. */
     baseURL: 'http://localhost:5173',
 
+    /* Executa sem interface gráfica (resolve problemas de dependências) */
+    headless: true,
+
     /* Coleta traces no retry da primeira falha */
     trace: 'on-first-retry',
 

@@ -151,12 +151,13 @@ export function IncomeFormFields({
                 borderColor="var(--border)"
                 borderRadius="full"
                 _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                data-testid="data-picker"
               />
             </Box>
           </Field.Root>
 
           {/* Recorrente */}
-          <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
+          <Checkbox.Root {...register('isRecurring')} colorPalette="brand" data-testid="recorrente-checkbox">
             <Checkbox.Control />
             <Checkbox.Label>Receita recorrente</Checkbox.Label>
           </Checkbox.Root>
