@@ -82,6 +82,7 @@ export function AccountSelector({
               borderColor: 'var(--primary)',
               boxShadow: '0 0 0 1px var(--primary)',
             }}
+            data-testid="field-conta"
           >
             <Text>
               {selectedAccount ? selectedAccount.account_name : placeholder}

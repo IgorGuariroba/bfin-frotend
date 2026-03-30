@@ -100,13 +100,13 @@ export function DashboardHeader({
                 bg="var(--primary-foreground)"
                 color="var(--primary)"
                 display="flex"
-                align="center"
-                justify="center"
+                alignItems="center"
+                justifyContent="center"
                 fontSize="sm"
                 fontWeight="bold"
                 data-testid="user-avatar"
               >
-                {(user?.nome || 'U')[0]}
+                {(user?.email || 'U')[0].toUpperCase()}
               </Box>
               <Box display={{ base: 'none', md: 'block' }}>
                 <Text
@@ -115,7 +115,7 @@ export function DashboardHeader({
                   color="var(--primary-foreground)"
                   data-testid="user-name"
                 >
-                  {user?.nome || 'Usuário Teste'}
+                  {user?.email || 'Usuário Teste'}
                 </Text>
               </Box>
             </HStack>

@@ -1,15 +1,28 @@
 import { test, expect } from '@playwright/test';
 import { TEST_CONFIG, ERROR_MESSAGES } from '../utils/test-config';
-import { logout, isAuthenticated, clearAuthState, registerAndLogin } from '../utils/auth-helpers';
+import { logout, registerAndLogin } from '../utils/auth-helpers';
 
 /**
  * Testes E2E para funcionalidade de Login
  */
 
+test.describe.configure({ mode: 'serial' });
+
 test.describe('Login', () => {
   test.beforeEach(async ({ page }) => {
-    // Limpa estado de autenticação antes de cada teste
-    await clearAuthState(page);
+    // Navega para login primeiro para ter um contexto válido
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+
+    // Limpa localStorage de forma segura
+    await page.evaluate(() => {
+      if (typeof Storage !== 'undefined') {
+        localStorage.removeItem('@bfin:token');
+        localStorage.removeItem('@bfin:refreshToken');
+        localStorage.removeItem('@bfin:user');
+        localStorage.removeItem('@bfin:test-mode');
+        sessionStorage.clear();
+      }
+    });
   });
 
   test('deve realizar login com credenciais válidas', async ({ page }) => {
@@ -66,10 +79,8 @@ test.describe('Login', () => {
     // Registra e faz login primeiro
     await registerAndLogin(page);
 
-    // Verifica que está autenticado
-    expect(await isAuthenticated(page)).toBe(true);
-
-    // Faz logout
+    // registerAndLogin já confirma que está autenticado no dashboard
+    // Agora faz logout
     await logout(page);
 
     // Verifica redirecionamento para login

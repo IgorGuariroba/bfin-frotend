@@ -102,6 +102,7 @@ export function IncomeFormFields({
                     borderColor="var(--border)"
                     borderRadius="full"
                     _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                    data-testid="field-categoria"
                   >
                     {categories?.map((category) => (
                       <option key={category.id} value={category.id}>

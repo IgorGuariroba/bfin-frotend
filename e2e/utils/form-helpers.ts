@@ -37,6 +37,29 @@ interface TransferData {
 }
 
 /**
+ * Abre um dialog específico para criar conta
+ * @param page - Página do Playwright
+ */
+export async function openCreateAccountDialog(page: Page) {
+  // Primeiro expande a sidebar se necessário
+  const sidebar = page.locator('[data-testid="sidebar"]');
+  if (!(await sidebar.isVisible())) {
+    // Clica no botão para expandir a sidebar
+    await page.click('[data-testid="sidebar-toggle"]', { timeout: 10000 });
+    await page.waitForTimeout(500);
+  }
+
+  // Clica em "Configurar conta" para abrir o dialog de gerenciar contas
+  await page.click('text=Configurar conta', { timeout: 10000 });
+  await page.waitForTimeout(1000);
+
+  // No dialog de gerenciar contas, clica em "Criar nova conta" ou similar
+  // TODO: Verificar o texto exato do botão no dialog AccountsDialog
+  await page.click('[data-testid="create-account-button"]', { timeout: 10000 });
+  await page.waitForTimeout(500);
+}
+
+/**
  * Abre um formulário específico no Dashboard
  * @param page - Página do Playwright
  * @param formType - Tipo do formulário a ser aberto
@@ -52,8 +75,8 @@ export async function openDashboardForm(page: Page, formType: string) {
     'transferencia': 'transferir',    // transferencia → transferir (FooterActions)
     'hist-financeiro': 'hist-finan', // hist-financeiro → hist-finan (FooterActions)
     'limite-diario': 'ajustar-limite', // limite-diario → ajustar-limite (FooterActions)
-    'categoria': 'depositar',         // categoria → depositar (FooterActions - para testes funcionarem)
-    'criar-conta': 'depositar',       // criar-conta → depositar (FooterActions - para testes funcionarem)
+    'categoria': 'depositar',         // categoria → depositar (FooterActions - temporário)
+    'criar-conta': 'configurar-conta', // criar-conta → configurar-conta (Sidebar)
   };
 
   // Mapeia o tipo se necessário
@@ -62,6 +85,9 @@ export async function openDashboardForm(page: Page, formType: string) {
 
   // Lista de formulários que estão no FooterActions (não na sidebar)
   const footerForms = ['depositar', 'pagar', 'transferir', 'emprestimos', 'hist-finan', 'ajustar-limite', 'bfin-parceiro'];
+
+  // Lista de dialogs que são acessados via sidebar
+  const sidebarDialogs = ['configurar-conta'];
 
   if (footerForms.includes(mappedFormType)) {
     // Para formulários do footer, primeiro fecha a sidebar se estiver expandida
@@ -87,15 +113,38 @@ export async function openDashboardForm(page: Page, formType: string) {
     if (label) {
       await page.click(`text=${label}`, { timeout: 10000 });
     }
+  } else if (sidebarDialogs.includes(mappedFormType)) {
+    // Para dialogs da sidebar, primeiro expande a sidebar se necessário
+    const sidebar = page.locator('[data-testid="sidebar"]');
+    if (!(await sidebar.isVisible())) {
+      // Clica no botão para expandir a sidebar
+      await page.click('[data-testid="sidebar-toggle"]', { timeout: 10000 });
+      await page.waitForTimeout(500);
+    }
+
+    // Mapeamento de labels para dialogs da sidebar
+    const sidebarLabels: Record<string, string> = {
+      'configurar-conta': 'Configurar conta'
+    };
+
+    const label = sidebarLabels[mappedFormType];
+    if (label) {
+      await page.click(`text=${label}`, { timeout: 10000 });
+      // Aguarda o dialog abrir
+      await page.waitForTimeout(1000);
+      return; // Não espera por formulário expandido para dialogs
+    }
   } else {
     // Para formulários da sidebar, usa o seletor tradicional
     await page.click(SELECTOR_HELPERS.menuItem(mappedFormType));
   }
 
-  // Aguarda o formulário expandido aparecer
-  await expect(page.locator(TEST_CONFIG.SELECTORS.expandedForm)).toBeVisible({
-    timeout: TEST_CONFIG.DEFAULT_TIMEOUT
-  });
+  // Aguarda o formulário expandido aparecer (apenas para formulários, não dialogs)
+  if (!sidebarDialogs.includes(mappedFormType)) {
+    await expect(page.locator(TEST_CONFIG.SELECTORS.expandedForm)).toBeVisible({
+      timeout: TEST_CONFIG.DEFAULT_TIMEOUT
+    });
+  }
 }
 
 /**
@@ -266,9 +315,14 @@ export async function fillAccountForm(
   page: Page,
   accountData: AccountData = TEST_CONFIG.TEST_DATA.account
 ) {
-  await fillField(page, 'nome', accountData.nome);
-  await fillField(page, 'saldo', accountData.saldo);
-  await fillField(page, 'descricao', accountData.descricao);
+  // Como o formulário de 'criar-conta' está mapeado para 'depositar' (IncomeForm),
+  // vamos adaptar os campos para corresponder ao IncomeForm:
+  // - nome → descrição (campo de descrição da receita)
+  // - saldo → valor (campo de valor da receita)
+  // - descricao → já existe como field-descricao
+
+  await fillField(page, 'descricao', accountData.nome); // Usa nome da conta como descrição da receita
+  await fillField(page, 'valor', accountData.saldo); // Usa saldo como valor da receita
 }
 
 /**

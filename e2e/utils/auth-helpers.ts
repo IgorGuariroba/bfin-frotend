@@ -10,147 +10,71 @@ import { TEST_CONFIG } from './test-config';
  * @param page - Página do Playwright
  */
 export async function registerAndLogin(page: Page) {
-  // Estratégia melhorada para evitar rate limiting:
-  // 1. Tenta login com usuário conhecido
-  // 2. Se falhar, usa mock authentication diretamente
-  // 3. Como último recurso, tenta registro
 
   try {
-    // Primeiro, tenta fazer login direto com usuário padrão
-    try {
-      await page.goto(TEST_CONFIG.LOGIN_URL);
-      await page.fill('[data-testid="email-input"]', TEST_CONFIG.TEST_USER.email);
-      await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
-      await page.click('[data-testid="login-button"]');
+    // Primeiro, tenta fazer login direto com usuário conhecido
+    await page.goto(TEST_CONFIG.LOGIN_URL);
+    await page.fill('[data-testid="email-input"]', TEST_CONFIG.TEST_USER.email);
+    await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
+    await page.click('[data-testid="login-button"]');
 
-      // Aguarda redirecionamento - se der certo, usa usuário existente
+    // Aguarda redirecionamento para dashboard
+    await page.waitForURL(TEST_CONFIG.DASHBOARD_URL, {
+      timeout: 10000
+    });
+
+    // Verifica se chegou no dashboard
+    await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
+
+    return {
+      nome: TEST_CONFIG.TEST_USER.nome,
+      email: TEST_CONFIG.TEST_USER.email,
+      password: TEST_CONFIG.TEST_USER.password,
+      confirmPassword: TEST_CONFIG.TEST_USER.password
+    };
+  } catch (loginError) {
+    // Se login falhou, tenta registrar novo usuário
+
+    try {
+      await page.goto(TEST_CONFIG.REGISTER_URL);
+
+      // Gera email único para evitar conflitos
+      const uniqueEmail = `test-${Date.now()}@example.com`;
+
+      await page.fill('[data-testid="name-input"]', TEST_CONFIG.TEST_USER.nome);
+      await page.fill('[data-testid="email-input"]', uniqueEmail);
+      await page.fill('[data-testid="password-input"]', TEST_CONFIG.TEST_USER.password);
+      await page.fill('[data-testid="confirm-password-input"]', TEST_CONFIG.TEST_USER.password);
+      await page.click('[data-testid="register-button"]');
+
+      // Aguarda redirecionamento para dashboard após registro
       await page.waitForURL(TEST_CONFIG.DASHBOARD_URL, {
-        timeout: 5000
+        timeout: 10000
       });
 
-      // Se chegou aqui, login funcionou
+      // Verifica se chegou no dashboard
       await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
-
-      // Configura sidebar se necessário
-      await ensureSidebarVisibility(page);
 
       return {
         nome: TEST_CONFIG.TEST_USER.nome,
-        email: TEST_CONFIG.TEST_USER.email,
+        email: uniqueEmail,
         password: TEST_CONFIG.TEST_USER.password,
         confirmPassword: TEST_CONFIG.TEST_USER.password
       };
-    } catch {
-      // Se login falhou, usa mock authentication imediatamente
-      console.warn('Login com usuário padrão falhou, usando mock authentication...');
-      return await setupMockAuthentication(page);
+    } catch (registerError) {
+      console.error('❌ Falha completa na autenticação real:', registerError);
+      throw new Error(`Falha na autenticação real - Login: ${loginError} | Registro: ${registerError}`);
     }
-
-    // Se chegou aqui, login falhou duas vezes - usa mock como fallback
-    console.warn('Fallback falharam, impossível autenticar');
-    throw new Error('Não foi possível autenticar: API indisponível e mock falharam');
-  } catch (error) {
-    throw new Error(`Falha no registro e login: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
   }
 }
 
 /**
- * Configura mock authentication para casos de rate limiting
+ * MOCKS REMOVIDOS - Usando apenas autenticação real
  */
-async function setupMockAuthentication(page: Page) {
-  // Intercepta TODAS as chamadas de API para retornar dados mockados
-  await page.route('**/api/v1/auth/me', async route => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        id: 'mock-user-id',
-        email: TEST_CONFIG.TEST_USER.email,
-        full_name: TEST_CONFIG.TEST_USER.nome
-      })
-    });
-  });
-
-  // Mock para auth endpoints
-  await page.route('**/api/v1/auth/**', async route => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        success: true,
-        user: {
-          id: 'mock-user-id',
-          email: TEST_CONFIG.TEST_USER.email,
-          full_name: TEST_CONFIG.TEST_USER.nome
-        },
-        token: 'mock-jwt-token-for-testing',
-        refreshToken: 'mock-refresh-token-for-testing'
-      })
-    });
-  });
-
-  // Mock para outras APIs que podem ser chamadas
-  await page.route('**/api/v1/**', async route => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify([])
-    });
-  });
-
-  // Vai para página de login para configurar mock
-  await page.goto(TEST_CONFIG.LOGIN_URL);
-
-  // Define dados mock no localStorage
-  await page.evaluate((config) => {
-    const mockUser = {
-      id: 'mock-user-id',
-      email: config.TEST_USER.email,
-      full_name: config.TEST_USER.nome
-    };
-
-    const mockToken = 'mock-jwt-token-for-testing';
-    const mockRefreshToken = 'mock-refresh-token-for-testing';
-
-    localStorage.setItem('@bfin:token', mockToken);
-    localStorage.setItem('@bfin:refreshToken', mockRefreshToken);
-    localStorage.setItem('@bfin:user', JSON.stringify(mockUser));
-  }, TEST_CONFIG);
-
-  // Navega para dashboard
-  await page.goto(TEST_CONFIG.DASHBOARD_URL);
-
-  // Verifica se chegou no dashboard
-  await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible({ timeout: 10000 });
-
-  // Configura sidebar se necessário
-  await ensureSidebarVisibility(page);
-
-  return {
-    nome: TEST_CONFIG.TEST_USER.nome,
-    email: TEST_CONFIG.TEST_USER.email,
-    password: TEST_CONFIG.TEST_USER.password,
-    confirmPassword: TEST_CONFIG.TEST_USER.password
-  };
-}
 
 /**
- * Garante que a sidebar esteja visível dependendo do tamanho da tela
+ * SIDEBAR LOGIC REMOVIDA - Simplificando testes
  */
-async function ensureSidebarVisibility(page: Page) {
-  const viewportSize = page.viewportSize();
-  const isMobile = viewportSize && viewportSize.width < 768;
-
-  if (isMobile) {
-    const sidebarToggle = page.locator('[data-testid="sidebar-toggle"], [data-testid="menu-button"], [aria-label*="menu"], button[aria-label*="Menu"]');
-    if (await sidebarToggle.count() > 0) {
-      await sidebarToggle.first().click();
-      await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible({ timeout: 5000 });
-    }
-  } else {
-    await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible();
-  }
-}
 
 /**
  * Realiza login no sistema
@@ -181,8 +105,7 @@ export async function login(
   // Verifica se o dashboard carregou
   await expect(page.locator('[data-testid="dashboard-header"]')).toBeVisible();
 
-  // Configura sidebar se necessário
-  await ensureSidebarVisibility(page);
+  // SIDEBAR CONFIG REMOVIDA - Simplificando testes
 }
 
 /**
@@ -196,30 +119,48 @@ export async function logout(page: Page) {
       return; // Se a página foi fechada, considera logout bem-sucedido
     }
 
-    // Primeiro, tenta acessar o botão de configurações para abrir o menu
-    const configButton = page.locator('button:has-text("Configurações")');
-    await configButton.click({ timeout: 5000 });
-
-    // Aguarda o menu aparecer e clica no botão DESCONECTAR
-    await page.click('button:has-text("DESCONECTAR")', { timeout: 5000 });
-
-    // Aguarda redirecionamento para login
-    await page.waitForURL(TEST_CONFIG.LOGIN_URL, {
-      timeout: 10000
-    });
-  } catch (error) {
-    console.warn('Erro no logout padrão, usando método de limpeza direta:', error);
-
-    // Método mais direto: limpar localStorage e navegar para login
+    // Estratégia 1: Tentar usar o menu dropdown no cabeçalho
     try {
-      await clearAuthState(page);
-      if (!page.isClosed()) {
-        await page.goto(TEST_CONFIG.LOGIN_URL);
-      }
-    } catch (finalError) {
-      console.warn('Erro final no logout, mas considerando bem-sucedido:', finalError);
-      // Se chegou até aqui, provavelmente a página foi fechada ou houve redirecionamento
+      // Clica no avatar do usuário para abrir o menu dropdown
+      const userMenu = page.locator('[data-testid="user-menu"]');
+      await userMenu.click({ timeout: 5000 });
+
+      // Aguarda o dropdown aparecer e clica na opção "Sair"
+      const logoutOption = page.locator('[data-testid="logout-option"]');
+      await logoutOption.click({ timeout: 5000 });
+
+      // Aguarda redirecionamento para login
+      await page.waitForURL(TEST_CONFIG.LOGIN_URL, {
+        timeout: 10000
+      });
+      return; // Se chegou aqui, logout foi bem-sucedido
+    } catch {
+      console.warn('Logout via menu dropdown falhou, tentando sidebar...');
     }
+
+    // Estratégia 2: Tentar usar o botão DESCONECTAR na sidebar
+    try {
+      const disconnectButton = page.locator('button:has-text("DESCONECTAR")');
+      await disconnectButton.click({ timeout: 5000 });
+
+      // Aguarda redirecionamento para login
+      await page.waitForURL(TEST_CONFIG.LOGIN_URL, {
+        timeout: 10000
+      });
+      return; // Se chegou aqui, logout foi bem-sucedido
+    } catch {
+      console.warn('Logout via sidebar falhou, tentando método de limpeza direta...');
+    }
+
+    // Estratégia 3: Método de limpeza direta como fallback
+    await clearAuthState(page);
+    if (!page.isClosed()) {
+      await page.goto(TEST_CONFIG.LOGIN_URL);
+    }
+
+  } catch (error) {
+    console.warn('Erro no logout, mas considerando bem-sucedido:', error);
+    // Se chegou até aqui, provavelmente a página foi fechada ou houve redirecionamento
   }
 }
 
@@ -258,17 +199,8 @@ export async function register(
   } catch (error) {
     console.warn('Erro no registro padrão, verificando rate limiting...', error);
 
-    // Verifica se é erro de rate limiting
-    const rateLimitMessage = await page.locator('[data-testid="error-message"]').textContent().catch(() => '');
-    const hasRateLimit = rateLimitMessage.includes('tentativas') || rateLimitMessage.includes('minutos');
-
-    if (hasRateLimit) {
-      console.warn('Rate limiting detectado, usando mock authentication...');
-      // Se for rate limiting, usa mock authentication
-      return await setupMockAuthentication(page);
-    }
-
-    // Se não for rate limiting, re-throws o erro
+    // MOCKS REMOVIDOS - Falha real significa falha no teste
+    console.error('❌ Falha na autenticação real:', error);
     throw error;
   }
 }
@@ -279,7 +211,14 @@ export async function register(
  */
 export async function isAuthenticated(page: Page): Promise<boolean> {
   try {
-    await page.goto(TEST_CONFIG.DASHBOARD_URL);
+    // Verifica se já está na página do dashboard
+    const currentUrl = page.url();
+    if (!currentUrl.includes('/dashboard')) {
+      // Só navega se não estiver no dashboard
+      await page.goto(TEST_CONFIG.DASHBOARD_URL);
+    }
+
+    // Verifica se elementos do dashboard estão visíveis
     await expect(page.locator(TEST_CONFIG.SELECTORS.sidebar)).toBeVisible({
       timeout: 5000
     });
@@ -294,8 +233,8 @@ export async function isAuthenticated(page: Page): Promise<boolean> {
  * @param page - Página do Playwright
  */
 export async function setAuthenticatedState(page: Page) {
-  // Usa o setup mock authentication atualizado
-  return await setupMockAuthentication(page);
+  // Remove mocks - usa apenas autenticação real
+  return await registerAndLogin(page);
 }
 
 /**
@@ -306,20 +245,39 @@ export async function clearAuthState(page: Page) {
   try {
     // Verifica se a página ainda está ativa
     if (!page.isClosed()) {
+      // Remove todos os interceptadores de rotas da página E do contexto
+      await page.unrouteAll();
+      await page.context().unrouteAll();
+
       // Navega para uma página válida primeiro se não estiver em uma
       const url = page.url();
       if (url === 'about:blank' || !url.includes('localhost')) {
         await page.goto(TEST_CONFIG.LOGIN_URL);
       }
 
-      await page.evaluate(() => {
-        if (typeof Storage !== 'undefined') {
-          localStorage.removeItem('@bfin:token');
-          localStorage.removeItem('@bfin:refreshToken');
-          localStorage.removeItem('@bfin:user');
-          sessionStorage.clear();
-        }
-      });
+      // Aguarda a página carregar completamente antes de tentar acessar localStorage
+      await page.waitForLoadState('networkidle');
+
+      // Limpa localStorage e sessionStorage com proteção contra SecurityError
+      try {
+        await page.evaluate(() => {
+          try {
+            if (typeof Storage !== 'undefined' && typeof localStorage !== 'undefined') {
+              localStorage.removeItem('@bfin:token');
+              localStorage.removeItem('@bfin:refreshToken');
+              localStorage.removeItem('@bfin:user');
+              localStorage.removeItem('@bfin:test-mode');
+              sessionStorage.clear();
+            }
+          } catch (e) {
+            // Ignora erros de acesso ao localStorage
+            console.warn('Erro ao acessar localStorage:', e);
+          }
+        });
+      } catch (evalError) {
+        // Se não conseguir executar evaluate, apenas registra o aviso
+        console.warn('Não foi possível executar limpeza do localStorage:', evalError);
+      }
     }
   } catch (error) {
     // Se a página está fechada ou houve erro, não há necessidade de limpar localStorage
