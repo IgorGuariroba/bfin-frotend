@@ -66,15 +66,32 @@ jobs:
           timeout 60 bash -c 'until curl -f http://localhost:3000/health 2>/dev/null || curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/ 2>/dev/null; do sleep 2; done' || echo "Backend pode não ter endpoint de health, continuando..."
           sleep 5
 
+      - name: 🐛 Debug Docker Status (Smoke Tests)
+        if: failure()
+        run: |
+          echo "🐳 Status dos containers:"
+          cd backend && docker compose ps
+          echo ""
+          echo "📋 Logs do container da API:"
+          cd backend && docker compose logs app || echo "Container 'app' não encontrado"
+          echo ""
+          echo "🔍 Processos na porta 3000:"
+          netstat -tlnp | grep :3000 || echo "Nada rodando na porta 3000"
+
       - name: 🎭 Install Playwright (Chromium only)
         run: npx playwright install --with-deps chromium
 
-      - name: 🚀 Run Smoke Tests (Skipped - Backend setup needed)
+      - name: 🚀 Run Smoke Tests
         run: |
-          echo "⏭️ Smoke tests temporarily skipped while backend Docker setup is being fixed"
-          echo "Issue: Backend API container not starting, only Redis + Postgres"
-          echo "Need to investigate: docker-compose.yml in bfin-backend repository"
-          exit 0
+          echo "🔍 Verificando se backend está respondendo..."
+          curl -f http://localhost:3000/health || curl -f http://localhost:3000/api/health || curl -f http://localhost:3000/ || echo "⚠️ Backend não respondeu, mas continuando com testes..."
+
+          echo "🎭 Executando Smoke Tests..."
+          npx playwright test --project=chromium-auth --grep="login|Login|deve fazer login|formulário de login"
+        env:
+          CI: false
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+          VITE_API_BASE_URL: http://localhost:3000
 
       - name: 📊 Upload Smoke Test Results
         uses: actions/upload-artifact@v4
@@ -136,15 +153,32 @@ jobs:
           timeout 60 bash -c 'until curl -f http://localhost:3000/health 2>/dev/null || curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/ 2>/dev/null; do sleep 2; done' || echo "Backend pode não ter endpoint de health, continuando..."
           sleep 5
 
+      - name: 🐛 Debug Docker Status (Full E2E Tests)
+        if: failure()
+        run: |
+          echo "🐳 Status dos containers:"
+          cd backend && docker compose ps
+          echo ""
+          echo "📋 Logs do container da API:"
+          cd backend && docker compose logs app || echo "Container 'app' não encontrado"
+          echo ""
+          echo "🔍 Processos na porta 3000:"
+          netstat -tlnp | grep :3000 || echo "Nada rodando na porta 3000"
+
       - name: 🎭 Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: 🧪 Run Full E2E Tests (Skipped - Backend setup needed)
+      - name: 🧪 Run Full E2E Tests
         run: |
-          echo "⏭️ Full E2E tests temporarily skipped while backend Docker setup is being fixed"
-          echo "Issue: Backend API container not starting, only Redis + Postgres"
-          echo "Need to investigate: docker-compose.yml in bfin-backend repository"
-          exit 0
+          echo "🔍 Verificando se backend está respondendo..."
+          curl -f http://localhost:3000/health || curl -f http://localhost:3000/api/health || curl -f http://localhost:3000/ || echo "⚠️ Backend não respondeu, mas continuando com testes..."
+
+          echo "🎭 Executando Full E2E Tests..."
+          npx playwright test --project=chromium
+        env:
+          CI: false
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+          VITE_API_BASE_URL: http://localhost:3000
 
       - name: 📊 Upload Full Test Results
         uses: actions/upload-artifact@v4
