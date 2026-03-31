@@ -56,7 +56,7 @@ jobs:
       - name: 🐳 Start Backend with Docker
         run: |
           cd backend
-          docker-compose up -d
+          docker compose up -d
         env:
           DOCKER_BUILDKIT: 1
 
@@ -89,7 +89,7 @@ jobs:
       - name: 🐳 Cleanup Backend
         if: always()
         run: |
-          cd backend && docker-compose down || true
+          cd backend && docker compose down || true
 
   # Testes completos apenas se smoke tests passarem
   e2e-full:
@@ -126,7 +126,7 @@ jobs:
       - name: 🐳 Start Backend with Docker
         run: |
           cd backend
-          docker-compose up -d
+          docker compose up -d
         env:
           DOCKER_BUILDKIT: 1
 
@@ -204,7 +204,7 @@ jobs:
       - name: 🐳 Cleanup Backend
         if: always()
         run: |
-          cd backend && docker-compose down || true
+          cd backend && docker compose down || true
 
   # Job de análise de mudanças
   analyze-changes:
