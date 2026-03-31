@@ -3,7 +3,6 @@ import { VStack, Grid } from '@chakra-ui/react';
 import { BfincontaWidget } from './BfincontaWidget';
 import { CalendarWidget } from './CalendarWidget';
 import { MonthlySummaryWidget } from './MonthlySummaryWidget';
-import { RecentTransactionsWidget } from './RecentTransactionsWidget';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface WidgetConfig {
@@ -52,15 +51,6 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
       type: 'financial',
       enabled: true,
       order: 2,
-    },
-    {
-      id: 'recent-transactions',
-      component: RecentTransactionsWidget,
-      props: {},
-      priority: 'primary',
-      type: 'financial',
-      enabled: true,
-      order: 3,
     },
     {
       id: 'calendar',
