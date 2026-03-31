@@ -50,6 +50,22 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: 🎯 Clone Backend Repository
+        run: git clone https://github.com/IgorGuariroba/bfin-backend.git backend
+
+      - name: 🐳 Start Backend with Docker
+        run: |
+          cd backend
+          docker-compose up -d
+        env:
+          DOCKER_BUILDKIT: 1
+
+      - name: ⏳ Wait for Backend to be Ready
+        run: |
+          echo "Aguardando backend ficar disponível..."
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health 2>/dev/null || curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/ 2>/dev/null; do sleep 2; done' || echo "Backend pode não ter endpoint de health, continuando..."
+          sleep 5
+
       - name: 🎭 Install Playwright (Chromium only)
         run: npx playwright install --with-deps chromium
 
@@ -69,6 +85,11 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 3
+
+      - name: 🐳 Cleanup Backend
+        if: always()
+        run: |
+          cd backend && docker-compose down || true
 
   # Testes completos apenas se smoke tests passarem
   e2e-full:
@@ -98,6 +119,22 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci
+
+      - name: 🎯 Clone Backend Repository
+        run: git clone https://github.com/IgorGuariroba/bfin-backend.git backend
+
+      - name: 🐳 Start Backend with Docker
+        run: |
+          cd backend
+          docker-compose up -d
+        env:
+          DOCKER_BUILDKIT: 1
+
+      - name: ⏳ Wait for Backend to be Ready
+        run: |
+          echo "Aguardando backend ficar disponível..."
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health 2>/dev/null || curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/ 2>/dev/null; do sleep 2; done' || echo "Backend pode não ter endpoint de health, continuando..."
+          sleep 5
 
       - name: 🎭 Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -163,6 +200,11 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
+
+      - name: 🐳 Cleanup Backend
+        if: always()
+        run: |
+          cd backend && docker-compose down || true
 
   # Job de análise de mudanças
   analyze-changes:
