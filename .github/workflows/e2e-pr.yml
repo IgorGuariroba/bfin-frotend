@@ -53,19 +53,12 @@ jobs:
       - name: 🎭 Install Playwright (Chromium only)
         run: npx playwright install --with-deps chromium
 
-      - name: 🏗️ Build Application
-        run: npm run build
+      - name: 🚀 Run Smoke Tests
+        run: npx playwright test --project=chromium-auth --grep="login|Login|deve fazer login|formulário de login"
         env:
-          VITE_API_BASE_URL: http://localhost:3001
-
-      - name: 🚀 Start Preview Server & Run Smoke Tests
-        run: |
-          npm run preview &
-          sleep 10
-          npx playwright test --project=chromium-auth --grep="login|Login|deve fazer login|formulário de login"
-        env:
-          CI: true
-          PLAYWRIGHT_BASE_URL: http://localhost:4173
+          CI: false
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+          VITE_API_BASE_URL: http://localhost:3000
 
       - name: 📊 Upload Smoke Test Results
         uses: actions/upload-artifact@v4
@@ -109,16 +102,12 @@ jobs:
       - name: 🎭 Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: 🏗️ Build Application
-        run: npm run build
-        env:
-          VITE_API_BASE_URL: http://localhost:3001
-
       - name: 🧪 Run Full E2E Tests
         run: npx playwright test --project=chromium
         env:
-          CI: true
+          CI: false
           PLAYWRIGHT_BASE_URL: http://localhost:5173
+          VITE_API_BASE_URL: http://localhost:3000
 
       - name: 📊 Upload Full Test Results
         uses: actions/upload-artifact@v4
