@@ -58,11 +58,14 @@ jobs:
         env:
           VITE_API_BASE_URL: http://localhost:3001
 
-      - name: 🚀 Run Smoke Tests
-        run: npx playwright test --project=chromium-auth --grep="login|Login|deve fazer login|formulário de login"
+      - name: 🚀 Start Preview Server & Run Smoke Tests
+        run: |
+          npm run preview &
+          sleep 10
+          npx playwright test --project=chromium-auth --grep="login|Login|deve fazer login|formulário de login"
         env:
           CI: true
-          PLAYWRIGHT_BASE_URL: http://localhost:5173
+          PLAYWRIGHT_BASE_URL: http://localhost:4173
 
       - name: 📊 Upload Smoke Test Results
         uses: actions/upload-artifact@v4
