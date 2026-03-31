@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, VStack, HStack } from '@chakra-ui/react';
 
