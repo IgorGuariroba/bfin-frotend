@@ -2,7 +2,6 @@ import React from 'react';
 import { VStack, Grid } from '@chakra-ui/react';
 import { BfincontaWidget } from './BfincontaWidget';
 import { CalendarWidget } from './CalendarWidget';
-import { MonthlySummaryWidget } from './MonthlySummaryWidget';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface WidgetConfig {
@@ -42,15 +41,6 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
       type: 'financial',
       enabled: true,
       order: 1,
-    },
-    {
-      id: 'monthly-summary',
-      component: MonthlySummaryWidget,
-      props: {},
-      priority: 'primary',
-      type: 'financial',
-      enabled: true,
-      order: 2,
     },
     {
       id: 'calendar',
