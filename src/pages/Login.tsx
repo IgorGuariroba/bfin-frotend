@@ -101,6 +101,8 @@ export function Login() {
       justify="center"
       bg="var(--background)"
       position="relative"
+      role="main"
+      aria-label="Página de login"
     >
       {/* Theme Toggle - Fixed top-right */}
       <Box position="absolute" top={4} right={4} zIndex={10}>
@@ -108,7 +110,7 @@ export function Login() {
       </Box>
 
       <Container maxW="md" py={{ base: "8", md: "16" }} px={{ base: "4", sm: "8" }}>
-        <form onSubmit={handleSubmit} data-testid="login-form" noValidate>
+        <form onSubmit={handleSubmit} data-testid="login-form" noValidate role="form" aria-label="Formulário de login">
           <VStack gap="0" w="full">
           {/* Card Superior - Informações da Conta e Logo */}
           <Box
@@ -118,6 +120,8 @@ export function Login() {
             p="8"
             position="relative"
             boxShadow="2xl"
+            role="region"
+            aria-label="Informações da conta"
           >
             {/* Botão Fechar */}
             <IconButton
@@ -163,7 +167,7 @@ export function Login() {
             </Flex>
 
             {/* Nome do Usuário / Email */}
-            <Box>
+            <Box as="div" role="group">
               <Flex justify="space-between" align="center">
                 <Input
                   type="email"
@@ -187,7 +191,10 @@ export function Login() {
                     outline: "none"
                   }}
                   autoComplete="username email"
-                  data-testid="email-input"
+                  aria-label="Email"
+                  aria-required="true"
+                  aria-invalid={!!emailError}
+                  aria-describedby={emailError ? 'email-error' : undefined}
                 />
                 <Link
                   color="var(--primary-foreground)"
@@ -197,6 +204,7 @@ export function Login() {
                   _hover={{ opacity: 0.8 }}
                   cursor="pointer"
                   onClick={handleTrocarUsuario}
+                  aria-label="Trocar de usuário"
                 >
                   TROCAR DE USUÁRIO
                 </Link>
@@ -206,7 +214,9 @@ export function Login() {
                   color="red.400"
                   fontSize="xs"
                   mt="1"
-                  data-testid="email-error"
+                  id="email-error"
+                  role="alert"
+                  aria-live="polite"
                 >
                   {emailError}
                 </Text>
@@ -221,10 +231,19 @@ export function Login() {
             borderBottomRadius="2xl"
             p="8"
             boxShadow="2xl"
+            role="region"
+            aria-label="Autenticação"
           >
             <VStack gap="6" align="stretch">
                 {error && (
-                  <Alert.Root status="error" borderRadius="lg" variant="subtle" data-testid="error-message">
+                  <Alert.Root
+                    status="error"
+                    borderRadius="lg"
+                    variant="subtle"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                  >
                     <Alert.Indicator />
                     <Alert.Title>{error}</Alert.Title>
                   </Alert.Root>
@@ -232,7 +251,7 @@ export function Login() {
 
                 {/* Título */}
                 <VStack align="flex-start" gap="1">
-                  <Text color="var(--card-foreground)" fontSize="lg" fontWeight="bold">
+                  <Text as="h1" color="var(--card-foreground)" fontSize="lg" fontWeight="bold">
                     BFIN
                   </Text>
                   <Text color="var(--muted-foreground)" fontSize="sm">
@@ -241,7 +260,7 @@ export function Login() {
                 </VStack>
 
                 {/* Campo Senha */}
-                <Box>
+                <Box as="div" role="group">
                   <Input
                     type="password"
                     name="password"
@@ -263,15 +282,20 @@ export function Login() {
                       boxShadow: "0 0 0 1px var(--accent)"
                     }}
                     autoComplete="current-password"
-                    data-testid="password-input"
+                    aria-label="Senha"
+                    aria-required="true"
+                    aria-invalid={!!passwordError}
+                    aria-describedby={passwordError ? 'password-error' : undefined}
                   />
                   {passwordError && (
                     <Text
                       color="red.400"
                       fontSize="xs"
                       mt="1"
+                      id="password-error"
+                      role="alert"
+                      aria-live="polite"
                       textAlign="center"
-                      data-testid="password-error"
                     >
                       {passwordError}
                     </Text>
@@ -281,7 +305,12 @@ export function Login() {
                 {/* Botão Entrar */}
                 <VStack gap="3" align="stretch">
                   {isLoading && (
-                    <Box data-testid="login-loading" textAlign="center">
+                    <Box
+                      role="status"
+                      aria-live="polite"
+                      aria-label="Carregando"
+                      textAlign="center"
+                    >
                       <Text color="var(--muted-foreground)" fontSize="sm">
                         Entrando...
                       </Text>
@@ -298,7 +327,6 @@ export function Login() {
                     letterSpacing="wide"
                     loading={isLoading}
                     loadingText="Entrando..."
-                    data-testid="login-button"
                     disabled={isLoading}
                   >
                     ENTRAR
@@ -306,7 +334,7 @@ export function Login() {
                 </VStack>
 
                 {/* Separador */}
-                <Flex align="center" gap="4" my="2">
+                <Flex align="center" gap="4" my="2" role="separator" aria-orientation="horizontal">
                   <Box flex="1" h="1px" bg="var(--border)" />
                   <Text color="var(--muted-foreground)" fontSize="xs" fontWeight="medium">
                     OU
@@ -328,7 +356,7 @@ export function Login() {
                     color: "var(--primary-foreground)",
                   }}
                   onClick={() => navigate('/register')}
-                  data-testid="register-link"
+                  aria-label="Registre-se - Criar nova conta"
                 >
                   REGISTRE-SE
                 </Button>

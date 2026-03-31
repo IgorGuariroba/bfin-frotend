@@ -91,7 +91,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                 w="full"
                 loading={formState.buttonState === 'loading'}
                 disabled={formState.buttonState === 'success'}
-                data-testid="submit-button"
+                aria-label={formState.buttonState === 'success' ? 'Depósito confirmado com sucesso' : 'Confirmar depósito de receita'}
               >
                 {formState.buttonState === 'success' ? 'Depósito Confirmado!' : 'Confirmar Depósito'}
               </Button>
@@ -101,7 +101,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                   colorPalette="gray"
                   w="full"
                   onClick={onCancel}
-                  data-testid="cancel-button"
+                  aria-label="Cancelar criação de receita"
                 >
                   Cancelar
                 </Button>

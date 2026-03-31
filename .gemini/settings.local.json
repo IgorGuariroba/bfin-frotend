@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version:*)",
+      "Bash(curl:*)",
+      "Bash(sudo -E bash -)",
+      "Bash(sudo apt-get install:*)",
+      "Bash(bash:*)",
+      "Bash(export NVM_DIR=\"$HOME/.nvm\")",
+      "Bash([ -s \"$NVM_DIR/nvm.sh\" ])",
+      "Bash(. \"$NVM_DIR/nvm.sh\")",
+      "Bash(nvm install:*)",
+      "Bash(nvm use:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "Bash(gh pr:*)",
+      "Bash(find:*)",
+      "mcp__chakra-ui__list_components",
+      "mcp__chakra-ui__get_component_props",
+      "Bash(ls:*)",
+      "mcp__chakra-ui__get_theme",
+      "Bash(grep -r concurrently /home/igor/projetos/bfin-frotend/ --include=*.json --include=*.js --include=*.ts)",
+      "mcp__chakra-ui__get_component_example",
+      "mcp__context7__query-docs",
+      "Bash(pkill:*)",
+      "mcp__playwright-test__test_run",
+      "mcp__playwright-test__test_debug",
+      "mcp__playwright-test__browser_snapshot",
+      "mcp__playwright-test__test_list",
+      "mcp__playwright-test__browser_evaluate",
+      "mcp__playwright-test__browser_network_requests",
+      "mcp__playwright-test__browser_console_messages",
+      "Bash(apt-cache search:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "playwright-test"
+  ]
+}

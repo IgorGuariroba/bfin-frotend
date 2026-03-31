@@ -76,7 +76,7 @@ export function IncomeFormFields({
                 borderColor="var(--border)"
                 borderRadius="full"
                 _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                data-testid="field-descricao"
+                aria-label="Descrição da receita"
               />
             </Box>
             {errors.description && (
@@ -102,7 +102,7 @@ export function IncomeFormFields({
                     borderColor="var(--border)"
                     borderRadius="full"
                     _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                    data-testid="field-categoria"
+                    aria-label="Categoria da receita"
                   >
                     {categories?.map((category) => (
                       <option key={category.id} value={category.id}>
@@ -151,13 +151,13 @@ export function IncomeFormFields({
                 borderColor="var(--border)"
                 borderRadius="full"
                 _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                data-testid="data-picker"
+                aria-label="Data de recebimento da receita"
               />
             </Box>
           </Field.Root>
 
           {/* Recorrente */}
-          <Checkbox.Root {...register('isRecurring')} colorPalette="brand" data-testid="recorrente-checkbox">
+          <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
             <Checkbox.Control />
             <Checkbox.Label>Receita recorrente</Checkbox.Label>
           </Checkbox.Root>
