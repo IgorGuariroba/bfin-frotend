@@ -59,7 +59,7 @@ jobs:
           VITE_API_BASE_URL: http://localhost:3001
 
       - name: 🚀 Run Smoke Tests
-        run: npx playwright test --project=chromium --grep="login|Login|deve fazer login|formulário de login"
+        run: npx playwright test --project=chromium-auth --grep="login|Login|deve fazer login|formulário de login"
         env:
           CI: true
           PLAYWRIGHT_BASE_URL: http://localhost:5173
