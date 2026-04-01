@@ -159,7 +159,7 @@ jobs:
         env:
           VITE_API_BASE_URL: http://localhost:3000
           PLAYWRIGHT_BASE_URL: http://localhost:5173
-          CI: false
+          CI: true
 
       - name: 📊 Upload Test Results
         uses: actions/upload-artifact@v4
