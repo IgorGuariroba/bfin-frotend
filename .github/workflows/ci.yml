@@ -62,53 +62,9 @@ jobs:
         run: npm audit --audit-level=moderate --production
         continue-on-error: true
 
-  # Job 2: Testes
+  # Job 2: Testes E2E (Frontend + Backend)
   tests:
-    name: 🧪 Tests
-    runs-on: ubuntu-latest
-    needs: code-quality
-    
-    steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: 🔐 Setup NPM Authentication
-        run: |
-          echo "@igorguariroba:registry=https://npm.pkg.github.com" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: 📦 Install dependencies
-        run: npm ci
-
-      - name: 🎭 Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: 🧪 Run Playwright Tests
-        run: npm run test:e2e
-        env:
-          VITE_API_BASE_URL: http://localhost:3000
-
-      - name: 📊 Upload Test Results
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-results
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 7
-
-  # Job 3: Testes E2E com Backend
-  e2e-tests:
-    name: 🎭 E2E Tests
+    name: 🧪 E2E Tests
     runs-on: ubuntu-latest
     needs: code-quality
     timeout-minutes: 20
@@ -147,14 +103,12 @@ jobs:
         run: |
           echo "Aguardando backend ficar disponível..."
 
-          # Health check mais robusto com múltiplas tentativas
           MAX_ATTEMPTS=30
           ATTEMPT=0
 
           while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
             ATTEMPT=$((ATTEMPT + 1))
 
-            # Tenta diferentes endpoints de health check
             if curl -f -s http://localhost:3000/health >/dev/null 2>&1 || \
                curl -f -s http://localhost:3000/api/health >/dev/null 2>&1 || \
                curl -f -s http://localhost:3000/ >/dev/null 2>&1; then
@@ -164,7 +118,6 @@ jobs:
 
             if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
               echo "⚠️ Backend pode não ter endpoint de health, mas continuando..."
-              # Mostrar logs para debug se falhar
               echo "📋 Status dos containers:"
               cd backend && docker compose ps || true
               echo "📋 Logs do backend:"
@@ -177,73 +130,61 @@ jobs:
             sleep 2
           done
 
-      - name: 🐛 Debug E2E Environment
-        if: failure()
-        run: bash scripts/debug-e2e-ci.sh
-
       - name: 🎭 Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      - name: 🎭 Run E2E Tests (Fluxo Completo)
-        run: |
-          echo "🔍 Verificando se backend está respondendo..."
-          curl -f http://localhost:3000/health || curl -f http://localhost:3000/api/health || curl -f http://localhost:3000/ || echo "⚠️ Backend não respondeu, mas continuando com testes..."
-
-          echo "🎭 Executando Teste E2E Completo..."
-          npx playwright test e2e/app-flow.spec.ts --project=chromium-auth
+      - name: 🚀 Start Frontend Dev Server
+        run: npm run dev &
         env:
-          CI: false
-          PLAYWRIGHT_BASE_URL: http://localhost:5173
           VITE_API_BASE_URL: http://localhost:3000
 
-      - name: 📊 Upload E2E Test Results
+      - name: ⏳ Wait for Frontend to be Ready
+        run: |
+          echo "Aguardando frontend ficar disponível..."
+
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
+
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            ATTEMPT=$((ATTEMPT + 1))
+
+            if curl -f -s http://localhost:5173 >/dev/null 2>&1; then
+              echo "✅ Frontend está respondendo!"
+              break
+            fi
+
+            if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+              echo "❌ Frontend não respondeu após ${MAX_ATTEMPTS} tentativas"
+              exit 1
+            fi
+
+            echo -n "."
+            sleep 2
+          done
+
+      - name: 🧪 Run Playwright Tests
+        run: npm run test:e2e
+        env:
+          VITE_API_BASE_URL: http://localhost:3000
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+          CI: false
+
+      - name: 📊 Upload Test Results
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: e2e-results
+          name: playwright-results
           path: |
-            test-results/
             playwright-report/
+            test-results/
           retention-days: 7
-
-      - name: 📝 Comment PR with E2E Results
-        uses: actions/github-script@v7
-        if: failure() && github.event_name == 'pull_request'
-        with:
-          script: |
-            const comment = `## 🚨 E2E Test Failed
-
-            O teste E2E do fluxo completo falhou nesta PR.
-
-            ### 🔍 O que verificar:
-            - Login está funcionando?
-            - Dashboard carrega corretamente?
-            - Formulários abrem/fecham?
-            - Mudanças na UI podem ter afetado os seletores
-
-            ### 📋 Próximos passos:
-            1. Baixe os artifacts para ver screenshots/videos
-            2. Execute localmente: \`npx playwright test e2e/app-flow.spec.ts\`
-            3. Atualize seletores se necessário
-
-            📊 Relatório detalhado disponível nos artifacts
-
-            **Commit:** \`${context.sha.substr(0, 7)}\`
-            `;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
 
       - name: 🐳 Cleanup Backend
         if: always()
         run: |
           cd backend && docker compose down || true
 
-  # Job 4: Build Validation
+  # Job 3: Build Validation
   build:
     name: 🏗️ Build Validation
     runs-on: ubuntu-latest
@@ -289,11 +230,11 @@ jobs:
           echo "|------|------|" >> $GITHUB_STEP_SUMMARY
           du -sh dist/* | awk '{printf "| %s | %s |\n", $2, $1}' >> $GITHUB_STEP_SUMMARY
 
-  # Job 5: Summary Final
+  # Job 4: Summary Final
   summary:
     name: ✅ CI Summary
     runs-on: ubuntu-latest
-    needs: [code-quality, tests, e2e-tests, build]
+    needs: [code-quality, tests, build]
     if: always()
 
     steps:
@@ -306,8 +247,7 @@ jobs:
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Code Quality | ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Playwright Tests | ${{ needs.tests.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| E2E Tests (Fluxo) | ${{ needs.e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | ${{ needs.tests.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
@@ -315,7 +255,7 @@ jobs:
           echo "**Author:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
 
       - name: ❌ Fail if any critical job failed
-        if: needs.code-quality.result == 'failure' || needs.build.result == 'failure' || needs.tests.result == 'failure' || needs.e2e-tests.result == 'failure'
+        if: needs.code-quality.result == 'failure' || needs.build.result == 'failure' || needs.tests.result == 'failure'
         run: |
           echo "::error::Jobs críticos falharam - bloqueando merge"
           exit 1
