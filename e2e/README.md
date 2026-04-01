@@ -21,6 +21,8 @@ e2e/
 
 ## Comandos Disponíveis
 
+### Testes E2E Básicos (apenas frontend)
+
 ```bash
 # Executar todos os testes
 npm run test:e2e
@@ -52,6 +54,33 @@ npm run test:e2e:type-check
 # Lint dos testes
 npm run test:e2e:lint
 ```
+
+### Testes E2E com Backend (recomendado)
+
+⚠️ **IMPORTANTE**: Para testes que dependem de API (login, formulários), use os comandos com backend:
+
+```bash
+# Executar testes E2E com backend Docker
+npm run test:e2e:backend
+
+# Executar apenas testes de login com backend
+npm run test:e2e:backend:auth
+
+# Executar smoke tests com backend
+npm run test:e2e:backend:smoke
+```
+
+**O que os comandos `test:e2e:backend` fazem:**
+
+1. 📥 Clona o repositório do backend (se necessário)
+2. 🐳 Inicia o backend com Docker Compose
+3. ⏳ Aguarda o backend ficar disponível
+4. 🧪 Executa os testes E2E
+5. 🛑 Pergunta se deve manter o backend rodando
+
+**Requisitos:**
+- Docker instalado e rodando
+- Acesso ao repositório: `https://github.com/IgorGuariroba/bfin-backend.git`
 
 ## Configuração de Variáveis de Ambiente
 

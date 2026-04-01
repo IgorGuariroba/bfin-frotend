@@ -55,3 +55,4 @@ e2e/.auth/
 .qwen/
 .cursor/
 QWEN.md
+/backend/

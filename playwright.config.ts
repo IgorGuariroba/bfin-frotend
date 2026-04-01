@@ -9,7 +9,11 @@ import { fileURLToPath } from 'url';
  */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ENV_FILE = path.resolve(__dirname, '.env.test');
+const ENV_LOCAL_FILE = path.resolve(__dirname, '.env.test.local');
+
+// Carregar .env.test primeiro, depois .env.test.local (se existir)
 dotenv.config({ path: ENV_FILE });
+dotenv.config({ path: ENV_LOCAL_FILE, override: true });
 
 /**
  * Configuração do Playwright para testes E2E
