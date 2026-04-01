@@ -9,6 +9,14 @@ on:
     branches:
       - main
       - develop
+    # Otimização: só roda E2E em mudanças relevantes para PRs
+    paths:
+      - 'src/**'
+      - 'e2e/**'
+      - 'package*.json'
+      - 'playwright.config.ts'
+      - 'vite.config.ts'
+      - '.github/workflows/ci.yml'
 
 # Cancela workflows anteriores da mesma branch
 concurrency:
@@ -51,7 +59,7 @@ jobs:
         run: npm run check:tokens
 
       - name: 🛡️ Security Audit
-        run: npm audit --audit-level=moderate
+        run: npm audit --audit-level=moderate --production
         continue-on-error: true
 
   # Job 2: Testes
@@ -87,7 +95,6 @@ jobs:
         run: npm test -- --run --reporter=verbose
         env:
           VITE_API_BASE_URL: http://localhost:3000
-        continue-on-error: true
 
       - name: 📊 Upload Test Results
         uses: actions/upload-artifact@v4
@@ -139,8 +146,36 @@ jobs:
       - name: ⏳ Wait for Backend to be Ready
         run: |
           echo "Aguardando backend ficar disponível..."
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health 2>/dev/null || curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/ 2>/dev/null; do sleep 2; done' || echo "Backend pode não ter endpoint de health, continuando..."
-          sleep 5
+
+          # Health check mais robusto com múltiplas tentativas
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
+
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            ATTEMPT=$((ATTEMPT + 1))
+
+            # Tenta diferentes endpoints de health check
+            if curl -f -s http://localhost:3000/health >/dev/null 2>&1 || \
+               curl -f -s http://localhost:3000/api/health >/dev/null 2>&1 || \
+               curl -f -s http://localhost:3000/ >/dev/null 2>&1; then
+              echo "✅ Backend está respondendo!"
+              break
+            fi
+
+            if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+              echo "⚠️ Backend pode não ter endpoint de health, mas continuando..."
+              # Mostrar logs para debug se falhar
+              echo "📋 Status dos containers:"
+              cd backend && docker compose ps || true
+              echo "📋 Logs do backend:"
+              cd backend && docker compose logs --tail=10 app || echo "Sem logs disponíveis"
+              cd ..
+              break
+            fi
+
+            echo -n "."
+            sleep 2
+          done
 
       - name: 🐛 Debug E2E Environment
         if: failure()
@@ -149,13 +184,13 @@ jobs:
       - name: 🎭 Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      - name: 🎭 Run E2E Tests (Smoke Only)
+      - name: 🎭 Run E2E Tests (Fluxo Completo)
         run: |
           echo "🔍 Verificando se backend está respondendo..."
           curl -f http://localhost:3000/health || curl -f http://localhost:3000/api/health || curl -f http://localhost:3000/ || echo "⚠️ Backend não respondeu, mas continuando com testes..."
 
-          echo "🎭 Executando Smoke Tests..."
-          npx playwright test --project=chromium-auth --grep="login|Login|deve fazer login|formulário de login"
+          echo "🎭 Executando Teste E2E Completo..."
+          npx playwright test e2e/app-flow.spec.ts --project=chromium-auth
         env:
           CI: false
           PLAYWRIGHT_BASE_URL: http://localhost:5173
@@ -170,6 +205,38 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 7
+
+      - name: 📝 Comment PR with E2E Results
+        uses: actions/github-script@v7
+        if: failure() && github.event_name == 'pull_request'
+        with:
+          script: |
+            const comment = `## 🚨 E2E Test Failed
+
+            O teste E2E do fluxo completo falhou nesta PR.
+
+            ### 🔍 O que verificar:
+            - Login está funcionando?
+            - Dashboard carrega corretamente?
+            - Formulários abrem/fecham?
+            - Mudanças na UI podem ter afetado os seletores
+
+            ### 📋 Próximos passos:
+            1. Baixe os artifacts para ver screenshots/videos
+            2. Execute localmente: \`npx playwright test e2e/app-flow.spec.ts\`
+            3. Atualize seletores se necessário
+
+            📊 Relatório detalhado disponível nos artifacts
+
+            **Commit:** \`${context.sha.substr(0, 7)}\`
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 
       - name: 🐳 Cleanup Backend
         if: always()
@@ -240,7 +307,7 @@ jobs:
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Code Quality | ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Unit Tests | ${{ needs.tests.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| E2E Tests | ${{ needs.e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests (Fluxo) | ${{ needs.e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
@@ -248,11 +315,7 @@ jobs:
           echo "**Author:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
 
       - name: ❌ Fail if any critical job failed
-        if: needs.code-quality.result == 'failure' || needs.build.result == 'failure'
-        run: exit 1
-
-      - name: ⚠️ Warn if optional jobs failed
-        if: needs.tests.result == 'failure' || needs.e2e-tests.result == 'failure'
+        if: needs.code-quality.result == 'failure' || needs.build.result == 'failure' || needs.tests.result == 'failure' || needs.e2e-tests.result == 'failure'
         run: |
-          echo "⚠️ Alguns testes falharam mas o build pode prosseguir"
-          echo "📋 Revise os resultados dos testes antes de fazer merge"
+          echo "::error::Jobs críticos falharam - bloqueando merge"
+          exit 1

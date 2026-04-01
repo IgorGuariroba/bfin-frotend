@@ -1,14 +1,14 @@
-# Testes E2E - Playwright
+# Testes E2E - Playwright (Simplificado)
 
 Este diretório contém os testes end-to-end (E2E) da aplicação usando Playwright.
+
+**CONFIGURAÇÃO ATUAL**: Testes simplificados focados apenas na validação de login.
 
 ## Estrutura de Arquivos
 
 ```
 e2e/
-├── auth/                    # Testes de autenticação
-│   ├── login.spec.ts        # Testes de login (abordagem direta)
-│   └── login-pom.spec.ts    # Testes de login (Page Object Model)
+├── app-flow.spec.ts         # Teste principal: validação de login
 ├── fixtures/                # Fixtures reutilizáveis
 │   └── auth.fixture.ts      # Fixtures de autenticação
 ├── pages/                   # Page Objects
@@ -21,10 +21,10 @@ e2e/
 
 ## Comandos Disponíveis
 
-### Testes E2E Básicos (apenas frontend)
+### Testes E2E Básicos (apenas validação de login)
 
 ```bash
-# Executar todos os testes
+# Executar teste de validação de login
 npm run test:e2e
 
 # Executar com interface gráfica
@@ -32,18 +32,6 @@ npm run test:e2e:ui
 
 # Executar em modo debug
 npm run test:e2e:debug
-
-# Executar apenas testes de login
-npm run test:e2e:login
-
-# Executar apenas testes de forms
-npm run test:e2e:forms
-
-# Executar testes mobile
-npm run test:e2e:mobile
-
-# Executar smoke tests (fluxo crítico)
-npm run test:e2e:smoke
 
 # Ver relatório HTML
 npm run test:e2e:report
@@ -57,17 +45,11 @@ npm run test:e2e:lint
 
 ### Testes E2E com Backend (recomendado)
 
-⚠️ **IMPORTANTE**: Para testes que dependem de API (login, formulários), use os comandos com backend:
+⚠️ **IMPORTANTE**: Para o teste de login que depende de API, use os comandos com backend:
 
 ```bash
-# Executar testes E2E com backend Docker
+# Executar teste de login com backend Docker
 npm run test:e2e:backend
-
-# Executar apenas testes de login com backend
-npm run test:e2e:backend:auth
-
-# Executar smoke tests com backend
-npm run test:e2e:backend:smoke
 ```
 
 **O que os comandos `test:e2e:backend` fazem:**

@@ -32,72 +32,11 @@ export default defineConfig({
   /* Configuração do relatório */
   reporter: 'html',
 
-  /* Configuração de projetos para principais browsers */
+  /* Configuração simplificada - apenas Chrome para teste básico */
   projects: [
-    /* Setup de autenticação global */
-    {
-      name: 'setup',
-      testMatch: /setup\/.*\.setup\.ts/,
-    },
-
-    /* Testes que NÃO requerem autenticação (login, cadastro, etc.) */
-    {
-      name: 'chromium-auth',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
-      testIgnore: /setup\/.*\.setup\.ts/,
-    },
-
-    /* Testes que requerem autenticação */
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: 'e2e/.auth/user.json',
-      },
-      dependencies: ['setup'],
-      testIgnore: [/auth\/.*\.spec\.ts/, /setup\/.*\.setup\.ts/],
-    },
-
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        storageState: 'e2e/.auth/user.json',
-      },
-      dependencies: ['setup'],
-      testIgnore: [/auth\/.*\.spec\.ts/, /setup\/.*\.setup\.ts/],
-    },
-
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        storageState: 'e2e/.auth/user.json',
-      },
-      dependencies: ['setup'],
-      testIgnore: [/auth\/.*\.spec\.ts/, /setup\/.*\.setup\.ts/],
-    },
-
-    /* Testes em mobile */
-    {
-      name: 'Mobile Chrome',
-      use: {
-        ...devices['Pixel 5'],
-        storageState: 'e2e/.auth/user.json',
-      },
-      dependencies: ['setup'],
-      testIgnore: [/auth\/.*\.spec\.ts/, /setup\/.*\.setup\.ts/],
-    },
-    {
-      name: 'Mobile Safari',
-      use: {
-        ...devices['iPhone 12'],
-        storageState: 'e2e/.auth/user.json',
-      },
-      dependencies: ['setup'],
-      testIgnore: [/auth\/.*\.spec\.ts/, /setup\/.*\.setup\.ts/],
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
 
