@@ -91,18 +91,18 @@ jobs:
       - name: 🎭 Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      - name: 🧪 Run Vitest
-        run: npm test -- --run --reporter=verbose
+      - name: 🧪 Run Playwright Tests
+        run: npm run test:e2e
         env:
           VITE_API_BASE_URL: http://localhost:3000
 
       - name: 📊 Upload Test Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
-          name: test-results
+          name: playwright-results
           path: |
-            coverage/
+            playwright-report/
             test-results/
           retention-days: 7
 
@@ -306,7 +306,7 @@ jobs:
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Code Quality | ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Unit Tests | ${{ needs.tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Playwright Tests | ${{ needs.tests.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| E2E Tests (Fluxo) | ${{ needs.e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
