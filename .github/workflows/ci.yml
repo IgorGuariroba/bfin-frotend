@@ -9,19 +9,11 @@ on:
     branches:
       - main
       - develop
-    # Otimização: só roda E2E em mudanças relevantes para PRs
-    paths:
-      - 'src/**'
-      - 'e2e/**'
-      - 'package*.json'
-      - 'playwright.config.ts'
-      - 'vite.config.ts'
-      - '.github/workflows/ci.yml'
 
-# Cancela workflows anteriores da mesma branch
+# Cancela workflows anteriores da mesma branch (mas não cancela E2E em PRs)
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'pull_request' }}
 
 jobs:
   # Job 1: Verificação de Código
@@ -66,7 +58,7 @@ jobs:
   tests:
     name: 🧪 E2E Tests
     runs-on: ubuntu-latest
-    needs: code-quality
+    needs: [code-quality, build]
     timeout-minutes: 20
 
     steps:
