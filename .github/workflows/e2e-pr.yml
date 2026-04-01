@@ -63,20 +63,39 @@ jobs:
       - name: ⏳ Wait for Backend to be Ready
         run: |
           echo "Aguardando backend ficar disponível..."
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health 2>/dev/null || curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/ 2>/dev/null; do sleep 2; done' || echo "Backend pode não ter endpoint de health, continuando..."
-          sleep 5
+          # Health check mais robusto com múltiplas tentativas
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
 
-      - name: 🐛 Debug Docker Status (Smoke Tests)
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            ATTEMPT=$((ATTEMPT + 1))
+
+            # Tenta diferentes endpoints de health check
+            if curl -f -s http://localhost:3000/health >/dev/null 2>&1 || \
+               curl -f -s http://localhost:3000/api/health >/dev/null 2>&1 || \
+               curl -f -s http://localhost:3000/ >/dev/null 2>&1; then
+              echo "✅ Backend está respondendo!"
+              break
+            fi
+
+            if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+              echo "⚠️ Backend pode não ter endpoint de health, mas continuando..."
+              # Mostrar logs para debug se falhar
+              echo "📋 Status dos containers:"
+              cd backend && docker compose ps || true
+              echo "📋 Logs do backend:"
+              cd backend && docker compose logs --tail=10 app || echo "Sem logs disponíveis"
+              cd ..
+              break
+            fi
+
+            echo -n "."
+            sleep 2
+          done
+
+      - name: 🐛 Debug E2E Environment (Smoke Tests)
         if: failure()
-        run: |
-          echo "🐳 Status dos containers:"
-          cd backend && docker compose ps
-          echo ""
-          echo "📋 Logs do container da API:"
-          cd backend && docker compose logs app || echo "Container 'app' não encontrado"
-          echo ""
-          echo "🔍 Processos na porta 3000:"
-          netstat -tlnp | grep :3000 || echo "Nada rodando na porta 3000"
+        run: bash scripts/debug-e2e-ci.sh
 
       - name: 🎭 Install Playwright (Chromium only)
         run: npx playwright install --with-deps chromium
@@ -150,20 +169,39 @@ jobs:
       - name: ⏳ Wait for Backend to be Ready
         run: |
           echo "Aguardando backend ficar disponível..."
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health 2>/dev/null || curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/ 2>/dev/null; do sleep 2; done' || echo "Backend pode não ter endpoint de health, continuando..."
-          sleep 5
+          # Health check mais robusto com múltiplas tentativas
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
 
-      - name: 🐛 Debug Docker Status (Full E2E Tests)
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            ATTEMPT=$((ATTEMPT + 1))
+
+            # Tenta diferentes endpoints de health check
+            if curl -f -s http://localhost:3000/health >/dev/null 2>&1 || \
+               curl -f -s http://localhost:3000/api/health >/dev/null 2>&1 || \
+               curl -f -s http://localhost:3000/ >/dev/null 2>&1; then
+              echo "✅ Backend está respondendo!"
+              break
+            fi
+
+            if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+              echo "⚠️ Backend pode não ter endpoint de health, mas continuando..."
+              # Mostrar logs para debug se falhar
+              echo "📋 Status dos containers:"
+              cd backend && docker compose ps || true
+              echo "📋 Logs do backend:"
+              cd backend && docker compose logs --tail=10 app || echo "Sem logs disponíveis"
+              cd ..
+              break
+            fi
+
+            echo -n "."
+            sleep 2
+          done
+
+      - name: 🐛 Debug E2E Environment (Full E2E Tests)
         if: failure()
-        run: |
-          echo "🐳 Status dos containers:"
-          cd backend && docker compose ps
-          echo ""
-          echo "📋 Logs do container da API:"
-          cd backend && docker compose logs app || echo "Container 'app' não encontrado"
-          echo ""
-          echo "🔍 Processos na porta 3000:"
-          netstat -tlnp | grep :3000 || echo "Nada rodando na porta 3000"
+        run: bash scripts/debug-e2e-ci.sh
 
       - name: 🎭 Install Playwright Browsers
         run: npx playwright install --with-deps
