@@ -164,31 +164,32 @@ export const CashFlowChartWidget = ({ onViewDetails }: CashFlowChartWidgetProps)
 
           {/* Gráfico de gastos por categoria */}
           {chartData.length > 0 ? (
-            <Chart.Root height="220px" chart={chart}>
+            <Chart.Root height="280px" chart={chart}>
               <BarChart
-                layout="vertical"
                 data={chart.data}
-                margin={{ left: 10, right: 10 }}
+                margin={{ left: 10, right: 10, top: 10, bottom: 60 }}
                 responsive
               >
-                <CartesianGrid stroke={chart.color('border.muted')} horizontal={false} />
+                <CartesianGrid stroke={chart.color('border.muted')} vertical={false} />
                 <XAxis
+                  type="category"
+                  dataKey={chart.key('category')}
+                  axisLine={false}
+                  tickLine={false}
+                  fontSize={10}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                  tickFormatter={(value: string) =>
+                    value.length > 10 ? value.slice(0, 10) + '…' : value
+                  }
+                />
+                <YAxis
                   type="number"
                   axisLine={false}
                   tickLine={false}
                   fontSize={10}
                   tickFormatter={(value: number) => formatCompact(value)}
-                />
-                <YAxis
-                  type="category"
-                  dataKey={chart.key('category')}
-                  axisLine={false}
-                  tickLine={false}
-                  fontSize={11}
-                  width={100}
-                  tickFormatter={(value: string) =>
-                    value.length > 12 ? value.slice(0, 12) + '…' : value
-                  }
                 />
                 <Tooltip
                   cursor={{ fill: chart.color('bg.muted') }}
