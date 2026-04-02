@@ -8,10 +8,11 @@ import {
 } from '@chakra-ui/react';
 import { Button } from '@/components/atoms/Button';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { format, addDays, startOfDay, endOfDay } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { getDayStart, getDayEnd } from '@/utils/dateUtils';
 
 import { BaseWidget } from './BaseWidget';
 import { Calendar } from '@/components/organisms/Calendar';
@@ -28,15 +29,15 @@ interface CalendarWidgetProps {
 
 // Hook para buscar eventos dos próximos 7 dias
 function useUpcomingEvents() {
-  const today = startOfDay(new Date());
-  const next7Days = endOfDay(addDays(new Date(), 7));
+  const today = new Date();
+  const next7Days = addDays(new Date(), 7);
 
   return useQuery({
     queryKey: ['upcoming-events', format(today, 'yyyy-MM-dd')],
     queryFn: async () => {
       const response = await transactionService.list({
-        startDate: today.toISOString(),
-        endDate: next7Days.toISOString(),
+        startDate: getDayStart(today),
+        endDate: getDayEnd(next7Days),
       });
 
       return transformTransactionsToEvents(response.transactions);

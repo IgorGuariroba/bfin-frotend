@@ -6,6 +6,7 @@ import { TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { BaseWidget } from './BaseWidget';
 import { useAccounts } from '../../hooks/useAccounts';
 import { useTransactions } from '../../hooks/useTransactions';
+import { getMonthStart, getMonthEnd } from '../../utils/dateUtils';
 
 interface CashFlowChartWidgetProps {
   onViewDetails?: () => void;
@@ -14,11 +15,9 @@ interface CashFlowChartWidgetProps {
 function getMonthRange(offset: number) {
   const now = new Date();
   const target = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-  const start = new Date(target.getFullYear(), target.getMonth(), 1);
-  const end = new Date(target.getFullYear(), target.getMonth() + 1, 0, 23, 59, 59);
   return {
-    startDate: start.toISOString(),
-    endDate: end.toISOString(),
+    startDate: getMonthStart(target),
+    endDate: getMonthEnd(target),
     label: target.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
   };
 }
