@@ -43,7 +43,7 @@ export default defineConfig({
   /* Configuração compartilhada para todos os projetos */
   use: {
     /* URL base para usar em ações como `await page.goto('/')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL: process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173',
 
     /* Executa sem interface gráfica (resolve problemas de dependências) */
     headless: true,
@@ -58,10 +58,10 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
 
-  /* Inicia o dev server antes de executar os testes */
+  /* Inicia o servidor antes de executar os testes */
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
+    command: process.env.CI ? 'npm run preview' : 'npm run dev',
+    url: process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173',
     reuseExistingServer: true,
     timeout: 120 * 1000,
   },
