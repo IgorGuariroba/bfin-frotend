@@ -16,6 +16,7 @@ services:
       PORT: 3000
       JWT_SECRET: ci-test-secret
       JWT_REFRESH_SECRET: ci-test-refresh-secret
+      CORS_ORIGINS: http://localhost:4173,http://localhost:5173,http://localhost:3000
     depends_on:
       postgres:
         condition: service_healthy
