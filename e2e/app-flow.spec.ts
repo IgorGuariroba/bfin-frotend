@@ -1,62 +1,94 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Teste E2E Simplificado - Validação de Login
- * @description Testa apenas o fluxo de login da aplicação
+ * Teste E2E - Validação de Registro e Login
+ * @description Testa o fluxo completo de registro e login da aplicação
  *
- * PRINCÍPIO: Um teste que valida que o login está funcionando corretamente
- * Foco: Validação de autenticação básica
+ * PRINCÍPIO: Teste auto-contido que cria seus próprios dados de teste
+ * 1. Registra um novo usuário
+ * 2. Faz logout
+ * 3. Faz login com as credenciais criadas
+ * 4. Valida o acesso ao dashboard
  */
-test.describe('BFIN - Validação de Login', () => {
-  test('deve realizar login com sucesso e redirecionar para o dashboard', async ({ page }) => {
-    // ===== LOGIN =====
-    await test.step('Fazer login', async () => {
-      await page.goto('/login');
+test.describe('BFIN - Registro e Login', () => {
+  // Dados únicos para cada execução de teste
+  const timestamp = Date.now();
+  const testEmail = `test${timestamp}@bfin.com.br`;
+  const testPassword = process.env.TEST_USER_PASSWORD || 'senha123';
+  const testFullName = `Test User ${timestamp}`;
+
+  test('deve registrar usuário, fazer login e acessar o dashboard', async ({ page }) => {
+    // ===== REGISTRO =====
+    await test.step('Registrar novo usuário', async () => {
+      await page.goto('/register');
       await page.waitForLoadState('networkidle');
 
-      const email = process.env.TEST_USER_EMAIL || 'teste@bfin.com.br';
-      const password = process.env.TEST_USER_PASSWORD || 'senha123';
+      await expect(page.getByTestId('register-form')).toBeVisible();
 
-      // Verificar formulário de login
-      await expect(page.getByRole('form', { name: /formulário de login/i })).toBeVisible();
+      await page.getByTestId('name-input').fill(testFullName);
+      await page.getByTestId('email-input').fill(testEmail);
+      await page.getByTestId('password-input').fill(testPassword);
+      await page.getByTestId('confirm-password-input').fill(testPassword);
 
-      // Fazer login
-      await page.getByRole('textbox', { name: /email/i }).fill(email);
-      await page.getByLabel(/senha/i).fill(password);
-      await page.getByRole('button', { name: /entrar/i }).click();
+      await page.getByTestId('register-button').click();
 
-      // Aguardar resposta da API ou erro
       await page.waitForLoadState('networkidle');
 
-      // Verificar se há mensagem de erro
-      const errorAlert = page.getByRole('alert');
-      const hasError = await errorAlert.isVisible();
-
-      if (hasError) {
+      const errorAlert = page.getByTestId('error-message');
+      if (await errorAlert.isVisible()) {
         const errorMessage = await errorAlert.textContent();
-        throw new Error(`Falha no login: ${errorMessage}`);
+        throw new Error(`Falha no registro: ${errorMessage}`);
       }
 
-      // Aguardar redirecionamento para dashboard com timeout maior
       await page.waitForURL(/\/dashboard/, { timeout: 15000 });
       await expect(page).toHaveURL(/\/dashboard/);
     });
 
-    // ===== VERIFICAÇÃO BÁSICA DO DASHBOARD =====
-    await test.step('Verificar redirecionamento para dashboard', async () => {
-      // Aguardar carregamento completo
+    // ===== LOGOUT =====
+    await test.step('Fazer logout', async () => {
       await page.waitForLoadState('networkidle');
 
-      // Verificar que estamos na página correta
-      await expect(page).toHaveURL(/\/dashboard/);
+      // Mobile: botão X visível diretamente
+      const mobileLogoutButton = page.getByLabel('Sair da aplicação');
 
-      // Verificar área de conteúdo principal do dashboard (se existir)
-      const dashboardContent = page.getByTestId('dashboard-content');
-      if (await dashboardContent.isVisible()) {
-        await expect(dashboardContent).toBeVisible();
+      if (await mobileLogoutButton.isVisible()) {
+        await mobileLogoutButton.click();
+      } else {
+        // Desktop: abrir menu do usuário e clicar em Sair
+        await page.getByTestId('user-menu').click();
+        await page.getByTestId('logout-option').click();
       }
 
-      // Login realizado com sucesso
+      await page.waitForURL(/\/login/, { timeout: 10000 });
+      await expect(page).toHaveURL(/\/login/);
+    });
+
+    // ===== LOGIN =====
+    await test.step('Fazer login com usuário registrado', async () => {
+      await page.waitForLoadState('networkidle');
+
+      await expect(page.getByRole('form', { name: /formulário de login/i })).toBeVisible();
+
+      await page.getByRole('textbox', { name: /email/i }).fill(testEmail);
+      await page.getByLabel(/senha/i).fill(testPassword);
+      await page.getByRole('button', { name: /entrar/i }).click();
+
+      await page.waitForLoadState('networkidle');
+
+      const errorAlert = page.getByRole('alert');
+      if (await errorAlert.isVisible()) {
+        const errorMessage = await errorAlert.textContent();
+        throw new Error(`Falha no login: ${errorMessage}`);
+      }
+
+      await page.waitForURL(/\/dashboard/, { timeout: 15000 });
+      await expect(page).toHaveURL(/\/dashboard/);
+    });
+
+    // ===== VERIFICAÇÃO DO DASHBOARD =====
+    await test.step('Verificar acesso ao dashboard', async () => {
+      await page.waitForLoadState('networkidle');
+      await expect(page).toHaveURL(/\/dashboard/);
     });
   });
 });
