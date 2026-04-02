@@ -1,6 +1,7 @@
 import React from 'react';
 import { VStack, Grid } from '@chakra-ui/react';
 import { BfincontaWidget } from './BfincontaWidget';
+import { CashFlowChartWidget } from './CashFlowChartWidget';
 import { CalendarWidget } from './CalendarWidget';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -41,6 +42,17 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
       type: 'financial',
       enabled: true,
       order: 1,
+    },
+    {
+      id: 'cashflow-chart',
+      component: CashFlowChartWidget,
+      props: {
+        onViewDetails: () => onExpandForm('hist-finan')
+      },
+      priority: 'secondary',
+      type: 'analytics',
+      enabled: true,
+      order: 2,
     },
     {
       id: 'calendar',

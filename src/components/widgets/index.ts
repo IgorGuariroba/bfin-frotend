@@ -10,6 +10,8 @@ export type { WidgetConfig } from './WidgetManager';
 export { BfincontaWidget } from './BfincontaWidget';
 export { CalendarWidget } from './CalendarWidget';
 
+export { CashFlowChartWidget } from './CashFlowChartWidget';
+
 // Espaço reservado para novos widgets:
 // export { TransactionsWidget } from './TransactionsWidget';
 // export { GoalsWidget } from './GoalsWidget';
