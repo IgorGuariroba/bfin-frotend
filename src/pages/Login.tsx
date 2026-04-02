@@ -20,6 +20,8 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { signIn } = useAuth();
@@ -36,16 +38,54 @@ export function Login() {
     setEmail('');
     setPassword('');
     setError('');
+    setEmailError('');
+    setPasswordError('');
+  }
+
+  function validateEmail(value: string) {
+    if (!value) {
+      setEmailError('Campo obrigatório');
+      return false;
+    } else if (!/\S+@\S+\.\S+/.test(value)) {
+      setEmailError('Email inválido');
+      return false;
+    } else {
+      setEmailError('');
+      return true;
+    }
+  }
+
+  function validatePassword(value: string) {
+    if (!value) {
+      setPasswordError('Campo obrigatório');
+      return false;
+    } else {
+      setPasswordError('');
+      return true;
+    }
+  }
+
+  function validateFields() {
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    return isEmailValid && isPasswordValid;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+
+    // Validar campos
+    if (!validateFields()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       await signIn(email, password);
-      navigate('/dashboard');
+      // Redirecionamento será feito automaticamente pelo PublicRoute
+      // pois o usuário agora está autenticado
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao fazer login';
       setError(errorMessage);
@@ -61,6 +101,8 @@ export function Login() {
       justify="center"
       bg="var(--background)"
       position="relative"
+      role="main"
+      aria-label="Página de login"
     >
       {/* Theme Toggle - Fixed top-right */}
       <Box position="absolute" top={4} right={4} zIndex={10}>
@@ -68,7 +110,7 @@ export function Login() {
       </Box>
 
       <Container maxW="md" py={{ base: "8", md: "16" }} px={{ base: "4", sm: "8" }}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} data-testid="login-form" noValidate role="form" aria-label="Formulário de login">
           <VStack gap="0" w="full">
           {/* Card Superior - Informações da Conta e Logo */}
           <Box
@@ -78,6 +120,8 @@ export function Login() {
             p="8"
             position="relative"
             boxShadow="2xl"
+            role="region"
+            aria-label="Informações da conta"
           >
             {/* Botão Fechar */}
             <IconButton
@@ -123,42 +167,61 @@ export function Login() {
             </Flex>
 
             {/* Nome do Usuário / Email */}
-            <Flex justify="space-between" align="center">
-              <Input
-                type="email"
-                name="email"
-                id="email"
-                placeholder="Digite seu email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                color="var(--primary-foreground)"
-                fontSize="xl"
-                fontWeight="bold"
-                letterSpacing="wide"
-                bg="transparent"
-                border="none"
-                p="0"
-                _placeholder={{ color: "var(--primary-foreground)", opacity: 0.6 }}
-                _focus={{
-                  border: "none",
-                  boxShadow: "none",
-                  outline: "none"
-                }}
-                autoComplete="username email"
-                required
-              />
-              <Link
-                color="var(--primary-foreground)"
-                fontSize="xs"
-                fontWeight="medium"
-                textDecoration="underline"
-                _hover={{ opacity: 0.8 }}
-                cursor="pointer"
-                onClick={handleTrocarUsuario}
-              >
-                TROCAR DE USUÁRIO
-              </Link>
-            </Flex>
+            <Box as="div" role="group">
+              <Flex justify="space-between" align="center">
+                <Input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Digite seu email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onBlur={(e) => validateEmail(e.target.value)}
+                  color="var(--primary-foreground)"
+                  fontSize="xl"
+                  fontWeight="bold"
+                  letterSpacing="wide"
+                  bg="transparent"
+                  border="none"
+                  p="0"
+                  _placeholder={{ color: "var(--primary-foreground)", opacity: 0.6 }}
+                  _focus={{
+                    border: "none",
+                    boxShadow: "none",
+                    outline: "none"
+                  }}
+                  autoComplete="username email"
+                  aria-label="Email"
+                  aria-required="true"
+                  aria-invalid={!!emailError}
+                  aria-describedby={emailError ? 'email-error' : undefined}
+                />
+                <Link
+                  color="var(--primary-foreground)"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  textDecoration="underline"
+                  _hover={{ opacity: 0.8 }}
+                  cursor="pointer"
+                  onClick={handleTrocarUsuario}
+                  aria-label="Trocar de usuário"
+                >
+                  TROCAR DE USUÁRIO
+                </Link>
+              </Flex>
+              {emailError && (
+                <Text
+                  color="red.400"
+                  fontSize="xs"
+                  mt="1"
+                  id="email-error"
+                  role="alert"
+                  aria-live="polite"
+                >
+                  {emailError}
+                </Text>
+              )}
+            </Box>
           </Box>
 
           {/* Card Inferior - Login */}
@@ -168,10 +231,19 @@ export function Login() {
             borderBottomRadius="2xl"
             p="8"
             boxShadow="2xl"
+            role="region"
+            aria-label="Autenticação"
           >
             <VStack gap="6" align="stretch">
                 {error && (
-                  <Alert.Root status="error" borderRadius="lg" variant="subtle">
+                  <Alert.Root
+                    status="error"
+                    borderRadius="lg"
+                    variant="subtle"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                  >
                     <Alert.Indicator />
                     <Alert.Title>{error}</Alert.Title>
                   </Alert.Root>
@@ -179,7 +251,7 @@ export function Login() {
 
                 {/* Título */}
                 <VStack align="flex-start" gap="1">
-                  <Text color="var(--card-foreground)" fontSize="lg" fontWeight="bold">
+                  <Text as="h1" color="var(--card-foreground)" fontSize="lg" fontWeight="bold">
                     BFIN
                   </Text>
                   <Text color="var(--muted-foreground)" fontSize="sm">
@@ -188,7 +260,7 @@ export function Login() {
                 </VStack>
 
                 {/* Campo Senha */}
-                <Box>
+                <Box as="div" role="group">
                   <Input
                     type="password"
                     name="password"
@@ -196,6 +268,7 @@ export function Login() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onBlur={(e) => validatePassword(e.target.value)}
                     size="lg"
                     bg="var(--input)"
                     borderColor="var(--border)"
@@ -209,28 +282,59 @@ export function Login() {
                       boxShadow: "0 0 0 1px var(--accent)"
                     }}
                     autoComplete="current-password"
-                    required
+                    aria-label="Senha"
+                    aria-required="true"
+                    aria-invalid={!!passwordError}
+                    aria-describedby={passwordError ? 'password-error' : undefined}
                   />
+                  {passwordError && (
+                    <Text
+                      color="red.400"
+                      fontSize="xs"
+                      mt="1"
+                      id="password-error"
+                      role="alert"
+                      aria-live="polite"
+                      textAlign="center"
+                    >
+                      {passwordError}
+                    </Text>
+                  )}
                 </Box>
 
                 {/* Botão Entrar */}
-                <Button
-                  type="submit"
-                  bg="var(--primary)"
-                  color="var(--primary-foreground)"
-                  _hover={{ opacity: 0.9 }}
-                  size="lg"
-                  fontSize="sm"
-                  fontWeight="bold"
-                  letterSpacing="wide"
-                  loading={isLoading}
-                  loadingText="Entrando..."
-                >
-                  ENTRAR
-                </Button>
+                <VStack gap="3" align="stretch">
+                  {isLoading && (
+                    <Box
+                      role="status"
+                      aria-live="polite"
+                      aria-label="Carregando"
+                      textAlign="center"
+                    >
+                      <Text color="var(--muted-foreground)" fontSize="sm">
+                        Entrando...
+                      </Text>
+                    </Box>
+                  )}
+                  <Button
+                    type="submit"
+                    bg="var(--primary)"
+                    color="var(--primary-foreground)"
+                    _hover={{ opacity: 0.9 }}
+                    size="lg"
+                    fontSize="sm"
+                    fontWeight="bold"
+                    letterSpacing="wide"
+                    loading={isLoading}
+                    loadingText="Entrando..."
+                    disabled={isLoading}
+                  >
+                    ENTRAR
+                  </Button>
+                </VStack>
 
                 {/* Separador */}
-                <Flex align="center" gap="4" my="2">
+                <Flex align="center" gap="4" my="2" role="separator" aria-orientation="horizontal">
                   <Box flex="1" h="1px" bg="var(--border)" />
                   <Text color="var(--muted-foreground)" fontSize="xs" fontWeight="medium">
                     OU
@@ -252,6 +356,7 @@ export function Login() {
                     color: "var(--primary-foreground)",
                   }}
                   onClick={() => navigate('/register')}
+                  aria-label="Registre-se - Criar nova conta"
                 >
                   REGISTRE-SE
                 </Button>

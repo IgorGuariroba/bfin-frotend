@@ -108,7 +108,7 @@ export function Dashboard({ initialExpandedForm }: DashboardProps) {
         />
 
         {/* Área de Conteúdo */}
-        <Flex flex="1" direction="column" overflow="auto" position="relative">
+        <Flex flex="1" direction="column" overflow="auto" position="relative" data-testid="dashboard-content">
           {/* Renderizador de formulários expandidos */}
           <ExpandedFormRenderer
             expandedForm={expandedForm}

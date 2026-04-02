@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useBreakpointValue } from '@chakra-ui/react';
 import {
   Shield,
   Wallet,
@@ -35,7 +36,17 @@ interface SidebarActions {
  * Benefícios: lógica isolada, fácil modificação de menu items
  */
 export function useDashboardSidebar(actions: SidebarActions) {
-  const [sidebarState, setSidebarState] = useState<SidebarState>(SIDEBAR_DEFAULTS.MOBILE_STATE);
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
+  // Estado inicial baseado no viewport
+  const getInitialState = (): SidebarState => {
+    if (isMobile) {
+      return SIDEBAR_DEFAULTS.MOBILE_STATE;
+    }
+    return SIDEBAR_DEFAULTS.DESKTOP_STATE;
+  };
+
+  const [sidebarState, setSidebarState] = useState<SidebarState>(getInitialState);
   const sidebarToggleRef = useRef<(() => void) | null>(null);
 
   /**

@@ -7,6 +7,7 @@ import {
   Download,
   DollarSign,
   Sliders,
+  TrendingUp,
 } from 'lucide-react';
 import { customShadows } from '../../theme';
 import type { ExpandedFormType } from '../../types/ExpandedForms';
@@ -48,6 +49,11 @@ export function FooterActions({ expandedForm, onFormSelect, onHomeClick }: Foote
       key: 'emprestimos' as const,
       icon: DollarSign,
       label: 'Empréstimos',
+    },
+    {
+      key: 'hist-finan' as const,
+      icon: TrendingUp,
+      label: 'Histórico',
     },
     {
       key: 'ajustar-limite' as const,

@@ -39,6 +39,7 @@ export function MonetaryValueInput({
         bg="transparent"
         _focus={{ boxShadow: 'none', border: 'none', outline: 'none' }}
         _placeholder={{ color: { _light: 'whiteAlpha.700', _dark: 'gray.600' } }}
+        data-testid="field-valor"
       />
     </NumberInput.Root>
   );

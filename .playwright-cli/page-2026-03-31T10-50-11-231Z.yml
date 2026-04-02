@@ -1,0 +1,37 @@
+- generic [active] [ref=e1]:
+  - main "Página de login" [ref=e3]:
+    - button "Mudar para modo escuro" [ref=e5] [cursor=pointer]:
+      - img [ref=e6]
+    - form "Formulário de login" [ref=e9]:
+      - generic [ref=e10]:
+        - region "Informações da conta" [ref=e11]:
+          - button "Fechar" [ref=e12] [cursor=pointer]:
+            - img [ref=e13]
+          - generic [ref=e16]:
+            - paragraph [ref=e17]: "Agência: 0001"
+            - paragraph [ref=e18]: "Conta: 1000001-0"
+            - paragraph [ref=e19]: "Banco: 260 - BFIN Pagamentos S.A."
+          - paragraph [ref=e21]: BFIN
+          - group [ref=e22]:
+            - generic [ref=e23]:
+              - textbox "Email" [ref=e24]:
+                - /placeholder: Digite seu email
+                - text: igor@bfin.com.br
+              - generic "Trocar de usuário" [ref=e25] [cursor=pointer]: TROCAR DE USUÁRIO
+        - region "Autenticação" [ref=e26]:
+          - generic [ref=e27]:
+            - alert [ref=e40]:
+              - img [ref=e42]
+              - generic [ref=e44]: Erro ao fazer login
+            - generic [ref=e28]:
+              - heading "BFIN" [level=1] [ref=e29]
+              - paragraph [ref=e30]: Desbloqueie seu app
+            - group [ref=e31]:
+              - textbox "Senha" [ref=e32]:
+                - /placeholder: ••••••••
+                - text: "123456"
+            - button "ENTRAR" [ref=e34] [cursor=pointer]
+            - separator [ref=e35]:
+              - paragraph [ref=e37]: OU
+            - button "Registre-se - Criar nova conta" [ref=e39] [cursor=pointer]: REGISTRE-SE
+  - region "top-end Notifications alt+T"

@@ -141,6 +141,7 @@ export function Sidebar({
         <Box
           position="relative"
           display="flex"
+          data-testid="sidebar"
           css={isMobile && hiddenOnMobile ? {
             // No mobile com modo hidden, sidebar desliza da lateral
             position: 'fixed',

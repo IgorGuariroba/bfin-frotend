@@ -119,6 +119,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
                 colorPalette="green"
                 w="full"
                 loading={isSubmitting}
+                aria-label="Simular empréstimo com os valores informados"
               >
                 Simular Empréstimo
               </Button>
@@ -128,6 +129,7 @@ export function LoanForm({ onCancel }: LoanFormProps) {
                   colorPalette="gray"
                   w="full"
                   onClick={onCancel}
+                  aria-label="Cancelar simulação de empréstimo"
                 >
                   Cancelar
                 </Button>

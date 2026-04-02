@@ -31,6 +31,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
         variant="green-header"
         icon={TrendingUp}
         onBack={onCancel}
+        formId="income-form"
       >
         <Box px={{ base: 4, md: 6 }} py={8}>
           <VStack gap={4} align="center">
@@ -90,6 +91,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                 w="full"
                 loading={formState.buttonState === 'loading'}
                 disabled={formState.buttonState === 'success'}
+                aria-label={formState.buttonState === 'success' ? 'Depósito confirmado com sucesso' : 'Confirmar depósito de receita'}
               >
                 {formState.buttonState === 'success' ? 'Depósito Confirmado!' : 'Confirmar Depósito'}
               </Button>
@@ -99,6 +101,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
                   colorPalette="gray"
                   w="full"
                   onClick={onCancel}
+                  aria-label="Cancelar criação de receita"
                 >
                   Cancelar
                 </Button>

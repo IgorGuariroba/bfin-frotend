@@ -13,6 +13,7 @@ export const EXPANDED_FORMS = {
   TRANSFERIR: 'transferir',
   BFIN_PARCEIRO: 'bfin-parceiro',
   CALENDARIO: 'calendario',
+  HIST_FINAN: 'hist-finan',
 } as const;
 
 export type ExpandedFormType = typeof EXPANDED_FORMS[keyof typeof EXPANDED_FORMS] | null;

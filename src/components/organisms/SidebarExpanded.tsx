@@ -112,6 +112,7 @@ export function SidebarExpanded({
             {menuItems.map(({ id, icon, label, onClick, disabled = false }) => (
               <Button
                 key={id}
+                data-testid={`menu-${id}`}
                 variant="ghost"
                 color="var(--primary-foreground)"
                 justifyContent="space-between"

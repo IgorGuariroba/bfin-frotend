@@ -272,7 +272,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
         {/* Form Content */}
         <Box flex="1" pb={contentPb ?? 8}>
           {formId || onSubmit ? (
-            <form id={formId} onSubmit={onSubmit}>
+            <form id={formId} onSubmit={onSubmit} data-testid={formId}>
               {children}
             </form>
           ) : (
@@ -373,7 +373,7 @@ export const BaseForm: React.FC<BaseFormProps> = ({
           shadow="md"
         >
           {formId || onSubmit ? (
-            <form id={formId} onSubmit={onSubmit}>
+            <form id={formId} onSubmit={onSubmit} data-testid={formId}>
               {children}
             </form>
           ) : (

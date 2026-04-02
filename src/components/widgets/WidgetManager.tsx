@@ -51,7 +51,7 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
       priority: 'secondary',
       type: 'informational',
       enabled: true,
-      order: 2,
+      order: 4,
     },
     // Espaço para novos widgets:
     // {

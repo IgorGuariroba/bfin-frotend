@@ -76,6 +76,7 @@ export function IncomeFormFields({
                 borderColor="var(--border)"
                 borderRadius="full"
                 _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                aria-label="Descrição da receita"
               />
             </Box>
             {errors.description && (
@@ -101,6 +102,7 @@ export function IncomeFormFields({
                     borderColor="var(--border)"
                     borderRadius="full"
                     _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                    aria-label="Categoria da receita"
                   >
                     {categories?.map((category) => (
                       <option key={category.id} value={category.id}>
@@ -149,6 +151,7 @@ export function IncomeFormFields({
                 borderColor="var(--border)"
                 borderRadius="full"
                 _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                aria-label="Data de recebimento da receita"
               />
             </Box>
           </Field.Root>

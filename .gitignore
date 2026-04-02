@@ -13,6 +13,9 @@ dist-ssr
 build
 *.local
 
+# TypeScript build info cache
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -27,11 +30,18 @@ build
 *storybook.log
 storybook-static
 
+# Playwright E2E Tests
+test-results/
+playwright-report/
+playwright/.cache/
+e2e/.auth/
+
 # Environment variables
 .env
 .env.local
 .env.production.local
 .env.development.local
+.env.test.local
 
 # NPM config local (contém token hardcoded, não versionar)
 # .npmrc com ${NPM_TOKEN} pode ser versionado
@@ -45,3 +55,4 @@ storybook-static
 .qwen/
 .cursor/
 QWEN.md
+/backend/
