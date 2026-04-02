@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
-import { Box, Text, HStack } from '@chakra-ui/react';
+import { useCallback, useMemo, useState } from 'react';
+import { Box, Text, HStack, IconButton } from '@chakra-ui/react';
 import { Chart, useChart } from '@chakra-ui/charts';
 import { Bar, BarChart, CartesianGrid, Rectangle, Tooltip, XAxis, YAxis } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { BaseWidget } from './BaseWidget';
 import { useAccounts } from '../../hooks/useAccounts';
 import { useTransactions } from '../../hooks/useTransactions';
@@ -11,14 +11,15 @@ interface CashFlowChartWidgetProps {
   onViewDetails?: () => void;
 }
 
-function getMonthRange() {
+function getMonthRange(offset: number) {
   const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  const target = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  const start = new Date(target.getFullYear(), target.getMonth(), 1);
+  const end = new Date(target.getFullYear(), target.getMonth() + 1, 0, 23, 59, 59);
   return {
     startDate: start.toISOString(),
     endDate: end.toISOString(),
-    label: now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+    label: target.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
   };
 }
 
@@ -39,7 +40,11 @@ const formatCompact = (value: number) =>
   }).format(value);
 
 export const CashFlowChartWidget = ({ onViewDetails }: CashFlowChartWidgetProps) => {
-  const { startDate, endDate, label } = useMemo(() => getMonthRange(), []);
+  const [monthOffset, setMonthOffset] = useState(0);
+  const goBack = useCallback(() => setMonthOffset((o) => o - 1), []);
+  const goForward = useCallback(() => setMonthOffset((o) => o + 1), []);
+
+  const { startDate, endDate, label } = useMemo(() => getMonthRange(monthOffset), [monthOffset]);
   const { data: accounts, isLoading: loadingAccounts } = useAccounts();
   const defaultAccount = accounts?.find((a) => a.is_default) ?? accounts?.[0];
 
@@ -102,6 +107,27 @@ export const CashFlowChartWidget = ({ onViewDetails }: CashFlowChartWidgetProps)
       subtitle={label}
       isLoading={isLoading}
       error={error ? 'Erro ao carregar resumo mensal' : null}
+      headerContent={
+        <HStack gap={1}>
+          <IconButton
+            aria-label="Mês anterior"
+            size="xs"
+            variant="ghost"
+            onClick={goBack}
+          >
+            <ChevronLeft size={16} />
+          </IconButton>
+          <IconButton
+            aria-label="Próximo mês"
+            size="xs"
+            variant="ghost"
+            onClick={goForward}
+            disabled={monthOffset >= 0}
+          >
+            <ChevronRight size={16} />
+          </IconButton>
+        </HStack>
+      }
       primaryAction={
         onViewDetails
           ? { label: 'Ver detalhes', onClick: onViewDetails, colorPalette: 'brand' }
