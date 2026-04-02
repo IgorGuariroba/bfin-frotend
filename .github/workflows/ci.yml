@@ -113,7 +113,7 @@ jobs:
               echo "📋 Status dos containers:"
               cd backend && docker compose ps || true
               echo "📋 Logs do backend:"
-              cd backend && docker compose logs --tail=10 app || echo "Sem logs disponíveis"
+              cd backend && docker compose logs --tail=30 app || echo "Sem logs disponíveis"
               cd ..
               break
             fi

@@ -25,8 +25,20 @@ test.describe('BFIN - Validação de Login', () => {
       await page.getByLabel(/senha/i).fill(password);
       await page.getByRole('button', { name: /entrar/i }).click();
 
-      // Aguardar redirecionamento para dashboard
-      await page.waitForURL(/\/dashboard/);
+      // Aguardar resposta da API ou erro
+      await page.waitForLoadState('networkidle');
+
+      // Verificar se há mensagem de erro
+      const errorAlert = page.getByRole('alert');
+      const hasError = await errorAlert.isVisible();
+
+      if (hasError) {
+        const errorMessage = await errorAlert.textContent();
+        throw new Error(`Falha no login: ${errorMessage}`);
+      }
+
+      // Aguardar redirecionamento para dashboard com timeout maior
+      await page.waitForURL(/\/dashboard/, { timeout: 15000 });
       await expect(page).toHaveURL(/\/dashboard/);
     });
 

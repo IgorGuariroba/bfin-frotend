@@ -13,8 +13,6 @@ interface AxiosError {
   };
 }
 
-const authApi = getAuthentication();
-
 type User = SdkUser;
 
 interface AuthContextData {
@@ -32,6 +30,11 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Helper para obter instância da API de autenticação
+function getAuthApi() {
+  return getAuthentication();
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +48,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (token && storedUser) {
         try {
           // Validar token buscando dados do usuário
+          const authApi = getAuthApi();
           const userData = await authApi.getApiV1AuthMe();
           setUser(userData);
         } catch (_error) {
@@ -63,6 +67,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn(email: string, password: string) {
     try {
+      const authApi = getAuthApi();
       const response = await authApi.postApiV1AuthLogin({
         email,
         password,
@@ -89,6 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signUp(email: string, password: string, full_name: string) {
     try {
+      const authApi = getAuthApi();
       const response = await authApi.postApiV1AuthRegister({
         email,
         password,
