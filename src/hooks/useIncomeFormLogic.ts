@@ -153,6 +153,7 @@ export function useIncomeFormLogic({ actions, onSuccess }: UseIncomeFormLogicPro
       handleSubmit: handleSubmit(onSubmit),
       errors,
       setValue,
+      watch,
     },
 
     // Data

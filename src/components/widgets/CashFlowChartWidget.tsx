@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Box, Text, HStack, IconButton } from '@chakra-ui/react';
 import { Chart, useChart } from '@chakra-ui/charts';
-import { Bar, BarChart, CartesianGrid, Rectangle, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Rectangle, XAxis, YAxis } from 'recharts';
 import { TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { BaseWidget } from './BaseWidget';
 import { useAccounts } from '../../hooks/useAccounts';
@@ -31,12 +31,6 @@ const CATEGORY_COLORS = [
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
-const formatCompact = (value: number) =>
-  new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    notation: 'compact',
-  }).format(value);
 
 export const CashFlowChartWidget = ({ onViewDetails }: CashFlowChartWidgetProps) => {
   const [monthOffset, setMonthOffset] = useState(0);
@@ -81,12 +75,13 @@ export const CashFlowChartWidget = ({ onViewDetails }: CashFlowChartWidgetProps)
       }
     }
 
-    // Ordenar por valor decrescente e atribuir cores
+    // Ordenar por valor decrescente e atribuir cores com porcentagem
     const sorted = [...byCategory.values()]
       .sort((a, b) => b.total - a.total)
       .map((item, i) => ({
         category: item.name,
         amount: Number(item.total.toFixed(2)),
+        percentage: totalExp > 0 ? Number(((item.total / totalExp) * 100).toFixed(1)) : 0,
         color: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
       }));
 
@@ -165,48 +160,32 @@ export const CashFlowChartWidget = ({ onViewDetails }: CashFlowChartWidgetProps)
           {/* Gráfico de gastos por categoria */}
           {chartData.length > 0 ? (
             <Chart.Root height="280px" chart={chart}>
-              <BarChart
-                data={chart.data}
-                margin={{ left: 10, right: 10, top: 10, bottom: 60 }}
-                responsive
-              >
+              <BarChart data={chart.data} responsive margin={{ left: 10, right: 10, top: 10, bottom: 60 }}>
                 <CartesianGrid stroke={chart.color('border.muted')} vertical={false} />
                 <XAxis
-                  type="category"
-                  dataKey={chart.key('category')}
                   axisLine={false}
                   tickLine={false}
+                  dataKey={chart.key('category')}
                   fontSize={10}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
+                  height={30}
                   tickFormatter={(value: string) =>
                     value.length > 10 ? value.slice(0, 10) + '…' : value
                   }
                 />
                 <YAxis
-                  type="number"
                   axisLine={false}
                   tickLine={false}
                   fontSize={10}
-                  tickFormatter={(value: number) => formatCompact(value)}
-                />
-                <Tooltip
-                  cursor={{ fill: chart.color('bg.muted') }}
-                  animationDuration={100}
-                  content={<Chart.Tooltip />}
+                  domain={[0, 100]}
+                  tickFormatter={(value) => `${value}%`}
                 />
                 <Bar
                   isAnimationActive={false}
-                  dataKey={chart.key('amount')}
-                  radius={4}
-                  barSize={20}
-                  shape={(props: unknown) => {
-                    const barProps = props as Record<string, unknown> & { payload: { color: string } };
-                    return (
-                      <Rectangle {...barProps} fill={chart.color(barProps.payload.color)} />
-                    );
-                  }}
+                  dataKey={chart.key('percentage')}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  shape={(props: any) => (
+                    <Rectangle {...props} fill={chart.color((props.payload as { color: string }).color)} />
+                  )}
                 />
               </BarChart>
             </Chart.Root>

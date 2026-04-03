@@ -74,6 +74,7 @@ export function IncomeForm({ onSuccess, onCancel }: IncomeFormProps) {
             <IncomeFormFields
               register={logic.form.register}
               errors={logic.form.errors}
+              watch={logic.form.watch}
               accounts={logic.accounts}
               categories={logic.categories}
               selectedAccountId={logic.selectedAccountId}
