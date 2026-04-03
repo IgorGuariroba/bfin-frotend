@@ -3,6 +3,7 @@ import { VStack, Grid } from '@chakra-ui/react';
 import { BfincontaWidget } from './BfincontaWidget';
 import { CashFlowChartWidget } from './CashFlowChartWidget';
 import { CalendarWidget } from './CalendarWidget';
+import { DailyLimitWidget } from './DailyLimitWidget';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface WidgetConfig {
@@ -53,6 +54,17 @@ export const WidgetManager: React.FC<WidgetManagerProps> = ({
       type: 'analytics',
       enabled: true,
       order: 2,
+    },
+    {
+      id: 'daily-limit',
+      component: DailyLimitWidget,
+      props: {
+        onAdjustLimitClick: () => onExpandForm('ajustar-limite')
+      },
+      priority: 'primary',
+      type: 'financial',
+      enabled: true,
+      order: 3,
     },
     {
       id: 'calendar',

@@ -11,6 +11,7 @@ export { BfincontaWidget } from './BfincontaWidget';
 export { CalendarWidget } from './CalendarWidget';
 
 export { CashFlowChartWidget } from './CashFlowChartWidget';
+export { DailyLimitWidget } from './DailyLimitWidget';
 
 // Espaço reservado para novos widgets:
 // export { TransactionsWidget } from './TransactionsWidget';
