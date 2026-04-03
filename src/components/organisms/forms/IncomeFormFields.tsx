@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { Pencil, Tag, Calendar, Check, Plus, Zap } from 'lucide-react';
 import { AccountSelector } from '../../molecules/AccountSelector';
-import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import type { Account, Category } from '@igorguariroba/bfin-sdk/client';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
@@ -20,6 +20,8 @@ import type { IncomeFormData } from '../../../hooks/useIncomeFormLogic';
 interface IncomeFormFieldsProps {
   register: UseFormRegister<IncomeFormData>;
   errors: FieldErrors<IncomeFormData>;
+  watch: UseFormWatch<IncomeFormData>;
+  setValue: UseFormSetValue<IncomeFormData>;
   accounts?: Account[];
   categories?: Category[];
   selectedAccountId: string;
@@ -31,6 +33,8 @@ interface IncomeFormFieldsProps {
 export function IncomeFormFields({
   register,
   errors,
+  watch,
+  setValue,
   accounts,
   categories,
   selectedAccountId,
@@ -157,10 +161,49 @@ export function IncomeFormFields({
           </Field.Root>
 
           {/* Recorrente */}
-          <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
+          <Checkbox.Root
+            checked={watch('isRecurring')}
+            onCheckedChange={(details) => setValue('isRecurring', !!details.checked, { shouldValidate: true })}
+            colorPalette="brand"
+          >
+            <Checkbox.HiddenInput />
             <Checkbox.Control />
             <Checkbox.Label>Receita recorrente</Checkbox.Label>
           </Checkbox.Root>
+
+          {/* Padrão de Recorrência (condicional) */}
+          {watch('isRecurring') && (
+            <Field.Root invalid={!!errors.recurrencePattern}>
+              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
+                Frequência da Recorrência
+              </Field.Label>
+              <Box position="relative">
+                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
+                  <Zap size={18} color="var(--muted-foreground)" />
+                </Box>
+                <NativeSelect.Root>
+                  <NativeSelect.Field
+                    {...register('recurrencePattern')}
+                    placeholder="Selecione a frequência"
+                    pl={10}
+                    borderColor="var(--border)"
+                    borderRadius="full"
+                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
+                    aria-label="Frequência da recorrência da receita"
+                  >
+                    <option value="">Selecione a frequência</option>
+                    <option value="monthly">Mensal</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="yearly">Anual</option>
+                  </NativeSelect.Field>
+                  <NativeSelect.Indicator />
+                </NativeSelect.Root>
+              </Box>
+              {errors.recurrencePattern && (
+                <Field.ErrorText>{errors.recurrencePattern.message}</Field.ErrorText>
+              )}
+            </Field.Root>
+          )}
 
           {/* Info Box */}
           <Box
