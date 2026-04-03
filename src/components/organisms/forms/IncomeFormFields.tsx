@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { Pencil, Tag, Calendar, Check, Plus, Zap } from 'lucide-react';
 import { AccountSelector } from '../../molecules/AccountSelector';
-import type { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
+import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import type { Account, Category } from '@igorguariroba/bfin-sdk/client';
 import { iconColors } from '../../../theme';
 import { toast } from '../../../lib/toast';
@@ -21,6 +21,7 @@ interface IncomeFormFieldsProps {
   register: UseFormRegister<IncomeFormData>;
   errors: FieldErrors<IncomeFormData>;
   watch: UseFormWatch<IncomeFormData>;
+  setValue: UseFormSetValue<IncomeFormData>;
   accounts?: Account[];
   categories?: Category[];
   selectedAccountId: string;
@@ -33,6 +34,7 @@ export function IncomeFormFields({
   register,
   errors,
   watch,
+  setValue,
   accounts,
   categories,
   selectedAccountId,
@@ -159,7 +161,11 @@ export function IncomeFormFields({
           </Field.Root>
 
           {/* Recorrente */}
-          <Checkbox.Root {...register('isRecurring')} colorPalette="brand">
+          <Checkbox.Root
+            checked={watch('isRecurring')}
+            onCheckedChange={(details) => setValue('isRecurring', !!details.checked, { shouldValidate: true })}
+            colorPalette="brand"
+          >
             <Checkbox.Control />
             <Checkbox.Label>Receita recorrente</Checkbox.Label>
           </Checkbox.Root>
