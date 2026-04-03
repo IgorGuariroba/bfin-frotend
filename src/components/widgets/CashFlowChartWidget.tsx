@@ -54,7 +54,7 @@ export const CashFlowChartWidget = ({ onViewDetails }: CashFlowChartWidgetProps)
     if (!txData?.transactions) return { chartData: [], totalExpenses: 0, totalIncome: 0 };
 
     const expenses = txData.transactions.filter(
-      (t) => t.type === 'fixed' || t.type === 'variable'
+      (t) => t.type === 'fixed_expense' || t.type === 'variable_expense' || t.type === 'fixed' || t.type === 'variable'
     );
 
     const income = txData.transactions

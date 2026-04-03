@@ -1,4 +1,4 @@
-export type TransactionType = 'income' | 'fixed' | 'variable';
+export type TransactionType = 'income' | 'fixed' | 'variable' | 'fixed_expense' | 'variable_expense';
 export type TransactionStatus = 'pending' | 'executed' | 'cancelled' | 'locked';
 export type RecurrencePattern = 'monthly' | 'weekly' | 'yearly';
 
