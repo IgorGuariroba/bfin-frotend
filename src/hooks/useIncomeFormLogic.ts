@@ -125,11 +125,14 @@ export function useIncomeFormLogic({ actions, onSuccess }: UseIncomeFormLogicPro
     actions.setShowConfirmationModal(false);
     actions.setButtonState('idle');
 
-    // Resetar formulário
+    // Resetar formulário completamente
     setValue('amount', 0);
     actions.setAmountInputValue('');
     setValue('description', '');
     setValue('categoryId', '');
+    setValue('dueDate', undefined);
+    setValue('isRecurring', false);
+    setValue('recurrencePattern', undefined);
 
     if (onSuccess) {
       setTimeout(() => onSuccess(), 300);
@@ -140,10 +143,14 @@ export function useIncomeFormLogic({ actions, onSuccess }: UseIncomeFormLogicPro
     actions.setShowConfirmationModal(false);
     actions.resetForm();
 
-    // Resetar formulário
+    // Resetar formulário completamente
     setValue('amount', 0);
+    actions.setAmountInputValue('');
     setValue('description', '');
     setValue('categoryId', '');
+    setValue('dueDate', undefined);
+    setValue('isRecurring', false);
+    setValue('recurrencePattern', undefined);
   };
 
   return {
@@ -154,7 +161,16 @@ export function useIncomeFormLogic({ actions, onSuccess }: UseIncomeFormLogicPro
       errors,
       setValue,
       watch,
+      reset: form.reset,
+      formState: form.formState,
     },
+
+    // Form functions exposed directly
+    register,
+    handleSubmit: handleSubmit(onSubmit),
+    errors,
+    setValue,
+    watch,
 
     // Data
     accounts,

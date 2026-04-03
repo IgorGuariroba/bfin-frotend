@@ -166,6 +166,7 @@ export function IncomeFormFields({
             onCheckedChange={(details) => setValue('isRecurring', !!details.checked, { shouldValidate: true })}
             colorPalette="brand"
           >
+            <Checkbox.HiddenInput />
             <Checkbox.Control />
             <Checkbox.Label>Receita recorrente</Checkbox.Label>
           </Checkbox.Root>
