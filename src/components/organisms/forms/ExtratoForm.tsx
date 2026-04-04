@@ -22,10 +22,6 @@ import { toaster } from '../../ui/toaster';
 import {
   Eye,
   EyeOff,
-  TrendingUp,
-  ArrowLeftRight,
-  Banknote,
-  QrCode,
   ShoppingCart,
   ArrowDownLeft,
   ArrowUpRight,
@@ -337,13 +333,22 @@ export function ExtratoForm({ onBack, onViewAll, onCancel }: ExtratoFormProps) {
 
   const formatDateLabel = (dateString: string) => {
     try {
-      const date = new Date(dateString);
+      // Extrai apenas a parte da data (YYYY-MM-DD) para evitar problemas de timezone
+      const datePart = dateString.split('T')[0];
+      if (!datePart) return dateString;
+      
+      // Cria a data em UTC usando apenas a parte da data
+      const [year, month, day] = datePart.split('-').map(Number);
+      const date = new Date(Date.UTC(year, month - 1, day));
+      
       const today = new Date();
-      const yesterday = new Date();
-      yesterday.setDate(today.getDate() - 1);
+      const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+      
+      const yesterdayUTC = new Date(todayUTC);
+      yesterdayUTC.setUTCDate(todayUTC.getUTCDate() - 1);
 
-      if (date.toDateString() === today.toDateString()) return 'Hoje';
-      if (date.toDateString() === yesterday.toDateString()) return 'Ontem';
+      if (date.getTime() === todayUTC.getTime()) return 'Hoje';
+      if (date.getTime() === yesterdayUTC.getTime()) return 'Ontem';
 
       return format(date, "dd MMM", { locale: ptBR });
     } catch {
@@ -379,41 +384,6 @@ export function ExtratoForm({ onBack, onViewAll, onCancel }: ExtratoFormProps) {
       onCancel={onCancel}
     >
 
-      {/* Floating Action Card */}
-      <Box px={4} mt="-10" mb={6}>
-        <Box bg="var(--card)" borderRadius="2xl" p={6} shadow="xl">
-          <Flex justify="space-between" align="center">
-            <VStack gap={2} cursor="pointer">
-              <Center bg="green.50" boxSize="14" borderRadius="2xl">
-                <Icon as={TrendingUp} color="green.500" boxSize={6} />
-              </Center>
-              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Investimentos</Text>
-            </VStack>
-
-            <VStack gap={2} cursor="pointer">
-              <Center bg="green.50" boxSize="14" borderRadius="2xl">
-                <Icon as={ArrowLeftRight} color="green.500" boxSize={6} />
-              </Center>
-              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Transferir</Text>
-            </VStack>
-
-            <VStack gap={2} cursor="pointer">
-              <Center bg="green.50" boxSize="14" borderRadius="2xl">
-                <Icon as={Banknote} color="green.500" boxSize={6} />
-              </Center>
-              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Pagar</Text>
-            </VStack>
-
-            <VStack gap={2} cursor="pointer">
-              <Center bg="green.50" boxSize="14" borderRadius="2xl">
-                <Icon as={QrCode} color="green.500" boxSize={6} />
-              </Center>
-              <Text fontSize="xs" fontWeight="bold" color="var(--muted-foreground)">Pix</Text>
-            </VStack>
-          </Flex>
-        </Box>
-      </Box>
-
       {/* Recent Transactions Section */}
       <VStack align="stretch" gap={4} px={6} pb={24}>
         <Flex justify="space-between" align="center">
@@ -432,7 +402,7 @@ export function ExtratoForm({ onBack, onViewAll, onCancel }: ExtratoFormProps) {
             <Center py={10}>
               <Spinner color="green.500" />
             </Center>
-          ) : transactionsData?.transactions.map((transaction) => (
+          ) : transactionsData?.transactions.slice().reverse().map((transaction) => (
             <TransactionItem
               key={transaction.id}
               title={transaction.description}
