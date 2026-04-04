@@ -161,6 +161,7 @@ export function useIncomeFormLogic({ actions, onSuccess }: UseIncomeFormLogicPro
       errors,
       setValue,
       watch,
+      control: form.control,
       reset: form.reset,
       formState: form.formState,
     },
@@ -171,6 +172,7 @@ export function useIncomeFormLogic({ actions, onSuccess }: UseIncomeFormLogicPro
     errors,
     setValue,
     watch,
+    control: form.control,
 
     // Data
     accounts,

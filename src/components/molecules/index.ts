@@ -1,5 +1,6 @@
 export { FormField } from './FormField';
 export { FormSelect } from './FormSelect';
+export { SelectField } from './SelectField';
 export { BalanceCard } from './BalanceCard';
 export { StatusBadge } from './StatusBadge';
 export { RoleDisplay } from './RoleDisplay';
