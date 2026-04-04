@@ -70,7 +70,7 @@ export function IncomeFormFields({
             <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
               Descrição
             </Field.Label>
-            <Box position="relative">
+            <Box position="relative" width="full" >
               <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
                 <Pencil size={18} color="var(--muted-foreground)" />
               </Box>
