@@ -36,11 +36,11 @@ export function SelectField<T extends FieldValues = FieldValues>({
   const collection = createListCollection({ items });
 
   return (
-    <Field.Root invalid={!!error}>
+    <Field.Root invalid={!!error} width="full" flex={1} minWidth={0}>
       <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
         {label}
       </Field.Label>
-      <Box position="relative">
+      <Box position="relative" width="full">
         {Icon && (
           <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1} pointerEvents="none">
             <Icon size={18} color="var(--muted-foreground)" />
