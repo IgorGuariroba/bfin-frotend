@@ -16,7 +16,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             {label}
           </Field.Label>
         )}
-        <Box position="relative">
+        <Box position="relative"  width="full" >
           {icon && (
             <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
               {icon}

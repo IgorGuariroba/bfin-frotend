@@ -5,16 +5,15 @@ import {
   Text,
   Field,
   Input,
-  NativeSelect,
   Checkbox,
-  IconButton,
 } from '@chakra-ui/react';
-import { Pencil, Tag, Calendar, Check, Plus, Zap } from 'lucide-react';
+import { Pencil, Calendar, Check, Zap } from 'lucide-react';
+import { SelectField } from '../../molecules/SelectField';
 import { AccountSelector } from '../../molecules/AccountSelector';
-import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
+import { CategorySelector } from '../../molecules/CategorySelector';
+import type { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue, Control } from 'react-hook-form';
 import type { Account, Category } from '@igorguariroba/bfin-sdk/client';
 import { iconColors } from '../../../theme';
-import { toast } from '../../../lib/toast';
 import type { IncomeFormData } from '../../../hooks/useIncomeFormLogic';
 
 interface IncomeFormFieldsProps {
@@ -22,6 +21,7 @@ interface IncomeFormFieldsProps {
   errors: FieldErrors<IncomeFormData>;
   watch: UseFormWatch<IncomeFormData>;
   setValue: UseFormSetValue<IncomeFormData>;
+  control: Control<IncomeFormData>;
   accounts?: Account[];
   categories?: Category[];
   selectedAccountId: string;
@@ -35,6 +35,7 @@ export function IncomeFormFields({
   errors,
   watch,
   setValue,
+  control,
   accounts,
   categories,
   selectedAccountId,
@@ -69,7 +70,7 @@ export function IncomeFormFields({
             <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
               Descrição
             </Field.Label>
-            <Box position="relative">
+            <Box position="relative" width="full" >
               <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
                 <Pencil size={18} color="var(--muted-foreground)" />
               </Box>
@@ -89,55 +90,13 @@ export function IncomeFormFields({
           </Field.Root>
 
           {/* Categoria */}
-          <Field.Root invalid={!!errors.categoryId}>
-            <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-              Categoria
-            </Field.Label>
-            <HStack gap={2}>
-              <Box position="relative" flex={1}>
-                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
-                  <Tag size={18} color="var(--muted-foreground)" />
-                </Box>
-                <NativeSelect.Root>
-                  <NativeSelect.Field
-                    {...register('categoryId')}
-                    placeholder="Selecione uma categoria"
-                    pl={10}
-                    borderColor="var(--border)"
-                    borderRadius="full"
-                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                    aria-label="Categoria da receita"
-                  >
-                    {categories?.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </NativeSelect.Field>
-                  <NativeSelect.Indicator />
-                </NativeSelect.Root>
-              </Box>
-              <IconButton
-                aria-label="Nova Categoria"
-                onClick={() => {
-                  if (!selectedAccountId) {
-                    toast.error('Selecione uma conta primeiro');
-                    return;
-                  }
-                  onCategoryDialogOpen();
-                }}
-                variant="outline"
-                borderRadius="full"
-                borderColor="var(--border)"
-                disabled={!selectedAccountId}
-              >
-                <Plus size={18} />
-              </IconButton>
-            </HStack>
-            {errors.categoryId && (
-              <Field.ErrorText>{errors.categoryId.message}</Field.ErrorText>
-            )}
-          </Field.Root>
+          <CategorySelector
+            categories={categories}
+            selectedAccountId={selectedAccountId}
+            onNewCategoryClick={onCategoryDialogOpen}
+            control={control}
+            error={errors.categoryId?.message}
+          />
 
           {/* Data */}
           <Field.Root>
@@ -173,36 +132,19 @@ export function IncomeFormFields({
 
           {/* Padrão de Recorrência (condicional) */}
           {watch('isRecurring') && (
-            <Field.Root invalid={!!errors.recurrencePattern}>
-              <Field.Label fontSize="sm" color="var(--muted-foreground)" mb={2}>
-                Frequência da Recorrência
-              </Field.Label>
-              <Box position="relative">
-                <Box position="absolute" left={3} top="50%" transform="translateY(-50%)" zIndex={1}>
-                  <Zap size={18} color="var(--muted-foreground)" />
-                </Box>
-                <NativeSelect.Root>
-                  <NativeSelect.Field
-                    {...register('recurrencePattern')}
-                    placeholder="Selecione a frequência"
-                    pl={10}
-                    borderColor="var(--border)"
-                    borderRadius="full"
-                    _focus={{ borderColor: 'var(--primary)', boxShadow: '0 0 0 1px var(--primary)' }}
-                    aria-label="Frequência da recorrência da receita"
-                  >
-                    <option value="">Selecione a frequência</option>
-                    <option value="monthly">Mensal</option>
-                    <option value="weekly">Semanal</option>
-                    <option value="yearly">Anual</option>
-                  </NativeSelect.Field>
-                  <NativeSelect.Indicator />
-                </NativeSelect.Root>
-              </Box>
-              {errors.recurrencePattern && (
-                <Field.ErrorText>{errors.recurrencePattern.message}</Field.ErrorText>
-              )}
-            </Field.Root>
+            <SelectField
+              control={control}
+              name="recurrencePattern"
+              label="Frequência da Recorrência"
+              placeholder="Selecione a frequência"
+              icon={Zap}
+              items={[
+                { label: 'Mensal', value: 'monthly' },
+                { label: 'Semanal', value: 'weekly' },
+                { label: 'Anual', value: 'yearly' },
+              ]}
+              error={errors.recurrencePattern?.message}
+            />
           )}
 
           {/* Info Box */}
